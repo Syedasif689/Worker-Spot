@@ -1,0 +1,443 @@
+/* ===========================
+   ABOUT PAGE — Fully Responsive
+   No forced widths, fluid grids
+   =========================== */
+
+.about {
+  background: #0B0F14;
+  color: #fff;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+.about-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: clamp(40px, 6vw, 90px) clamp(16px, 4vw, 32px);
+}
+
+/* ===========================
+   HERO
+=========================== */
+
+.about-hero {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: clamp(60px, 8vw, 120px) clamp(16px, 3vw, 32px) clamp(40px, 5vw, 70px);
+  text-align: center;
+}
+
+.about-badge {
+  display: inline-block;
+  background: rgba(255, 138, 0, 0.12);
+  color: #FF8A00;
+  border: 1px solid rgba(255, 138, 0, 0.35);
+  padding: clamp(8px, 1vw, 10px) clamp(16px, 2vw, 22px);
+  border-radius: 50px;
+  font-size: clamp(13px, 1.1vw, 15px);
+  font-weight: 600;
+}
+
+.about-hero h1 {
+  margin-top: clamp(20px, 2.8vw, 28px);
+  font-size: clamp(2.2rem, 5.2vw, 4rem);
+  line-height: 1.15;
+  font-weight: 700;
+}
+
+.about-hero h1 span {
+  color: #FF8A00;
+}
+
+.about-hero p {
+  margin: clamp(18px, 2.4vw, 28px) auto 0;
+  max-width: 760px;
+  color: #9CA3AF;
+  font-size: clamp(15px, 1.3vw, 19px);
+  line-height: 1.9;
+}
+
+/* ===========================
+   SECTION TITLE
+=========================== */
+
+.section-title {
+  text-align: center;
+  margin-bottom: clamp(30px, 5vw, 60px);
+}
+
+.section-title h2 {
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  margin-bottom: clamp(10px, 1.2vw, 16px);
+}
+
+.section-title p {
+  color: #9CA3AF;
+  font-size: clamp(15px, 1.2vw, 18px);
+}
+
+/* ===========================
+   TWO COLUMN GRID
+=========================== */
+
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: clamp(20px, 3vw, 35px);
+}
+
+/* ===========================
+   CARDS — Base
+=========================== */
+
+.about-card,
+.mission-card,
+.story-card,
+.value-card,
+.cta-box {
+  background: #111827;
+  border: 1px solid #2B3445;
+  border-radius: clamp(16px, 2vw, 22px);
+  transition: 0.35s ease;
+}
+
+.about-card:hover,
+.mission-card:hover,
+.story-card:hover,
+.value-card:hover,
+.cta-box:hover {
+  transform: translateY(-8px);
+  border-color: #FF8A00;
+  box-shadow: 0 18px 45px rgba(255, 138, 0, 0.15);
+}
+
+/* ===========================
+   ABOUT CARD
+=========================== */
+
+.about-card {
+  padding: clamp(24px, 3vw, 40px);
+}
+
+.card-icon {
+  width: clamp(48px, 5vw, 60px);
+  height: clamp(48px, 5vw, 60px);
+  color: #FF8A00;
+  margin-bottom: clamp(16px, 2vw, 22px);
+}
+
+.about-card h3 {
+  font-size: clamp(1.3rem, 2.4vw, 1.9rem);
+  margin-bottom: clamp(12px, 1.5vw, 20px);
+}
+
+.about-card ul {
+  list-style: none;
+  padding: 0;
+}
+
+.about-card li {
+  color: #C9D1D9;
+  margin: clamp(12px, 1.2vw, 18px) 0;
+  font-size: clamp(14px, 1.1vw, 17px);
+  position: relative;
+  padding-left: 28px;
+}
+
+.about-card li::before {
+  content: "✓";
+  color: #FF8A00;
+  position: absolute;
+  left: 0;
+}
+
+/* ===========================
+   STORY
+=========================== */
+
+.story-card {
+  padding: clamp(28px, 4vw, 55px);
+  text-align: center;
+}
+
+.story-card p {
+  font-size: clamp(16px, 1.5vw, 20px);
+  line-height: 2;
+  color: #C9D1D9;
+}
+
+/* ===========================
+   MISSION — 2 columns
+=========================== */
+
+.mission-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: clamp(20px, 3vw, 35px);
+}
+
+.mission-card {
+  padding: clamp(24px, 3vw, 45px);
+}
+
+.mission-card h3 {
+  margin: clamp(14px, 1.8vw, 22px) 0;
+  font-size: clamp(1.2rem, 2.2vw, 1.9rem);
+}
+
+.mission-card p {
+  color: #9CA3AF;
+  line-height: 1.9;
+  font-size: clamp(14px, 1.1vw, 17px);
+}
+
+/* ===========================
+   VALUES — 4 columns
+=========================== */
+
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: clamp(16px, 2vw, 25px);
+}
+
+.value-card {
+  padding: clamp(20px, 2.5vw, 40px);
+  text-align: center;
+}
+
+.value-card svg {
+  width: clamp(36px, 4vw, 50px);
+  height: clamp(36px, 4vw, 50px);
+  color: #FF8A00;
+}
+
+.value-card h4 {
+  margin-top: clamp(12px, 1.5vw, 18px);
+  font-size: clamp(1rem, 1.8vw, 1.5rem);
+}
+
+/* ===========================
+   ROADMAP
+=========================== */
+
+.roadmap {
+  display: flex;
+  justify-content: space-between;
+  gap: clamp(12px, 2vw, 20px);
+  flex-wrap: wrap;
+}
+
+.roadmap-item {
+  flex: 1;
+  min-width: 140px;
+  background: #111827;
+  border: 1px solid #2B3445;
+  border-radius: clamp(14px, 1.5vw, 18px);
+  padding: clamp(16px, 2vw, 25px);
+  text-align: center;
+  transition: 0.35s ease;
+}
+
+.roadmap-item:hover {
+  transform: translateY(-6px);
+  border-color: #FF8A00;
+}
+
+.roadmap-item span {
+  display: block;
+  color: #FF8A00;
+  font-size: clamp(22px, 3vw, 30px);
+  margin-bottom: clamp(10px, 1.2vw, 15px);
+}
+
+.roadmap-item p {
+  font-size: clamp(12px, 1vw, 15px);
+  color: #9CA3AF;
+}
+
+/* ===========================
+   CTA
+=========================== */
+
+.cta-box {
+  text-align: center;
+  padding: clamp(30px, 5vw, 70px);
+}
+
+.cta-box h2 {
+  font-size: clamp(1.8rem, 4vw, 2.9rem);
+}
+
+.cta-box p {
+  margin: clamp(16px, 2vw, 25px) auto;
+  max-width: 720px;
+  color: #9CA3AF;
+  font-size: clamp(15px, 1.2vw, 18px);
+  line-height: 1.8;
+}
+
+.cta-box button {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: clamp(12px, 1.5vw, 20px);
+  background: #FF8A00;
+  color: white;
+  border: none;
+  padding: clamp(14px, 1.5vw, 18px) clamp(24px, 2.5vw, 34px);
+  border-radius: 14px;
+  font-size: clamp(15px, 1.1vw, 17px);
+  font-weight: 600;
+  transition: 0.3s ease;
+  cursor: pointer;
+}
+
+.cta-box button:hover {
+  background: #FF9F1C;
+  transform: translateY(-4px);
+}
+
+/* ===========================
+   RESPONSIVE — fine‑tuning
+   =========================== */
+
+/* Tablets & small laptops */
+@media (max-width: 992px) {
+  .about-container {
+    padding: 60px 24px;
+  }
+
+  .about-hero {
+    padding-top: 80px;
+  }
+
+  .about-hero h1 {
+    font-size: clamp(2rem, 5vw, 2.8rem);
+  }
+
+  .values-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .mission-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .about-hero {
+    padding-top: 60px;
+  }
+
+  .about-hero h1 {
+    font-size: clamp(1.8rem, 6vw, 2.2rem);
+  }
+
+  .about-hero p {
+    font-size: 15px;
+  }
+
+  .about-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .values-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .roadmap {
+    flex-direction: column;
+  }
+
+  .roadmap-item {
+    min-width: auto;
+  }
+
+  .cta-box {
+    padding: 30px 20px;
+  }
+
+  .cta-box h2 {
+    font-size: 1.6rem;
+  }
+}
+
+/* Small phones */
+@media (max-width: 480px) {
+  .about-container {
+    padding: 40px 16px;
+  }
+
+  .about-hero {
+    padding-top: 40px;
+    padding-bottom: 30px;
+  }
+
+  .about-hero h1 {
+    font-size: 1.6rem;
+  }
+
+  .about-hero p {
+    font-size: 14px;
+  }
+
+  .values-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .value-card {
+    padding: 16px 12px;
+  }
+  .value-card svg {
+    width: 30px;
+    height: 30px;
+  }
+  .value-card h4 {
+    font-size: 0.9rem;
+  }
+
+  .about-card {
+    padding: 18px;
+  }
+  .about-card li {
+    font-size: 14px;
+  }
+
+  .mission-card {
+    padding: 18px;
+  }
+
+  .story-card {
+    padding: 20px;
+  }
+  .story-card p {
+    font-size: 15px;
+  }
+
+  .cta-box {
+    padding: 24px 16px;
+  }
+  .cta-box h2 {
+    font-size: 1.3rem;
+  }
+  .cta-box p {
+    font-size: 14px;
+  }
+  .cta-box button {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 20px;
+    font-size: 15px;
+  }
+}
+
+/* Very large screens */
+@media (min-width: 1400px) {
+  .about-container {
+    max-width: 1400px;
+  }
+}

@@ -1,0 +1,152 @@
+.terms-page {
+  min-height: 100vh;
+  padding: 50px 20px;
+  background: #0a0a0a;
+  color: #e5e5e5;
+}
+
+.terms-container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* Header */
+
+.terms-header {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.terms-header h1 {
+  margin-bottom: 15px;
+  color: #ffffff;
+  font-size: 34px;
+  font-weight: 700;
+}
+
+.terms-intro {
+  max-width: 750px;
+  margin: 0 auto 25px;
+  color: #a5a5a5;
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+/* Language */
+
+.language-selector {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: #151515;
+  border: 1px solid #303030;
+  border-radius: 10px;
+}
+
+.language-selector label {
+  color: #aaa;
+  font-size: 14px;
+}
+
+.language-selector select {
+  padding: 7px 12px;
+  border: 1px solid #3a3a3a;
+  border-radius: 7px;
+  outline: none;
+  background: #0d0d0d;
+  color: #fff;
+  cursor: pointer;
+}
+
+.language-selector select:focus {
+  border-color: #f5b400;
+}
+
+/* Content */
+
+.terms-content {
+  padding: 10px;
+}
+
+.terms-section {
+  margin-bottom: 28px;
+  padding: 25px;
+  background: #141414;
+  border: 1px solid #282828;
+  border-radius: 12px;
+}
+
+.terms-section h2 {
+  margin: 0 0 15px;
+  color: #f5b400;
+  font-size: 20px;
+}
+
+.terms-section p {
+  margin: 0 0 12px;
+  color: #bdbdbd;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.terms-section p:last-child {
+  margin-bottom: 0;
+}
+
+/* Footer */
+
+.terms-footer {
+  margin-top: 35px;
+  padding: 25px;
+  text-align: center;
+  background: #111111;
+  border-top: 1px solid #292929;
+}
+
+.terms-footer strong {
+  color: #f5b400;
+  font-size: 18px;
+}
+
+.terms-footer p {
+  margin-top: 8px;
+  color: #888;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* Mobile */
+
+@media (max-width: 600px) {
+  .terms-page {
+    padding: 30px 12px;
+  }
+
+  .terms-header h1 {
+    font-size: 25px;
+  }
+
+  .terms-intro {
+    font-size: 14px;
+  }
+
+  .language-selector {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .terms-section {
+    padding: 18px;
+  }
+
+  .terms-section h2 {
+    font-size: 18px;
+  }
+
+  .terms-section p {
+    font-size: 13px;
+    line-height: 1.7;
+  }
+}

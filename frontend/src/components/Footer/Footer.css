@@ -1,0 +1,365 @@
+/* ===========================
+   FOOTER — Fully Responsive
+   Dark theme with orange accents
+   =========================== */
+
+.footer {
+  background: #0B0F14;
+  color: #fff;
+  border-top: 1px solid rgba(255, 138, 0, 0.08);
+  overflow-x: hidden;
+  width: 100%;
+}
+
+.footer-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: clamp(50px, 8vw, 80px) clamp(16px, 4vw, 32px) clamp(30px, 5vw, 50px);
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1.2fr;
+  gap: clamp(30px, 5vw, 60px);
+}
+
+/* ===========================
+   BRAND
+=========================== */
+
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 1.5vw, 18px);
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(48px, 5vw, 56px);
+  height: clamp(48px, 5vw, 56px);
+  background: rgba(255, 138, 0, 0.12);
+  border-radius: 14px;
+  color: #FF8A00;
+  transition: 0.35s ease;
+}
+
+.footer-logo:hover {
+  background: #FF8A00;
+  color: #fff;
+  transform: rotate(-8deg) scale(1.05);
+}
+
+.footer-brand h2 {
+  font-size: clamp(1.4rem, 2.2vw, 1.8rem);
+  font-weight: 700;
+  margin: 0;
+}
+
+.footer-brand h2 span {
+  color: #FF8A00;
+}
+
+.footer-brand p {
+  color: #9CA3AF;
+  font-size: clamp(14px, 1.1vw, 16px);
+  line-height: 1.8;
+  max-width: 380px;
+}
+
+/* ===========================
+   LINKS COLUMNS
+=========================== */
+
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px, 1.2vw, 14px);
+}
+
+.footer-links h3 {
+  font-size: clamp(1rem, 1.4vw, 1.2rem);
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: clamp(4px, 0.5vw, 8px);
+}
+
+.footer-links a {
+  color: #9CA3AF;
+  text-decoration: none;
+  font-size: clamp(14px, 1.1vw, 16px);
+  transition: 0.3s ease;
+  width: fit-content;
+}
+
+.footer-links a:hover {
+  color: #FF8A00;
+  transform: translateX(6px);
+}
+
+/* ===========================
+   CONTACT
+=========================== */
+
+.footer-links p {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #9CA3AF;
+  font-size: clamp(14px, 1.1vw, 16px);
+  margin: 0;
+  line-height: 1.8;
+}
+
+.footer-links p svg {
+  color: #FF8A00;
+  flex-shrink: 0;
+  width: clamp(18px, 1.3vw, 20px);
+  height: clamp(18px, 1.3vw, 20px);
+}
+
+/* ===========================
+   BOTTOM BAR
+=========================== */
+
+.footer-bottom {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: clamp(16px, 2vw, 24px) clamp(16px, 4vw, 32px);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: clamp(12px, 2vw, 20px);
+}
+
+.footer-bottom p {
+  color: #9CA3AF;
+  font-size: clamp(13px, 1vw, 15px);
+}
+
+.footer-bottom p span {
+  color: #FF8A00;
+  font-weight: 600;
+}
+
+/* ===========================
+   SOCIAL ICONS
+=========================== */
+
+.footer-social {
+  display: flex;
+  gap: clamp(12px, 1.5vw, 18px);
+}
+
+.footer-social a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(36px, 3.5vw, 42px);
+  height: clamp(36px, 3.5vw, 42px);
+  border-radius: 50%;
+  background: rgba(255, 138, 0, 0.08);
+  color: #9CA3AF;
+  transition: 0.35s ease;
+  border: 1px solid transparent;
+}
+
+.footer-social a:hover {
+  background: #FF8A00;
+  color: #fff;
+  transform: translateY(-4px);
+  border-color: #FF8A00;
+  box-shadow: 0 8px 25px rgba(255, 138, 0, 0.25);
+}
+
+.footer-social a svg {
+  width: clamp(18px, 1.5vw, 20px);
+  height: clamp(18px, 1.5vw, 20px);
+}
+
+/* ===========================
+   SCROLL TO TOP
+=========================== */
+
+.scroll-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(40px, 4vw, 48px);
+  height: clamp(40px, 4vw, 48px);
+  border-radius: 50%;
+  background: #FF8A00;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: 0.35s ease;
+  flex-shrink: 0;
+}
+
+.scroll-top:hover {
+  background: #FF9F1C;
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 8px 30px rgba(255, 138, 0, 0.35);
+}
+
+.scroll-top svg {
+  width: clamp(18px, 1.5vw, 20px);
+  height: clamp(18px, 1.5vw, 20px);
+}
+
+/* ===========================
+   RESPONSIVE — fine‑tuning
+=========================== */
+
+/* Tablets & small laptops */
+@media (max-width: 992px) {
+  .footer-container {
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+
+  .footer-brand {
+    grid-column: 1 / -1;
+  }
+
+  .footer-brand p {
+    max-width: 100%;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .footer-container {
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    padding: 40px 20px 30px;
+  }
+
+  .footer-brand {
+    grid-column: 1 / -1;
+  }
+
+  .footer-links h3 {
+    font-size: 1.1rem;
+  }
+  .footer-links a,
+  .footer-links p {
+    font-size: 14px;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    text-align: center;
+    padding: 16px 20px;
+    gap: 14px;
+  }
+
+  .footer-bottom p {
+    font-size: 13px;
+  }
+
+  .footer-social {
+    gap: 12px;
+  }
+}
+
+/* Small phones */
+@media (max-width: 480px) {
+  .footer-container {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 36px 16px 24px;
+  }
+
+  .footer-brand {
+    grid-column: auto;
+  }
+
+  .footer-brand p {
+    font-size: 14px;
+  }
+
+  .footer-links {
+    gap: 8px;
+  }
+
+  .footer-links a,
+  .footer-links p {
+    font-size: 14px;
+  }
+
+  .footer-links a:hover {
+    transform: translateX(4px);
+  }
+
+  .footer-bottom {
+    padding: 14px 16px;
+    gap: 12px;
+  }
+
+  .footer-bottom p {
+    font-size: 12px;
+  }
+
+  .footer-social a {
+    width: 38px;
+    height: 38px;
+  }
+
+  .scroll-top {
+    width: 42px;
+    height: 42px;
+  }
+}
+
+/* Very small phones (≤360px) */
+@media (max-width: 360px) {
+  .footer-container {
+    padding: 30px 12px 20px;
+    gap: 22px;
+  }
+
+  .footer-links h3 {
+    font-size: 1rem;
+  }
+  .footer-links a,
+  .footer-links p {
+    font-size: 13px;
+  }
+
+  .footer-links p {
+    gap: 8px;
+  }
+
+  .footer-bottom p {
+    font-size: 11px;
+  }
+
+  .footer-social a {
+    width: 34px;
+    height: 34px;
+  }
+  .footer-social a svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .scroll-top {
+    width: 36px;
+    height: 36px;
+  }
+  .scroll-top svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* Very large screens */
+@media (min-width: 1400px) {
+  .footer-container {
+    max-width: 1400px;
+  }
+  .footer-bottom {
+    max-width: 1400px;
+  }
+}

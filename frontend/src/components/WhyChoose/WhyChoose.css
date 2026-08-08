@@ -1,0 +1,293 @@
+/* ===========================
+   WHY CHOOSE — Slightly Smaller on Desktop
+   (Reduced padding, font sizes, spacing)
+   =========================== */
+
+.why {
+  background: #0B0F14;
+  color: #fff;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+.why-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: clamp(40px, 8vw, 80px) clamp(16px, 4vw, 32px);
+}
+
+/* ===========================
+   HEADING
+=========================== */
+
+.why-heading {
+  text-align: center;
+  max-width: 850px;
+  margin: 0 auto clamp(40px, 6vw, 70px);
+}
+
+.why-badge {
+  display: inline-block;
+  padding: clamp(8px, 1vw, 10px) clamp(16px, 2vw, 20px);
+  border-radius: 999px;
+  background: rgba(255, 138, 0, 0.12);
+  color: #FF8A00;
+  border: 1px solid rgba(255, 138, 0, 0.35);
+  font-size: clamp(13px, 1.1vw, 15px);
+  font-weight: 600;
+}
+
+.why-heading h2 {
+  margin-top: clamp(18px, 2.5vw, 24px);
+  font-size: clamp(2rem, 5vw, 3.2rem); /* was 3.6rem */
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.why-heading h2 span {
+  color: #FF8A00;
+}
+
+.why-heading p {
+  margin-top: clamp(16px, 2vw, 20px);
+  color: #9CA3AF;
+  font-size: clamp(15px, 1.3vw, 18px); /* was 19px */
+  line-height: 1.8;
+}
+
+/* ===========================
+   FEATURES GRID — responsive columns
+=========================== */
+
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: clamp(20px, 3vw, 28px); /* was 30px */
+}
+
+/* ===========================
+   CARD — Smaller padding & fonts on desktop
+=========================== */
+
+.why-card {
+  background: #111827;
+  border: 1px solid #2B3445;
+  border-radius: clamp(18px, 2vw, 22px);
+  padding: clamp(22px, 2.8vw, 32px) clamp(18px, 2.2vw, 28px); /* was 40px / 35px */
+  transition: 0.35s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.why-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 4px;
+  background: #FF8A00;
+  transition: 0.45s ease;
+}
+.why-card:hover::before {
+  left: 0;
+}
+
+.why-card:hover {
+  transform: translateY(-10px);
+  border-color: #FF8A00;
+  box-shadow: 0 18px 45px rgba(255, 138, 0, 0.18);
+}
+
+.why-icon {
+  width: clamp(52px, 5.5vw, 68px); /* was 75px */
+  height: clamp(52px, 5.5vw, 68px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: clamp(14px, 1.6vw, 18px);
+  background: rgba(255, 138, 0, 0.10);
+  color: #FF8A00;
+  transition: 0.35s ease;
+}
+
+.why-card:hover .why-icon {
+  background: #FF8A00;
+  color: #fff;
+  transform: scale(1.1) rotate(-5deg);
+}
+.why-icon svg {
+  width: clamp(26px, 2.8vw, 34px); /* was 40px */
+  height: clamp(26px, 2.8vw, 34px);
+}
+
+.why-card h3 {
+  margin-top: clamp(16px, 2vw, 22px); /* was 28px */
+  font-size: clamp(1.1rem, 2vw, 1.5rem); /* was 1.8rem */
+  font-weight: 600;
+}
+
+.why-card p {
+  margin-top: clamp(10px, 1.2vw, 14px); /* was 18px */
+  color: #9CA3AF;
+  font-size: clamp(14px, 1.1vw, 16px); /* was 17px */
+  line-height: 1.8;
+}
+
+/* ===========================
+   CTA BOX — Smaller on desktop
+=========================== */
+
+.why-cta {
+  margin-top: clamp(50px, 8vw, 80px); /* was 100px */
+  background: #111827;
+  border: 1px solid #2B3445;
+  border-radius: clamp(20px, 2.5vw, 24px); /* was 28px */
+  padding: clamp(30px, 5vw, 50px) clamp(20px, 4vw, 50px); /* was 70px / 60px */
+  text-align: center;
+  transition: 0.35s ease;
+}
+
+.why-cta:hover {
+  border-color: #FF8A00;
+  box-shadow: 0 20px 55px rgba(255, 138, 0, 0.15);
+}
+
+.why-cta h2 {
+  font-size: clamp(1.8rem, 4vw, 2.4rem); /* was 2.9rem */
+  margin-bottom: clamp(14px, 1.5vw, 18px); /* was 20px */
+}
+
+.why-cta p {
+  max-width: 700px;
+  margin: 0 auto;
+  color: #9CA3AF;
+  font-size: clamp(15px, 1.2vw, 17px); /* was 18px */
+  line-height: 1.8;
+}
+
+.why-btn {
+  margin-top: clamp(24px, 3vw, 30px); /* was 35px */
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: clamp(14px, 1.5vw, 16px) clamp(24px, 3vw, 30px); /* was 18px / 36px */
+  border: none;
+  border-radius: 14px;
+  background: #FF8A00;
+  color: #fff;
+  font-size: clamp(15px, 1.1vw, 16px); /* was 17px */
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.35s ease;
+}
+
+.why-btn:hover {
+  background: #FF9F1C;
+  transform: translateY(-4px);
+}
+
+/* ===========================
+   RESPONSIVE — fine‑tuning
+=========================== */
+
+@media (max-width: 992px) {
+  .why-container {
+    padding: 60px 24px;
+  }
+  .why-heading h2 {
+    font-size: clamp(2rem, 4.5vw, 2.8rem);
+  }
+  .why-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  .why-cta {
+    padding: 40px 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .why-container {
+    padding: 50px 20px;
+  }
+  .why-heading {
+    margin-bottom: 40px;
+  }
+  .why-heading h2 {
+    font-size: clamp(1.6rem, 5vw, 2.2rem);
+  }
+  .why-heading p {
+    font-size: 15px;
+  }
+  .why-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .why-card {
+    padding: 24px 20px;
+  }
+  .why-card h3 {
+    font-size: 1.3rem;
+  }
+  .why-card p {
+    font-size: 15px;
+  }
+  .why-cta {
+    padding: 30px 20px;
+    margin-top: 60px;
+  }
+  .why-cta h2 {
+    font-size: 1.6rem;
+  }
+  .why-cta p {
+    font-size: 15px;
+  }
+  .why-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 16px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .why-container {
+    padding: 40px 16px;
+  }
+  .why-heading h2 {
+    font-size: 1.4rem;
+  }
+  .why-heading p {
+    font-size: 14px;
+  }
+  .why-card {
+    padding: 18px 16px;
+  }
+  .why-card h3 {
+    font-size: 1.1rem;
+  }
+  .why-card p {
+    font-size: 14px;
+  }
+  .why-icon {
+    width: 48px;
+    height: 48px;
+  }
+  .why-icon svg {
+    width: 24px;
+    height: 24px;
+  }
+  .why-cta h2 {
+    font-size: 1.3rem;
+  }
+  .why-cta p {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 1400px) {
+  .why-container {
+    max-width: 1400px;
+  }
+}

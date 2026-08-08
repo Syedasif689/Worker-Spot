@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+/* ==========================
+   Worker Spot Theme
+========================== */
+
+:root{
+  --primary:#FF8A00;
+  --primary-hover:#FF9F1C;
+
+  --bg:#0B0F14;
+  --surface:#111827;
+  --card:#1A1F2E;
+
+  --border:#2B3445;
+
+  --heading:#FFFFFF;
+  --text:#C9D1D9;
+
+  --success:#22C55E;
+  --danger:#EF4444;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  font-family:'Poppins',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+/* Scrollbar */
+
+::-webkit-scrollbar{
+  width:8px;
+}
+
+::-webkit-scrollbar-thumb{
+  background:var(--primary);
+  border-radius:20px;
+}
+
+::-webkit-scrollbar-track{
+  background:#121212;
+}
+
+a{
+  text-decoration:none;
+  color:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+img{
+  max-width:100%;
+}
