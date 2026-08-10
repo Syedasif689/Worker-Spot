@@ -1,554 +1,891 @@
-/* ===== GLOBAL RESET & PAGE ===== */
+/* =========================================================
+   REGISTER PAGE
+========================================================= */
+
 .register-page {
-  min-height: 100vh;
+  min-height: calc(100vh - 80px);
+
+  background: #0b0f14;
+  color: white;
+}
+
+.register-layout {
+  min-height: calc(100vh - 80px);
+
   display: flex;
-  justify-content: center;
+}
+
+
+/* =========================================================
+   LEFT SIDE
+========================================================= */
+
+.register-content {
+  width: 55%;
+
+  display: flex;
   align-items: center;
-  padding: 24px;
-  background: #0a0a0a;
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  padding: 65px;
+
+  box-sizing: border-box;
+
+  background:
+    radial-gradient(
+      circle at 20% 25%,
+      rgba(249, 115, 22, 0.12),
+      transparent 36%
+    ),
+    #0b0f14;
 }
 
-.register-container {
-  display: flex;
+.register-content-inner {
   width: 100%;
-  max-width: 1280px;
-  min-height: 700px;
-  background: #151515;
-  border-radius: 28px;
-  border: 1px solid #292929;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
-  overflow: hidden;
+  max-width: 650px;
+
+  margin: 0 auto;
 }
 
-/* ===== LEFT HERO PANEL ===== */
-.register-hero {
-  flex: 1.2;
+
+/* =========================================================
+   BRAND
+========================================================= */
+
+.register-brand {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
-  padding: 48px 40px;
-  background: linear-gradient(145deg, #1a1a1a 0%, #0f0f0f 100%);
-  position: relative;
+
+  gap: 13px;
+
+  margin-bottom: 45px;
 }
 
-.hero-content {
-  max-width: 460px;
-  width: 100%;
+.register-brand-icon {
+  width: 56px;
+  height: 56px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 15px;
+
+  background: #f97316;
+
+  color: white;
+
+  box-shadow:
+    0 12px 35px rgba(249, 115, 22, 0.25);
 }
 
-.hero-badge {
+.register-brand h2 {
+  margin: 0;
+
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.register-brand h2 span {
+  color: #f97316;
+}
+
+.register-brand p {
+  margin: 4px 0 0;
+
+  color: #9ca3af;
+
+  font-size: 13px;
+}
+
+
+/* =========================================================
+   BADGE
+========================================================= */
+
+.register-badge {
+  width: fit-content;
+
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 16px 6px 12px;
-  background: rgba(245, 180, 0, 0.12);
-  border: 1px solid rgba(245, 180, 0, 0.25);
-  border-radius: 40px;
-  color: #f5b400;
+
+  gap: 7px;
+
+  padding: 7px 12px;
+
+  margin-bottom: 20px;
+
+  border-radius: 30px;
+
+  background: rgba(249, 115, 22, 0.1);
+
+  border: 1px solid rgba(249, 115, 22, 0.25);
+
+  color: #fb923c;
+
   font-size: 13px;
   font-weight: 600;
-  letter-spacing: 0.3px;
-  margin-bottom: 32px;
 }
 
-.hero-badge svg {
-  color: #f5b400;
+
+/* =========================================================
+   MAIN MESSAGE
+========================================================= */
+
+.register-message {
+  max-width: 600px;
 }
 
-.hero-icon-group {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 28px;
+.register-message h1 {
+  margin: 0;
+
+  font-size: clamp(38px, 4vw, 58px);
+
+  line-height: 1.08;
+
+  letter-spacing: -1.6px;
 }
 
-.hero-icon-ring {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  background: rgba(245, 180, 0, 0.08);
-  border: 1px solid rgba(245, 180, 0, 0.2);
-  color: #f5b400;
+.register-message h1 span {
+  color: #f97316;
 }
 
-.hero-icon-ring.small {
-  width: 52px;
-  height: 52px;
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.08);
-}
+.register-message p {
+  max-width: 550px;
 
-.hero-content h1 {
-  margin: 0 0 12px 0;
-  color: #ffffff;
-  font-size: 38px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-  line-height: 1.2;
-}
+  margin-top: 22px;
 
-.hero-subtitle {
-  color: #b0b0b0;
+  color: #9ca3af;
+
   font-size: 16px;
+
   line-height: 1.7;
-  margin-bottom: 28px;
 }
 
-.hero-benefits {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px 20px;
-  margin-bottom: 36px;
+
+/* =========================================================
+   FEATURES
+========================================================= */
+
+.register-features {
+  display: flex;
+  flex-direction: column;
+
+  gap: 20px;
+
+  margin-top: 42px;
 }
 
-.hero-benefit {
+.register-feature {
   display: flex;
   align-items: center;
-  gap: 10px;
-  color: #ddd;
-  font-size: 14px;
+
+  gap: 15px;
 }
 
-.hero-benefit-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  background: rgba(245, 180, 0, 0.1);
-  border-radius: 6px;
-  color: #f5b400;
+.feature-icon {
+  width: 43px;
+  height: 43px;
+
   flex-shrink: 0;
-}
 
-.hero-stats {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 24px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.hero-stat {
-  text-align: center;
-}
-
-.hero-stat-number {
-  display: block;
-  color: #fff;
-  font-size: 22px;
-  font-weight: 700;
-}
-
-.hero-stat-label {
-  color: #999;
-  font-size: 13px;
-  margin-top: 2px;
-}
-
-.hero-stat-divider {
-  width: 1px;
-  height: 30px;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-/* ===== RIGHT FORM PANEL ===== */
-.register-form-panel {
-  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px 32px;
-  background: #151515;
+
+  border-radius: 11px;
+
+  background: #111827;
+
+  border: 1px solid #252b35;
+
+  color: #f97316;
 }
 
-.register-card {
-  width: 100%;
-  max-width: 480px;
+.register-feature h3 {
+  margin: 0;
+
+  font-size: 15px;
 }
+
+.register-feature p {
+  margin: 4px 0 0;
+
+  color: #6b7280;
+
+  font-size: 13px;
+}
+
+
+/* =========================================================
+   SIDE NOTE
+========================================================= */
+
+.register-side-note {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  margin-top: 40px;
+
+  color: #6b7280;
+
+  font-size: 12px;
+}
+
+.register-side-note svg {
+  color: #22c55e;
+}
+
+
+/* =========================================================
+   RIGHT SIDE
+========================================================= */
+
+.register-form-side {
+  width: 45%;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  padding: 45px 35px;
+
+  box-sizing: border-box;
+
+  background: #10151d;
+
+  border-left: 1px solid #202630;
+
+  overflow-y: auto;
+}
+
+
+/* =========================================================
+   FORM CONTAINER
+========================================================= */
+
+.register-container {
+  width: 100%;
+  max-width: 470px;
+
+  padding: 36px;
+
+  box-sizing: border-box;
+
+  background: #111827;
+
+  border: 1px solid #252b35;
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.35);
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
 
 .register-header {
   text-align: center;
-  margin-bottom: 32px;
+
+  margin-bottom: 30px;
 }
 
 .register-icon {
-  width: 60px;
-  height: 60px;
-  margin: 0 auto 16px;
+  width: 57px;
+  height: 57px;
+
+  margin: 0 auto 15px;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  background: rgba(245, 180, 0, 0.08);
-  border: 1px solid rgba(245, 180, 0, 0.15);
-  color: #f5b400;
+
+  border-radius: 15px;
+
+  background: #f97316;
+
+  color: white;
+
+  box-shadow:
+    0 10px 25px rgba(249, 115, 22, 0.2);
 }
 
 .register-header h1 {
   margin: 0;
-  color: #ffffff;
-  font-size: 26px;
+
+  font-size: 27px;
+
   font-weight: 700;
 }
 
 .register-header p {
-  margin-top: 8px;
-  color: #999;
+  margin: 9px 0 0;
+
+  color: #9ca3af;
+
   font-size: 14px;
+
   line-height: 1.5;
 }
 
-/* ===== FORM ELEMENTS ===== */
-.form-group {
+
+/* =========================================================
+   FORM GROUP
+========================================================= */
+
+.register-form-group {
   margin-bottom: 18px;
 }
 
-.form-group label {
+.register-form-group label {
   display: block;
-  margin-bottom: 6px;
-  color: #ddd;
+
+  margin-bottom: 8px;
+
+  color: #e5e7eb;
+
   font-size: 14px;
-  font-weight: 500;
-}
 
-.input-box {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 0 14px;
-  height: 50px;
-  background: #0f0f0f;
-  border: 1px solid #333;
-  border-radius: 10px;
-  transition: border-color 0.2s;
-}
-
-.input-box:focus-within {
-  border-color: #f5b400;
-}
-
-.input-box svg {
-  color: #999;
-  flex-shrink: 0;
-}
-
-.input-box input,
-.input-box select {
-  width: 100%;
-  height: 100%;
-  border: none;
-  outline: none;
-  background: transparent;
-  color: #fff;
-  font-size: 14px;
-}
-
-.input-box input::placeholder {
-  color: #666;
-}
-
-.input-box select {
-  cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  padding-right: 32px;
-}
-
-.input-box select option {
-  background: #151515;
-  color: white;
-}
-
-.password-button {
-  border: none;
-  background: transparent;
-  color: #888;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  padding: 4px;
-}
-
-.password-button:hover {
-  color: #f5b400;
-}
-
-.form-group small {
-  display: block;
-  margin-top: 5px;
-  color: #777;
-  font-size: 12px;
-}
-
-/* Worker Policy & Safety */
-.worker-policy {
-  margin: 20px 0;
-  padding: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.02);
-}
-
-.worker-policy h3 {
-  margin: 0 0 10px 0;
-  font-size: 17px;
-  color: #f0f0f0;
-}
-
-.worker-policy p {
-  margin: 8px 0;
-  line-height: 1.6;
-  font-size: 14px;
-  color: #bbb;
-}
-
-.worker-policy strong {
-  color: #f5b400;
   font-weight: 600;
 }
 
-.registration-safety {
-  margin-top: 12px;
+
+/* =========================================================
+   INPUT
+========================================================= */
+
+.register-input-box {
+  min-height: 50px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 0 14px;
+
+  box-sizing: border-box;
+
+  background: #0b0f14;
+
+  border: 1px solid #303743;
+
+  border-radius: 10px;
+
+  color: #6b7280;
+
+  transition: 0.25s ease;
+}
+
+.register-input-box:focus-within {
+  border-color: #f97316;
+
+  box-shadow:
+    0 0 0 3px rgba(249, 115, 22, 0.12);
+}
+
+.register-input-box input,
+.register-input-box select {
+  width: 100%;
+
+  min-width: 0;
+
+  padding: 14px 0;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  color: white;
+
   font-size: 14px;
-  line-height: 1.5;
-  color: #999;
+}
+
+.register-input-box input::placeholder {
+  color: #6b7280;
+}
+
+.register-input-box select {
+  cursor: pointer;
+}
+
+.register-input-box select option {
+  background: #111827;
+
+  color: white;
+}
+
+
+/* =========================================================
+   PASSWORD BUTTON
+========================================================= */
+
+.register-password-button {
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 5px;
+
+  border: none;
+
+  background: transparent;
+
+  color: #9ca3af;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.register-password-button:hover {
+  color: #f97316;
+}
+
+
+/* =========================================================
+   SMALL TEXT
+========================================================= */
+
+.register-form-group small {
+  display: block;
+
+  margin-top: 6px;
+
+  color: #6b7280;
+
+  font-size: 11px;
+}
+
+
+/* =========================================================
+   WORKER POLICY
+========================================================= */
+
+.worker-policy {
+  margin-top: 22px;
+
+  padding: 18px;
+
+  background: rgba(249, 115, 22, 0.04);
+
+  border: 1px solid rgba(249, 115, 22, 0.18);
+
+  border-radius: 12px;
+}
+
+.worker-policy-title {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  margin-bottom: 12px;
+
+  color: #fb923c;
+}
+
+.worker-policy-title svg {
+  flex-shrink: 0;
+}
+
+.worker-policy-title h3 {
+  margin: 0;
+
+  font-size: 13px;
+}
+
+.worker-policy p {
+  margin: 8px 0 0;
+
+  color: #9ca3af;
+
+  font-size: 11px;
+
+  line-height: 1.6;
+}
+
+.worker-policy strong {
+  color: #e5e7eb;
+}
+
+
+/* =========================================================
+   TERMS
+========================================================= */
+
+.register-terms {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 9px;
+
+  margin-top: 20px;
+
+  color: #9ca3af;
+
+  font-size: 12px;
+
+  line-height: 1.6;
+
+  cursor: pointer;
+}
+
+.register-terms input {
+  width: 16px;
+  height: 16px;
+
+  flex-shrink: 0;
+
+  margin-top: 2px;
+
+  accent-color: #f97316;
+
+  cursor: pointer;
+}
+
+.register-terms a {
+  color: #f97316;
+
+  text-decoration: none;
+
+  font-weight: 600;
+}
+
+.register-terms a:hover {
+  text-decoration: underline;
+}
+
+
+/* =========================================================
+   SAFETY
+========================================================= */
+
+.registration-safety {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+
+  margin: 16px 0 0;
+
+  color: #6b7280;
+
+  font-size: 11px;
+
+  text-align: center;
+}
+
+.registration-safety svg {
+  color: #22c55e;
+
+  flex-shrink: 0;
 }
 
 .registration-safety a {
-  color: #f5b400;
+  color: #f97316;
+
   text-decoration: none;
-  font-weight: 500;
 }
 
 .registration-safety a:hover {
   text-decoration: underline;
 }
 
-/* Terms */
-.terms {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  margin: 20px 0;
-  color: #aaa;
-  font-size: 13px;
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.register-error {
+  margin-top: 17px;
+
+  padding: 11px 13px;
+
+  border-radius: 8px;
+
+  background: rgba(239, 68, 68, 0.08);
+
+  border: 1px solid rgba(239, 68, 68, 0.25);
+
+  color: #f87171;
+
+  font-size: 12px;
+
   line-height: 1.5;
 }
 
-.terms input {
-  margin-top: 3px;
-  accent-color: #f5b400;
-  cursor: pointer;
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
-}
 
-.terms a {
-  color: #f5b400;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.terms a:hover {
-  text-decoration: underline;
-}
-
-.error-message {
-  margin-bottom: 16px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  background: #351515;
-  border: 1px solid #702525;
-  color: #ff6b6b;
-  font-size: 13px;
-}
+/* =========================================================
+   REGISTER BUTTON
+========================================================= */
 
 .register-button {
   width: 100%;
-  height: 52px;
+
+  min-height: 52px;
+
+  margin-top: 22px;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 9px;
+
+  gap: 8px;
+
   border: none;
+
   border-radius: 10px;
-  background: #f5b400;
-  color: #111;
-  font-size: 15px;
-  font-weight: 700;
+
+  background: #f97316;
+
+  color: white;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
   cursor: pointer;
-  transition: background 0.2s, transform 0.15s;
+
+  transition: 0.25s ease;
 }
 
 .register-button:hover {
-  background: #ffc52b;
-  transform: translateY(-2px);
+  background: #ea580c;
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 8px 25px rgba(249, 115, 22, 0.2);
 }
 
 .register-button:active {
-  transform: scale(0.97);
+  transform: translateY(0);
 }
 
-/* ===== RESPONSIVE ===== */
 
-/* Tablets & small laptops */
-@media (max-width: 1024px) {
+/* =========================================================
+   LOGIN
+========================================================= */
+
+.register-login {
+  margin-top: 24px;
+
+  padding-top: 21px;
+
+  border-top: 1px solid #252b35;
+
+  text-align: center;
+}
+
+.register-login p {
+  margin: 0 0 10px;
+
+  color: #6b7280;
+
+  font-size: 12px;
+}
+
+.register-login a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 40px;
+
+  padding: 0 18px;
+
+  border-radius: 8px;
+
+  border: 1px solid #303743;
+
+  color: #e5e7eb;
+
+  text-decoration: none;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  transition: 0.2s ease;
+}
+
+.register-login a:hover {
+  border-color: #f97316;
+
+  color: #f97316;
+
+  background: rgba(249, 115, 22, 0.05);
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1000px) {
+
+  .register-content {
+    width: 50%;
+
+    padding: 45px;
+  }
+
+  .register-form-side {
+    width: 50%;
+
+    padding: 35px 22px;
+  }
+
   .register-container {
+    padding: 30px 25px;
+  }
+
+  .register-message h1 {
+    font-size: 39px;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .register-layout {
     flex-direction: column;
-    min-height: auto;
-    border-radius: 24px;
   }
 
-  .register-hero {
-    padding: 40px 32px;
-    align-items: center;
-    text-align: center;
+  .register-content {
+    width: 100%;
+
+    padding: 40px 20px 35px;
   }
 
-  .hero-content {
-    max-width: 560px;
+  .register-content-inner {
+    max-width: 600px;
   }
 
-  .hero-badge {
-    margin-left: auto;
-    margin-right: auto;
+  .register-brand {
+    margin-bottom: 30px;
   }
 
-  .hero-icon-group {
-    justify-content: center;
+  .register-message h1 {
+    font-size: 36px;
   }
 
-  .hero-benefits {
-    grid-template-columns: 1fr 1fr;
-    text-align: left;
+  .register-message p {
+    font-size: 14px;
   }
 
-  .hero-stats {
-    justify-content: center;
-    gap: 32px;
+  .register-features {
+    margin-top: 30px;
+
+    gap: 15px;
   }
 
-  .hero-stat-divider {
-    display: none;
+  .register-side-note {
+    margin-top: 28px;
   }
 
-  .register-form-panel {
-    padding: 32px 24px;
-  }
+  .register-form-side {
+    width: 100%;
 
-  .register-card {
-    max-width: 100%;
-  }
-}
+    padding: 35px 16px 45px;
 
-/* Mobile */
-@media (max-width: 640px) {
-  .register-page {
-    padding: 16px;
+    border-left: none;
+
+    border-top: 1px solid #202630;
   }
 
   .register-container {
-    border-radius: 20px;
+    max-width: 520px;
+
+    padding: 30px 22px;
   }
 
-  .register-hero {
-    padding: 32px 20px;
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+  .register-content {
+    padding: 30px 16px;
   }
 
-  .hero-content h1 {
-    font-size: 28px;
+  .register-brand {
+    margin-bottom: 27px;
   }
 
-  .hero-subtitle {
-    font-size: 15px;
+  .register-brand-icon {
+    width: 50px;
+    height: 50px;
   }
 
-  .hero-benefits {
-    grid-template-columns: 1fr;
-    gap: 8px;
+  .register-brand h2 {
+    font-size: 21px;
   }
 
-  .hero-stats {
-    flex-wrap: wrap;
-    gap: 16px;
-    justify-content: center;
+  .register-brand p {
+    font-size: 11px;
   }
 
-  .hero-stat-number {
-    font-size: 18px;
+  .register-message h1 {
+    font-size: 32px;
+
+    letter-spacing: -1px;
   }
 
-  .register-form-panel {
-    padding: 24px 16px;
+  .register-message p {
+    margin-top: 17px;
+
+    font-size: 13px;
   }
 
-  .register-card {
-    padding: 0;
+  .register-features {
+    margin-top: 27px;
+  }
+
+  .register-feature h3 {
+    font-size: 14px;
+  }
+
+  .register-feature p {
+    font-size: 12px;
+  }
+
+  .register-form-side {
+    padding: 25px 12px 35px;
+  }
+
+  .register-container {
+    padding: 26px 18px;
   }
 
   .register-header h1 {
     font-size: 24px;
   }
 
-  .register-icon {
-    width: 52px;
-    height: 52px;
-  }
-
-  .input-box {
-    height: 46px;
-    padding: 0 12px;
+  .register-header p {
+    font-size: 13px;
   }
 
   .worker-policy {
-    padding: 14px;
+    padding: 15px;
   }
 
-  .worker-policy h3 {
-    font-size: 16px;
-  }
-
-  .register-button {
-    height: 48px;
-    font-size: 14px;
-  }
-
-  .terms {
-    font-size: 12px;
-  }
-}
-
-/* Extra small devices */
-@media (max-width: 400px) {
-  .register-hero {
-    padding: 24px 16px;
-  }
-
-  .hero-content h1 {
-    font-size: 24px;
-  }
-
-  .hero-icon-ring {
-    width: 56px;
-    height: 56px;
-  }
-
-  .hero-icon-ring.small {
-    width: 42px;
-    height: 42px;
-  }
-
-  .register-form-panel {
-    padding: 16px 12px;
-  }
 }

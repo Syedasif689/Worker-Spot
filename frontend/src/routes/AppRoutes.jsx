@@ -9,6 +9,8 @@ import Terms from "../pages/Terms/Terms";
 import Privacy from "../pages/Privacy/Privacy";
 import Safety from "../pages/Safety/Safety";
 import Userrig from "../pages/Register/Userrig";
+import CustomerLogin from "../pages/Login/CustomerLogin";
+import WorkerLogin from "../pages/Login/WorkerLogin";
 function AppRoutes() {
   return (
     <BrowserRouter>
@@ -23,6 +25,8 @@ function AppRoutes() {
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/safety" element={<Safety />} />
         <Route path="/userrig" element={<Userrig />} />
+        <Route path="/customer-login" element={<CustomerLogin />}/>
+        <Route path="/worker-login" element={<WorkerLogin />}/>
       </Routes>
     </BrowserRouter>
   );
