@@ -21,14 +21,16 @@ function CustomerRegister() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    terms: false,
-  });
+  fullName: "",
+  email: "",
+  mobile: "",
+  password: "",
+  confirmPassword: "",
+  terms: false,
+});
 
   // Handle input changes
   const handleChange = (e) => {
@@ -43,26 +45,79 @@ function CustomerRegister() {
   };
 
   // Submit registration
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match.");
-      return;
+  setError("");
+
+  if (formData.password !== formData.confirmPassword) {
+    setError("Passwords do not match.");
+    return;
+  }
+
+  if (formData.password.length < 8) {
+    setError("Password must be at least 8 characters.");
+    return;
+  }
+
+  if (!formData.terms) {
+    setError("Please agree to the Terms and Conditions.");
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const response = await fetch(
+      "http://localhost:8080/api/auth/register/customer",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fullName: formData.fullName,
+          email: formData.email,
+          mobile: formData.mobile,
+          password: formData.password,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    console.log("Backend status:", response.status);
+    console.log("Backend response:", data);
+
+    if (!response.ok) {
+      throw new Error(
+        data.message || "Customer registration failed."
+      );
     }
-
-    if (!formData.terms) {
-      setError("Please agree to the Terms and Conditions.");
-      return;
-    }
-
-    console.log("Customer Registration Data:", formData);
 
     alert("Customer registration successful!");
 
-    // Later:
-    // Send formData to Spring Boot API
-  };
+    setFormData({
+      fullName: "",
+      email: "",
+      mobile: "",
+      password: "",
+      confirmPassword: "",
+      terms: false,
+    });
+
+  } catch (err) {
+    console.error("Registration error:", err);
+
+    setError(
+      err.message || "Something went wrong. Please try again."
+    );
+
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="customer-register-page">
@@ -214,6 +269,7 @@ function CustomerRegister() {
               </div>
 
             </div>
+              
 
 
             {/* Email */}
@@ -240,6 +296,29 @@ function CustomerRegister() {
               </div>
 
             </div>
+             {/* Mobile Number */}
+<div className="form-group">
+
+  <label htmlFor="mobile">
+    Mobile Number
+  </label>
+
+  <div className="input-box">
+
+    <input
+      id="mobile"
+      type="tel"
+      name="mobile"
+      placeholder="Enter your mobile number"
+      value={formData.mobile}
+      onChange={handleChange}
+      maxLength="10"
+      required
+    />
+
+  </div>
+
+</div>
 
 
             {/* Password */}
@@ -250,7 +329,7 @@ function CustomerRegister() {
               </label>
 
               <div className="input-box">
-
+                 
                 <Lock size={20} />
 
                 <input
@@ -261,8 +340,9 @@ function CustomerRegister() {
                   value={formData.password}
                   onChange={handleChange}
                   required
+                  
                 />
-
+                    
                 <button
                   type="button"
                   className="password-button"
@@ -275,16 +355,22 @@ function CustomerRegister() {
                       : "Show password"
                   }
                 >
+                  
                   {showPassword ? (
                     <EyeOff size={20} />
                   ) : (
                     <Eye size={20} />
                   )}
                 </button>
-
+                   
               </div>
+              <p className="password-hint">
+               Password must be at least 8 characters.
+              </p>
+               
 
             </div>
+            
 
 
             {/* Confirm Password */}
@@ -413,9 +499,13 @@ function CustomerRegister() {
             <button
               type="submit"
               className="register-button"
+              disabled={loading}
             >
-              <UserPlus size={20} />
-              Create Customer Account
+             <UserPlus size={20} />
+
+              {loading
+              ? "Creating Account..."
+               : "Create Customer Account"}
             </button>
 
 
