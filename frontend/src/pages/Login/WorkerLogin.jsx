@@ -11,11 +11,86 @@ import {
   LogIn,
   User,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
 
 function WorkerLogin() {
   const [showPassword, setShowPassword] = useState(false);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/auth/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: email.trim(),
+            password: password,
+            role: "WORKER",
+          }),
+        }
+      );
+
+      let data = {};
+
+      try {
+        data = await response.json();
+      } catch {
+        data = {};
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Worker login failed. Please check your credentials."
+        );
+      }
+
+      console.log("Worker login successful:", data);
+
+      // Store JWT
+      localStorage.setItem("token", data.token);
+
+      // Store basic user information
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          userId: data.userId,
+          fullName: data.fullName,
+          email: data.email,
+          role: data.role,
+        })
+      );
+
+      // Redirect to worker dashboard
+      navigate("/worker-dashboard");
+
+    } catch (error) {
+      console.error("Worker login error:", error);
+
+      setError(
+        error.message ||
+          "Unable to connect to the server. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="login-page">
@@ -142,7 +217,7 @@ function WorkerLogin() {
           </div>
 
           {/* Form */}
-          <form>
+          <form onSubmit={handleSubmit}>
 
             {/* Email */}
             <div className="login-form-group">
@@ -159,6 +234,11 @@ function WorkerLogin() {
                   id="worker-email"
                   type="email"
                   placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setError("");
+                  }}
                   required
                 />
 
@@ -181,6 +261,11 @@ function WorkerLogin() {
                   id="worker-password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setError("");
+                  }}
                   required
                 />
 
@@ -221,13 +306,27 @@ function WorkerLogin() {
 
             </div>
 
+            {/* Error */}
+            {error && (
+              <div className="login-error">
+                {error}
+              </div>
+            )}
+
             {/* Login */}
             <button
               type="submit"
               className="login-button"
+              disabled={loading}
             >
-              Login as Worker
-              <LogIn size={18} />
+              {loading ? (
+                "Logging in..."
+              ) : (
+                <>
+                  Login as Worker
+                  <LogIn size={18} />
+                </>
+              )}
             </button>
 
           </form>

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import {
   User,
@@ -17,6 +18,9 @@ import {
   Sparkles,
   CheckCircle,
   ArrowRight,
+  Wrench,
+  IndianRupee,
+  FileText,
 } from "lucide-react";
 
 import "./Register.css";
@@ -24,7 +28,10 @@ import "./Register.css";
 function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -32,11 +39,24 @@ function Register() {
     email: "",
     password: "",
     confirmPassword: "",
-    location: "",
+
     category: "",
     age: "",
+    experienceYears: "",
+    charges: "",
+    about: "",
+
+    state: "",
+    district: "",
+    city: "",
+    area: "",
+
     terms: false,
   });
+
+  // =====================================================
+  // HANDLE INPUT CHANGES
+  // =====================================================
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -47,13 +67,30 @@ function Register() {
     }));
 
     setError("");
+    setSuccess("");
   };
 
-  const handleSubmit = (e) => {
+  // =====================================================
+  // WORKER REGISTRATION
+  // =====================================================
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    setError("");
+    setSuccess("");
+
+    // -------------------------
+    // Frontend validation
+    // -------------------------
 
     if (Number(formData.age) < 19) {
       setError("Workers must be 19 years or older.");
+      return;
+    }
+
+    if (Number(formData.age) > 100) {
+      setError("Please provide a valid age.");
       return;
     }
 
@@ -62,17 +99,158 @@ function Register() {
       return;
     }
 
+    if (formData.password.length < 8) {
+      setError("Password must be at least 8 characters.");
+      return;
+    }
+
+    if (!/^[6-9][0-9]{9}$/.test(formData.mobile)) {
+      setError("Please provide a valid 10-digit Indian mobile number.");
+      return;
+    }
+
+    if (Number(formData.experienceYears) < 0) {
+      setError("Experience cannot be negative.");
+      return;
+    }
+
+    if (Number(formData.charges) < 0) {
+      setError("Charges cannot be negative.");
+      return;
+    }
+
     if (!formData.terms) {
       setError("Please agree to the Terms and Conditions.");
       return;
     }
 
-    console.log("Worker Registration Data:", formData);
+    // -------------------------
+    // Data sent to backend
+    // -------------------------
 
-    alert("Worker registration successful!");
+    const workerData = {
+      fullName: formData.fullName.trim(),
+      mobile: formData.mobile.trim(),
+      email: formData.email.trim(),
+      password: formData.password,
 
-    // Later:
-    // Send formData to Spring Boot API
+      category: formData.category,
+      age: Number(formData.age),
+      experienceYears: Number(formData.experienceYears),
+      charges: Number(formData.charges),
+
+      state: formData.state.trim(),
+      district: formData.district.trim(),
+      city: formData.city.trim(),
+      area: formData.area.trim(),
+
+      about: formData.about.trim(),
+    };
+
+    try {
+      setLoading(true);
+
+      const response = await fetch(
+        "http://localhost:8080/api/auth/register/worker",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(workerData),
+        }
+      );
+
+      // =================================================
+      // SAFE RESPONSE HANDLING
+      // Prevents:
+      // "Unexpected end of JSON input"
+      // =================================================
+
+      const contentType = response.headers.get("content-type");
+
+      let result = null;
+
+      if (contentType && contentType.includes("application/json")) {
+        const text = await response.text();
+
+        if (text) {
+          try {
+            result = JSON.parse(text);
+          } catch {
+            result = null;
+          }
+        }
+      } else {
+        const text = await response.text();
+
+        if (text) {
+          result = {
+            message: text,
+          };
+        }
+      }
+
+      // =================================================
+      // ERROR RESPONSE
+      // =================================================
+
+      if (!response.ok) {
+        let errorMessage = "Worker registration failed.";
+
+        if (result?.message) {
+          errorMessage = result.message;
+        } else if (result?.error) {
+          errorMessage = result.error;
+        } else if (response.status === 409) {
+          errorMessage = "Email or mobile number is already registered.";
+        } else if (response.status === 400) {
+          errorMessage = "Please check your registration details.";
+        } else if (response.status === 500) {
+          errorMessage = "Server error. Please try again later.";
+        }
+
+        throw new Error(errorMessage);
+      }
+
+      // =================================================
+      // SUCCESS
+      // =================================================
+
+      setSuccess(
+        result?.message || "Worker registered successfully!"
+      );
+
+      // Clear form after successful registration
+      setFormData({
+        fullName: "",
+        mobile: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+
+        category: "",
+        age: "",
+        experienceYears: "",
+        charges: "",
+        about: "",
+
+        state: "",
+        district: "",
+        city: "",
+        area: "",
+
+        terms: false,
+      });
+    } catch (err) {
+      console.error("Worker registration error:", err);
+
+      setError(
+        err.message || "Unable to connect to the server."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -214,6 +392,10 @@ function Register() {
             {/* Form */}
             <form onSubmit={handleSubmit}>
 
+              {/* =================================================
+                  PERSONAL INFORMATION
+              ================================================= */}
+
               {/* Full Name */}
               <div className="register-form-group">
                 <label>Full Name</label>
@@ -245,7 +427,7 @@ function Register() {
                     placeholder="Enter your mobile number"
                     value={formData.mobile}
                     onChange={handleChange}
-                    pattern="[0-9]{10}"
+                    pattern="[6-9][0-9]{9}"
                     maxLength="10"
                     required
                   />
@@ -283,6 +465,7 @@ function Register() {
                     placeholder="Create a password"
                     value={formData.password}
                     onChange={handleChange}
+                    minLength="8"
                     required
                   />
 
@@ -334,23 +517,9 @@ function Register() {
                 </div>
               </div>
 
-              {/* Location */}
-              <div className="register-form-group">
-                <label>Location</label>
-
-                <div className="register-input-box">
-                  <MapPin size={19} />
-
-                  <input
-                    type="text"
-                    name="location"
-                    placeholder="City / Town / Area"
-                    value={formData.location}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              </div>
+              {/* =================================================
+                  WORKER INFORMATION
+              ================================================= */}
 
               {/* Category */}
               <div className="register-form-group">
@@ -369,41 +538,17 @@ function Register() {
                       Select your category
                     </option>
 
-                    <option value="Plumber">
-                      Plumber
-                    </option>
-
-                    <option value="Electrician">
-                      Electrician
-                    </option>
-
-                    <option value="Carpenter">
-                      Carpenter
-                    </option>
-
-                    <option value="Mechanic">
-                      Mechanic
-                    </option>
-
-                    <option value="Painter">
-                      Painter
-                    </option>
-
+                    <option value="Plumber">Plumber</option>
+                    <option value="Electrician">Electrician</option>
+                    <option value="Carpenter">Carpenter</option>
+                    <option value="Mechanic">Mechanic</option>
+                    <option value="Painter">Painter</option>
                     <option value="AC Technician">
                       AC Technician
                     </option>
-
-                    <option value="Mason">
-                      Mason
-                    </option>
-
-                    <option value="Welder">
-                      Welder
-                    </option>
-
-                    <option value="Other">
-                      Other
-                    </option>
+                    <option value="Mason">Mason</option>
+                    <option value="Welder">Welder</option>
+                    <option value="Other">Other</option>
                   </select>
                 </div>
               </div>
@@ -420,6 +565,7 @@ function Register() {
                     name="age"
                     placeholder="Enter your age"
                     min="19"
+                    max="100"
                     value={formData.age}
                     onChange={handleChange}
                     required
@@ -431,7 +577,154 @@ function Register() {
                 </small>
               </div>
 
-              {/* Worker Policy */}
+              {/* Experience */}
+              <div className="register-form-group">
+                <label>Experience</label>
+
+                <div className="register-input-box">
+                  <Wrench size={19} />
+
+                  <input
+                    type="number"
+                    name="experienceYears"
+                    placeholder="Years of experience"
+                    min="0"
+                    value={formData.experienceYears}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <small>
+                  Enter your total professional experience in years.
+                </small>
+              </div>
+
+              {/* Charges */}
+              <div className="register-form-group">
+                <label>Service Charges</label>
+
+                <div className="register-input-box">
+                  <IndianRupee size={19} />
+
+                  <input
+                    type="number"
+                    name="charges"
+                    placeholder="Your starting service charge"
+                    min="0"
+                    step="0.01"
+                    value={formData.charges}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <small>
+                  Set the amount you normally charge for your service.
+                </small>
+              </div>
+
+              {/* About */}
+              <div className="register-form-group">
+                <label>About You</label>
+
+                <div className="register-input-box register-textarea-box">
+                  <FileText size={19} />
+
+                  <textarea
+                    name="about"
+                    placeholder="Tell customers about your skills and experience"
+                    value={formData.about}
+                    onChange={handleChange}
+                    maxLength="2000"
+                    rows="4"
+                  />
+                </div>
+
+                <small>
+                  Maximum 2000 characters.
+                </small>
+              </div>
+
+              {/* =================================================
+                  LOCATION
+              ================================================= */}
+
+              {/* State */}
+              <div className="register-form-group">
+                <label>State</label>
+
+                <div className="register-input-box">
+                  <MapPin size={19} />
+
+                  <input
+                    type="text"
+                    name="state"
+                    placeholder="Enter your state"
+                    value={formData.state}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* District */}
+              <div className="register-form-group">
+                <label>District</label>
+
+                <div className="register-input-box">
+                  <MapPin size={19} />
+
+                  <input
+                    type="text"
+                    name="district"
+                    placeholder="Enter your district"
+                    value={formData.district}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* City */}
+              <div className="register-form-group">
+                <label>City / Town</label>
+
+                <div className="register-input-box">
+                  <MapPin size={19} />
+
+                  <input
+                    type="text"
+                    name="city"
+                    placeholder="Enter your city or town"
+                    value={formData.city}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Area */}
+              <div className="register-form-group">
+                <label>Area / Village</label>
+
+                <div className="register-input-box">
+                  <MapPin size={19} />
+
+                  <input
+                    type="text"
+                    name="area"
+                    placeholder="Enter your area or village"
+                    value={formData.area}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+
+              {/* =================================================
+                  WORKER POLICY
+              ================================================= */}
+
               <div className="worker-policy">
 
                 <div className="worker-policy-title">
@@ -465,7 +758,10 @@ function Register() {
 
               </div>
 
-              {/* Terms */}
+              {/* =================================================
+                  TERMS
+              ================================================= */}
+
               <label className="register-terms">
 
                 <input
@@ -514,23 +810,48 @@ function Register() {
                 before using Worker Spot.
               </p>
 
-              {/* Error */}
+              {/* =================================================
+                  ERROR MESSAGE
+              ================================================= */}
+
               {error && (
                 <div className="register-error">
                   {error}
                 </div>
               )}
 
-              {/* Submit */}
+              {/* =================================================
+                  SUCCESS MESSAGE
+              ================================================= */}
+
+              {success && (
+                <div className="register-success">
+                  <CheckCircle size={18} />
+                  <span>{success}</span>
+                </div>
+              )}
+
+              {/* =================================================
+                  SUBMIT
+              ================================================= */}
+
               <button
                 type="submit"
                 className="register-button"
+                disabled={loading}
               >
-                <UserPlus size={19} />
-
-                Create Worker Account
-
-                <ArrowRight size={18} />
+                {loading ? (
+                  <>
+                    <Clock size={19} />
+                    Creating Account...
+                  </>
+                ) : (
+                  <>
+                    <UserPlus size={19} />
+                    Create Worker Account
+                    <ArrowRight size={18} />
+                  </>
+                )}
               </button>
 
             </form>

@@ -11,11 +11,90 @@ import {
   LogIn,
   Briefcase,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
 
 function CustomerLogin() {
   const [showPassword, setShowPassword] = useState(false);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/auth/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: email.trim(),
+            password: password,
+            role: "CUSTOMER",
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Invalid email or password"
+        );
+      }
+
+      // Store JWT
+      localStorage.setItem("token", data.token);
+
+      // Store logged-in user information
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          userId: data.userId,
+          fullName: data.fullName,
+          email: data.email,
+          role: data.role,
+        })
+      );
+
+      console.log("Customer login successful:", data);
+
+      // Make sure only CUSTOMER accounts continue
+      if (data.role !== "CUSTOMER") {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+
+        throw new Error(
+          "This account is not registered as a customer."
+        );
+      }
+
+      // Temporary dashboard route
+      navigate("/customer-dashboard");
+
+    } catch (error) {
+      console.error("Customer login error:", error);
+
+      setError(
+        error.message ||
+          "Unable to login. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="login-page">
@@ -35,7 +114,9 @@ function CustomerLogin() {
 
             <div>
               <h2>Worker Spot</h2>
-              <span>Local services. Real opportunities.</span>
+              <span>
+                Local services. Real opportunities.
+              </span>
             </div>
           </div>
 
@@ -85,7 +166,8 @@ function CustomerLogin() {
               <div>
                 <h3>Choose the Right Service</h3>
                 <p>
-                  Find workers based on their skills and experience.
+                  Find workers based on their skills and
+                  experience.
                 </p>
               </div>
             </div>
@@ -132,7 +214,7 @@ function CustomerLogin() {
           </div>
 
           {/* Form */}
-          <form>
+          <form onSubmit={handleSubmit}>
 
             {/* Email */}
             <div className="login-form-group">
@@ -149,6 +231,11 @@ function CustomerLogin() {
                   id="email"
                   type="email"
                   placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setError("");
+                  }}
                   required
                 />
 
@@ -169,8 +256,17 @@ function CustomerLogin() {
 
                 <input
                   id="password"
-                  type={showPassword ? "text" : "password"}
+                  type={
+                    showPassword
+                      ? "text"
+                      : "password"
+                  }
                   placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setError("");
+                  }}
                   required
                 />
 
@@ -211,13 +307,24 @@ function CustomerLogin() {
 
             </div>
 
+            {/* Error */}
+            {error && (
+              <div className="login-error">
+                {error}
+              </div>
+            )}
+
             {/* Login */}
             <button
               type="submit"
               className="login-button"
+              disabled={loading}
             >
-              Login as Customer
-              <LogIn size={18} />
+              {loading
+                ? "Logging in..."
+                : "Login as Customer"}
+
+              {!loading && <LogIn size={18} />}
             </button>
 
           </form>
