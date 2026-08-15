@@ -12,6 +12,7 @@ import Userrig from "../pages/Register/Userrig";
 import CustomerLogin from "../pages/Login/CustomerLogin";
 import WorkerLogin from "../pages/Login/WorkerLogin";
 import WorkerDashboard from "../pages/Dashboard/WorkerDashboard";
+import WorkerProfile from "../pages/WorkerProfile";
 function AppRoutes() {
   return (
     <BrowserRouter>
@@ -29,9 +30,11 @@ function AppRoutes() {
         <Route path="/customer-login" element={<CustomerLogin />}/>
         <Route path="/worker-login" element={<WorkerLogin />}/>
         <Route path="/worker-dashboard" element={<WorkerDashboard />}/>
+        <Route path="/worker-profile" element={<WorkerProfile />}/>
       </Routes>
     </BrowserRouter>
   );
-}
+} 
+  
 
 export default AppRoutes;

@@ -7,7 +7,7 @@ import {
   MapPin,
   User,
 } from "lucide-react";
-
+import "./WorkerRequests.css";
 
 function WorkerRequests() {
   const [requests] = useState([]);

@@ -5,7 +5,7 @@ import {
   Power,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
+import "./WorkerQuickActions.css";
 function WorkerQuickActions() {
   const navigate = useNavigate();
 

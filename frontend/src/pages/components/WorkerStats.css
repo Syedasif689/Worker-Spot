@@ -1,0 +1,266 @@
+/* =========================================================
+   WORKER STATS – Main Container
+========================================================= */
+
+.worker-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   STAT CARD
+========================================================= */
+
+.worker-stat-card {
+    display: flex;
+    align-items: center;
+
+    gap: 16px;
+
+    padding: 18px 20px;
+
+    border: 1px solid #252e38;
+    border-radius: 14px;
+
+    background:
+        linear-gradient(135deg, #151c24 0%, #11161d 55%, #10151c 100%);
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.15s ease;
+
+    min-height: 90px;
+}
+
+.worker-stat-card:hover {
+    border-color: rgba(255, 138, 0, 0.25);
+
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   ICON
+========================================================= */
+
+.worker-stat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 46px;
+    height: 46px;
+
+    flex-shrink: 0;
+
+    border-radius: 12px;
+
+    border: 1px solid rgba(255, 138, 0, 0.2);
+    background: rgba(255, 138, 0, 0.08);
+
+    color: #ff8a00;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.worker-stat-card:hover .worker-stat-icon {
+    background: rgba(255, 138, 0, 0.14);
+    border-color: rgba(255, 138, 0, 0.35);
+}
+
+
+/* =========================================================
+   INFO
+========================================================= */
+
+.worker-stat-info {
+    display: flex;
+    flex-direction: column;
+
+    gap: 2px;
+
+    min-width: 0;
+}
+
+.worker-stat-title {
+    color: #8e99a6;
+
+    font-size: 12px;
+    font-weight: 500;
+
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.worker-stat-value {
+    color: #ffffff;
+
+    font-size: 22px;
+    font-weight: 700;
+
+    line-height: 1.2;
+
+    letter-spacing: -0.3px;
+}
+
+.worker-stat-description {
+    color: #8e99a6;
+
+    font-size: 12px;
+
+    line-height: 1.4;
+}
+
+
+/* =========================================================
+   RESPONSIVE BREAKPOINTS
+========================================================= */
+
+/* ----- Tablet (≤1000px) : 2 columns ----- */
+@media (max-width: 1000px) {
+    .worker-stats {
+        grid-template-columns: repeat(2, 1fr);
+
+        gap: 14px;
+    }
+
+    .worker-stat-card {
+        padding: 16px 18px;
+
+        min-height: 80px;
+
+        gap: 14px;
+    }
+
+    .worker-stat-icon {
+        width: 42px;
+        height: 42px;
+
+        border-radius: 10px;
+    }
+
+    .worker-stat-icon svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .worker-stat-value {
+        font-size: 20px;
+    }
+
+    .worker-stat-title {
+        font-size: 11px;
+    }
+
+    .worker-stat-description {
+        font-size: 11px;
+    }
+}
+
+/* ----- Mobile (≤600px) : 1 column ----- */
+@media (max-width: 600px) {
+    .worker-stats {
+        grid-template-columns: 1fr;
+
+        gap: 12px;
+    }
+
+    .worker-stat-card {
+        padding: 14px 16px;
+
+        min-height: 72px;
+
+        gap: 14px;
+
+        border-radius: 12px;
+    }
+
+    .worker-stat-icon {
+        width: 40px;
+        height: 40px;
+
+        border-radius: 10px;
+    }
+
+    .worker-stat-icon svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .worker-stat-value {
+        font-size: 18px;
+    }
+
+    .worker-stat-title {
+        font-size: 10px;
+    }
+
+    .worker-stat-description {
+        font-size: 10px;
+    }
+}
+
+/* ----- Very Small Mobile (≤380px) ----- */
+@media (max-width: 380px) {
+    .worker-stats {
+        gap: 10px;
+    }
+
+    .worker-stat-card {
+        padding: 12px 14px;
+
+        min-height: 64px;
+
+        gap: 12px;
+
+        border-radius: 10px;
+    }
+
+    .worker-stat-icon {
+        width: 36px;
+        height: 36px;
+
+        border-radius: 8px;
+    }
+
+    .worker-stat-icon svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .worker-stat-value {
+        font-size: 16px;
+    }
+
+    .worker-stat-title {
+        font-size: 9px;
+    }
+
+    .worker-stat-description {
+        font-size: 9px;
+    }
+}
+
+
+/* =========================================================
+   ACCESSIBILITY
+========================================================= */
+
+.worker-stat-card:focus-visible {
+    outline: 2px solid #ffb45c;
+
+    outline-offset: 3px;
+}

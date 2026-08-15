@@ -18,6 +18,7 @@ import {
   Sparkles,
   CheckCircle,
   ArrowRight,
+  LocateFixed,
   Wrench,
   IndianRupee,
   FileText,
@@ -53,7 +54,8 @@ function Register() {
 
     terms: false,
   });
-
+  const [locationStatus, setLocationStatus] = useState("");
+const [gettingLocation, setGettingLocation] = useState(false);
   // =====================================================
   // HANDLE INPUT CHANGES
   // =====================================================
@@ -69,7 +71,111 @@ function Register() {
     setError("");
     setSuccess("");
   };
+      const handleUseCurrentLocation = () => {
+  if (!navigator.geolocation) {
+    setLocationStatus(
+      "Location services are not supported by this browser."
+    );
+    return;
+  }
 
+  setGettingLocation(true);
+  setLocationStatus("Getting your current location...");
+
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      const { latitude, longitude } = position.coords;
+
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`
+        );
+
+        if (!response.ok) {
+          throw new Error("Unable to find address.");
+        }
+
+        const data = await response.json();
+        const address = data.address || {};
+
+        const state = address.state || "";
+
+        const district =
+          address.state_district ||
+          address.district ||
+          address.county ||
+          "";
+
+        const city =
+          address.city ||
+          address.town ||
+          address.village ||
+          address.municipality ||
+          "";
+
+        const area =
+          address.suburb ||
+          address.neighbourhood ||
+          address.residential ||
+          address.hamlet ||
+          "";
+
+        setFormData((prev) => ({
+          ...prev,
+          state,
+          district,
+          city,
+          area,
+        }));
+
+        setLocationStatus("Location detected successfully.");
+      } catch (error) {
+        console.error("Reverse geocoding error:", error);
+
+        setLocationStatus(
+          "Location detected, but address details could not be loaded."
+        );
+      } finally {
+        setGettingLocation(false);
+      }
+    },
+
+    (error) => {
+      setGettingLocation(false);
+
+      switch (error.code) {
+        case error.PERMISSION_DENIED:
+          setLocationStatus(
+            "Location permission was denied. Please allow location access."
+          );
+          break;
+
+        case error.POSITION_UNAVAILABLE:
+          setLocationStatus(
+            "Your current location is unavailable."
+          );
+          break;
+
+        case error.TIMEOUT:
+          setLocationStatus(
+            "Location request timed out. Please try again."
+          );
+          break;
+
+        default:
+          setLocationStatus(
+            "Unable to detect your location."
+          );
+      }
+    },
+
+    {
+      enableHighAccuracy: true,
+      timeout: 15000,
+      maximumAge: 0,
+    }
+  );
+};
   // =====================================================
   // WORKER REGISTRATION
   // =====================================================
@@ -218,7 +324,7 @@ function Register() {
       // =================================================
 
       setSuccess(
-        result?.message || "Worker registered successfully!"
+        result?.message || "Worker registered successfully Please login to continue!"
       );
 
       // Clear form after successful registration
@@ -649,7 +755,36 @@ function Register() {
               {/* =================================================
                   LOCATION
               ================================================= */}
+                                    <div className="register-location-header">
 
+  <div>
+    <h3>Service Location</h3>
+
+    <p>
+      Enter your location manually or use your current location.
+    </p>
+  </div>
+
+  <button
+    type="button"
+    className="register-location-button"
+    onClick={handleUseCurrentLocation}
+    disabled={gettingLocation}
+  >
+    <LocateFixed size={18} />
+
+    {gettingLocation
+      ? "Detecting Location..."
+      : "Use Current Location"}
+  </button>
+
+</div>
+
+{locationStatus && (
+  <p className="register-location-status">
+    {locationStatus}
+  </p>
+)}
               {/* State */}
               <div className="register-form-group">
                 <label>State</label>

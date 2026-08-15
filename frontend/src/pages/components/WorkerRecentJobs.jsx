@@ -4,7 +4,7 @@ import {
   MapPin,
   CheckCircle2,
 } from "lucide-react";
-
+import "./WorkerRecentJobs.css";
 function WorkerRecentJobs() {
   const jobs = [];
 

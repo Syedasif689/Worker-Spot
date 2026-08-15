@@ -5,7 +5,7 @@ import {
     ShieldCheck,
     AlertCircle,
 } from "lucide-react";
-
+import "./WorkerAvailability.css";
 function WorkerAvailability() {
 
     const [availability, setAvailability] = useState(null);

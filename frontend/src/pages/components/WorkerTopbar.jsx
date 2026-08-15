@@ -3,7 +3,7 @@ import {
     Bell,
     UserCircle,
 } from "lucide-react";
-
+import "./WorkerTopbar.css";
 function WorkerTopbar({ onMenuClick }) {
 
     return (

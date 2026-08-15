@@ -8,7 +8,7 @@ import {
     Star,
     AlertCircle,
 } from "lucide-react";
-
+import "./WorkerProfileCard.css";
 function WorkerProfileCard() {
 
     const [worker, setWorker] = useState(null);

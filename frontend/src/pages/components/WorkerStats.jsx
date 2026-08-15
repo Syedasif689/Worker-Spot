@@ -4,7 +4,7 @@ import {
     CheckCircle,
     Wallet,
 } from "lucide-react";
-
+import "./WorkerStats.css";
 function WorkerStats() {
 
     const stats = [

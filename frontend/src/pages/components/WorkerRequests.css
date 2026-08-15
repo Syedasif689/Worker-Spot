@@ -1,0 +1,677 @@
+/* =========================================================
+   WORKER REQUESTS
+   Responsive: Desktop / Tablet / Mobile
+========================================================= */
+
+.worker-requests {
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.worker-requests .worker-section-header {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 18px;
+}
+
+.worker-requests .worker-section-header h2 {
+    margin: 0;
+
+    color: #ffffff;
+
+    font-size: 20px;
+    font-weight: 700;
+
+    line-height: 1.3;
+}
+
+.worker-requests .worker-section-header p {
+    margin: 5px 0 0;
+
+    color: #7f8a96;
+
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   REQUEST COUNT
+========================================================= */
+
+.worker-request-count {
+    min-width: 42px;
+    height: 36px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    padding: 0 11px;
+
+    box-sizing: border-box;
+
+    border: 1px solid rgba(255, 138, 0, 0.18);
+    border-radius: 9px;
+
+    background: rgba(255, 138, 0, 0.08);
+
+    color: #ff8a00;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    flex-shrink: 0;
+}
+
+.worker-request-count svg {
+    flex-shrink: 0;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.worker-requests-empty {
+    width: 100%;
+    min-height: 220px;
+
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 30px 20px;
+
+    text-align: center;
+
+    border: 1px solid #202832;
+    border-radius: 15px;
+
+    background: #11161d;
+}
+
+.worker-requests-empty .worker-empty-icon {
+    width: 62px;
+    height: 62px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 14px;
+
+    border-radius: 15px;
+
+    background: rgba(255, 138, 0, 0.1);
+
+    color: #ff8a00;
+}
+
+.worker-requests-empty h3 {
+    margin: 0 0 7px;
+
+    color: #ffffff;
+
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.worker-requests-empty p {
+    max-width: 420px;
+
+    margin: 0;
+
+    color: #7f8a96;
+
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   REQUEST LIST
+========================================================= */
+
+.worker-request-list {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 12px;
+}
+
+
+/* =========================================================
+   REQUEST CARD
+========================================================= */
+
+.worker-request-card {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(180px, 1.5fr)
+        minmax(120px, 1fr)
+        minmax(120px, 1fr)
+        auto;
+
+    align-items: center;
+
+    gap: 18px;
+
+    padding: 17px;
+
+    border: 1px solid #202832;
+    border-radius: 13px;
+
+    background: #11161d;
+
+    transition:
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        background 0.2s ease;
+}
+
+.worker-request-card:hover {
+    border-color: #303b47;
+
+    background: #131a22;
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   CUSTOMER
+========================================================= */
+
+.worker-request-customer {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 11px;
+}
+
+.worker-request-avatar {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: rgba(255, 138, 0, 0.1);
+
+    color: #ff8a00;
+}
+
+.worker-request-customer > div:last-child {
+    min-width: 0;
+}
+
+.worker-request-customer h3 {
+    margin: 0 0 4px;
+
+    overflow: hidden;
+
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.worker-request-customer p {
+    margin: 0;
+
+    overflow: hidden;
+
+    color: #7f8a96;
+
+    font-size: 12px;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   LOCATION / TIME
+========================================================= */
+
+.worker-request-location,
+.worker-request-time {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    color: #9ca6b2;
+
+    font-size: 12px;
+}
+
+.worker-request-location svg,
+.worker-request-time svg {
+    flex-shrink: 0;
+
+    color: #ff8a00;
+}
+
+.worker-request-location span,
+.worker-request-time span {
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   ACTIONS
+========================================================= */
+
+.worker-request-actions {
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    flex-shrink: 0;
+}
+
+.worker-request-actions button {
+    min-height: 34px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 5px;
+
+    padding: 8px 11px;
+
+    border: none;
+    border-radius: 8px;
+
+    font-family: inherit;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        opacity 0.15s ease;
+}
+
+.worker-request-actions button:hover {
+    transform: translateY(-1px);
+}
+
+.worker-request-actions button:active {
+    transform: translateY(0);
+}
+
+.worker-request-actions svg {
+    flex-shrink: 0;
+}
+
+
+/* Accept */
+
+.worker-request-accept {
+    background: #ff8a00;
+
+    color: #ffffff;
+}
+
+.worker-request-accept:hover {
+    opacity: 0.9;
+}
+
+
+/* Reject */
+
+.worker-request-reject {
+    background: #202832;
+
+    color: #c5ccd4;
+}
+
+.worker-request-reject:hover {
+    background: #29323d;
+}
+
+
+/* =========================================================
+   LARGE TABLET
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .worker-request-card {
+        grid-template-columns:
+            minmax(180px, 1.4fr)
+            minmax(120px, 1fr)
+            minmax(110px, 1fr)
+            auto;
+
+        gap: 12px;
+
+        padding: 15px;
+    }
+
+    .worker-request-actions button {
+        padding: 8px 9px;
+    }
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 850px) {
+
+    .worker-request-card {
+        grid-template-columns:
+            1fr 1fr;
+
+        gap: 14px;
+    }
+
+
+    /* Customer */
+
+    .worker-request-customer {
+        min-width: 0;
+    }
+
+
+    /* Location */
+
+    .worker-request-location {
+        justify-content: flex-start;
+    }
+
+
+    /* Time */
+
+    .worker-request-time {
+        justify-content: flex-start;
+    }
+
+
+    /* Actions occupy complete row */
+
+    .worker-request-actions {
+        grid-column: 1 / -1;
+
+        width: 100%;
+
+        padding-top: 2px;
+    }
+
+    .worker-request-actions button {
+        flex: 1;
+
+        min-height: 38px;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .worker-requests {
+        margin-bottom: 24px;
+    }
+
+
+    /* Header */
+
+    .worker-requests .worker-section-header {
+        align-items: flex-start;
+
+        gap: 12px;
+
+        margin-bottom: 14px;
+    }
+
+    .worker-requests .worker-section-header h2 {
+        font-size: 18px;
+    }
+
+    .worker-requests .worker-section-header p {
+        max-width: 240px;
+
+        font-size: 12px;
+    }
+
+
+    /* Count */
+
+    .worker-request-count {
+        min-width: 38px;
+        height: 32px;
+
+        padding: 0 9px;
+
+        font-size: 12px;
+    }
+
+
+    /* Empty */
+
+    .worker-requests-empty {
+        min-height: 200px;
+
+        padding: 25px 16px;
+
+        border-radius: 13px;
+    }
+
+    .worker-requests-empty .worker-empty-icon {
+        width: 56px;
+        height: 56px;
+
+        margin-bottom: 12px;
+    }
+
+    .worker-requests-empty h3 {
+        font-size: 15px;
+    }
+
+    .worker-requests-empty p {
+        max-width: 300px;
+
+        font-size: 12px;
+    }
+
+
+    /* Request card */
+
+    .worker-request-card {
+        display: flex;
+        flex-direction: column;
+
+        align-items: stretch;
+
+        gap: 12px;
+
+        padding: 14px;
+
+        border-radius: 12px;
+    }
+
+
+    /* Customer */
+
+    .worker-request-customer {
+        width: 100%;
+    }
+
+    .worker-request-avatar {
+        width: 42px;
+        height: 42px;
+    }
+
+    .worker-request-customer h3 {
+        font-size: 14px;
+    }
+
+
+    /* Location / Time */
+
+    .worker-request-location,
+    .worker-request-time {
+        width: 100%;
+
+        min-height: 34px;
+
+        box-sizing: border-box;
+
+        padding: 8px 10px;
+
+        border-radius: 8px;
+
+        background: #161c23;
+
+        font-size: 12px;
+    }
+
+
+    /* Actions */
+
+    .worker-request-actions {
+        width: 100%;
+
+        display: grid;
+
+        grid-template-columns: 1fr 1fr;
+
+        gap: 8px;
+
+        padding-top: 2px;
+    }
+
+    .worker-request-actions button {
+        width: 100%;
+
+        min-height: 40px;
+
+        padding: 9px 10px;
+
+        font-size: 12px;
+    }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 400px) {
+
+    .worker-requests .worker-section-header h2 {
+        font-size: 17px;
+    }
+
+    .worker-requests .worker-section-header p {
+        font-size: 11px;
+    }
+
+    .worker-request-card {
+        padding: 12px;
+    }
+
+    .worker-request-avatar {
+        width: 38px;
+        height: 38px;
+    }
+
+    .worker-request-location,
+    .worker-request-time {
+        font-size: 11px;
+    }
+
+    .worker-request-actions button {
+        min-height: 38px;
+
+        font-size: 11px;
+    }
+}
+
+
+/* =========================================================
+   VERY SMALL SCREENS
+========================================================= */
+
+@media (max-width: 330px) {
+
+    .worker-requests .worker-section-header {
+        align-items: flex-start;
+    }
+
+    .worker-request-count {
+        min-width: 34px;
+
+        padding: 0 7px;
+    }
+
+    .worker-request-actions {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* =========================================================
+   REMOVE HORIZONTAL OVERFLOW
+========================================================= */
+
+.worker-requests,
+.worker-request-list,
+.worker-request-card {
+    max-width: 100%;
+}
+
+.worker-requests {
+    overflow-x: hidden;
+}

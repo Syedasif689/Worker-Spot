@@ -1,0 +1,364 @@
+/* =========================================================
+   WORKER QUICK ACTIONS
+========================================================= */
+
+.worker-quick-actions {
+    width: 100%;
+    margin-bottom: 28px;
+}
+
+
+/* =========================================================
+   SECTION HEADER
+========================================================= */
+
+.worker-quick-actions .worker-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 16px;
+}
+
+.worker-quick-actions .worker-section-header h2 {
+    margin: 0;
+
+    color: #ffffff;
+
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.worker-quick-actions .worker-section-header p {
+    margin: 5px 0 0;
+
+    color: #7f8a96;
+
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   QUICK ACTIONS GRID
+========================================================= */
+
+.worker-quick-actions-grid {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 14px;
+}
+
+
+/* =========================================================
+   QUICK ACTION CARD
+========================================================= */
+
+.worker-quick-action-card {
+    width: 100%;
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 13px;
+
+    padding: 17px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #202832;
+    border-radius: 13px;
+
+    background: #11161d;
+    color: #ffffff;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    font-family: inherit;
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+/* Hover */
+
+.worker-quick-action-card:hover {
+    transform: translateY(-2px);
+
+    border-color: #3a4653;
+
+    background: #151b22;
+
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.18);
+}
+
+
+/* Click */
+
+.worker-quick-action-card:active {
+    transform: translateY(0);
+}
+
+
+/* Keyboard focus */
+
+.worker-quick-action-card:focus-visible {
+    outline: 2px solid #ff8a00;
+    outline-offset: 2px;
+}
+
+
+/* =========================================================
+   ICON
+========================================================= */
+
+.worker-quick-action-icon {
+    width: 42px;
+    height: 42px;
+
+    min-width: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 10px;
+
+    background: rgba(255, 138, 0, 0.1);
+
+    color: #ff8a00;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.worker-quick-action-card:hover
+.worker-quick-action-icon {
+    background: rgba(255, 138, 0, 0.15);
+
+    transform: scale(1.04);
+}
+
+
+/* =========================================================
+   CONTENT
+========================================================= */
+
+.worker-quick-action-content {
+    min-width: 0;
+
+    flex: 1;
+}
+
+.worker-quick-action-content h3 {
+    margin: 0;
+
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    line-height: 1.35;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.worker-quick-action-content p {
+    margin: 4px 0 0;
+
+    color: #7f8a96;
+
+    font-size: 11px;
+
+    line-height: 1.45;
+}
+
+
+/* =========================================================
+   LARGE TABLET
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .worker-quick-actions-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 13px;
+    }
+
+    .worker-quick-action-card {
+        padding: 16px;
+    }
+
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 850px) {
+
+    .worker-quick-actions {
+        margin-bottom: 24px;
+    }
+
+    .worker-quick-actions-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 12px;
+    }
+
+    .worker-quick-action-card {
+        padding: 15px;
+
+        gap: 11px;
+    }
+
+    .worker-quick-action-icon {
+        width: 40px;
+        height: 40px;
+
+        min-width: 40px;
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .worker-quick-actions {
+        margin-bottom: 22px;
+    }
+
+
+    /* Header */
+
+    .worker-quick-actions .worker-section-header {
+        margin-bottom: 13px;
+    }
+
+    .worker-quick-actions .worker-section-header h2 {
+        font-size: 18px;
+    }
+
+    .worker-quick-actions .worker-section-header p {
+        margin-top: 4px;
+
+        font-size: 12px;
+    }
+
+
+    /* One card per row */
+
+    .worker-quick-actions-grid {
+        grid-template-columns: 1fr;
+
+        gap: 10px;
+    }
+
+
+    /* Card */
+
+    .worker-quick-action-card {
+        min-height: 68px;
+
+        padding: 13px 14px;
+
+        gap: 12px;
+
+        border-radius: 12px;
+    }
+
+
+    /* Icon */
+
+    .worker-quick-action-icon {
+        width: 40px;
+        height: 40px;
+
+        min-width: 40px;
+
+        border-radius: 9px;
+    }
+
+
+    /* Text */
+
+    .worker-quick-action-content h3 {
+        font-size: 13px;
+    }
+
+    .worker-quick-action-content p {
+        margin-top: 3px;
+
+        font-size: 11px;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 380px) {
+
+    .worker-quick-actions-grid {
+        gap: 8px;
+    }
+
+    .worker-quick-action-card {
+        min-height: 64px;
+
+        padding: 11px 12px;
+
+        gap: 10px;
+    }
+
+    .worker-quick-action-icon {
+        width: 37px;
+        height: 37px;
+
+        min-width: 37px;
+    }
+
+    .worker-quick-action-icon svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .worker-quick-action-content h3 {
+        font-size: 12px;
+    }
+
+    .worker-quick-action-content p {
+        font-size: 10px;
+    }
+
+}

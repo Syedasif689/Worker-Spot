@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import { NavLink } from "react-router-dom";
+import "./WorkerSidebar.css";
 
 function WorkerSidebar({ isOpen, onClose }) {
 
