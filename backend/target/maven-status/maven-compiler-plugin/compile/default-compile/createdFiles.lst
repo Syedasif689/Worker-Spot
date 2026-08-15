@@ -1,5 +1,6 @@
 com\workerspot\security\JwtService.class
 com\workerspot\repository\WorkerProfileRepository.class
+com\workerspot\dto\WorkerProfileUpdateRequest.class
 com\workerspot\dto\LoginResponse.class
 com\workerspot\entity\Availability.class
 com\workerspot\WorkerSpotApplication.class

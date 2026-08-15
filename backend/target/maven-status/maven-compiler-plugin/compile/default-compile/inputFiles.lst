@@ -5,6 +5,7 @@ D:\Worker Spot\backend\src\main\java\com\workerspot\control\WorkerProfileControl
 D:\Worker Spot\backend\src\main\java\com\workerspot\dto\LoginRequest.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\dto\LoginResponse.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\dto\RegisterRequest.java
+D:\Worker Spot\backend\src\main\java\com\workerspot\dto\WorkerProfileUpdateRequest.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\dto\WorkerRegisterRequest.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\entity\Availability.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\entity\CustomerProfile.java

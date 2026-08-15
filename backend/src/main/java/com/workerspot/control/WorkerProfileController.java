@@ -5,9 +5,13 @@ import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.workerspot.dto.WorkerProfileUpdateRequest;
+import com.workerspot.entity.Availability;
 import com.workerspot.entity.User;
 import com.workerspot.entity.WorkerProfile;
 import com.workerspot.repository.UserRepository;
@@ -119,4 +123,60 @@ public class WorkerProfileController {
         )
 );
     }
+    @PutMapping("/me")
+public ResponseEntity<?> updateMyProfile(
+        Authentication authentication,
+        @RequestBody WorkerProfileUpdateRequest request
+) {
+
+    String email = authentication.getName();
+
+    User user = userRepository
+            .findByEmail(email)
+            .orElseThrow(() ->
+                    new RuntimeException("User not found")
+            );
+
+    WorkerProfile workerProfile =
+            workerProfileRepository
+                    .findByUser(user)
+                    .orElseThrow(() ->
+                            new RuntimeException(
+                                    "Worker profile not found"
+                            )
+                    );
+
+    // Update user information
+    user.setFullName(request.getFullName());
+
+    // Update worker profile information
+    workerProfile.setAge(request.getAge());
+    workerProfile.setCategory(request.getCategory());
+    workerProfile.setExperienceYears(request.getExperienceYears());
+
+    workerProfile.setState(request.getState());
+    workerProfile.setDistrict(request.getDistrict());
+    workerProfile.setCity(request.getCity());
+    workerProfile.setArea(request.getArea());
+
+    workerProfile.setCharges(request.getCharges());
+
+    workerProfile.setAvailability(
+            Availability.valueOf(
+                    request.getAvailability().toUpperCase()
+            )
+    );
+
+    workerProfile.setAbout(request.getAbout());
+
+    userRepository.save(user);
+    workerProfileRepository.save(workerProfile);
+
+    return ResponseEntity.ok(
+            Map.of(
+                    "message",
+                    "Worker profile updated successfully"
+            )
+    );
+}
 }
