@@ -13,6 +13,8 @@ import CustomerLogin from "../pages/Login/CustomerLogin";
 import WorkerLogin from "../pages/Login/WorkerLogin";
 import WorkerDashboard from "../pages/Dashboard/WorkerDashboard";
 import WorkerProfile from "../pages/WorkerProfile";
+import CustomerDashboard from "../pages/Dashboard/CustomerDashboard";
+
 function AppRoutes() {
   return (
     <BrowserRouter>
@@ -31,6 +33,7 @@ function AppRoutes() {
         <Route path="/worker-login" element={<WorkerLogin />}/>
         <Route path="/worker-dashboard" element={<WorkerDashboard />}/>
         <Route path="/worker-profile" element={<WorkerProfile />}/>
+        <Route path="/customer-dashboard" element={<CustomerDashboard />}/>
       </Routes>
     </BrowserRouter>
   );

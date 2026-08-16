@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import {
   User,
@@ -18,10 +17,10 @@ import {
   Sparkles,
   CheckCircle,
   ArrowRight,
-  LocateFixed,
   Wrench,
   IndianRupee,
   FileText,
+  LocateFixed,
 } from "lucide-react";
 
 import "./Register.css";
@@ -33,6 +32,17 @@ function Register() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // =====================================================
+  // LOCATION STATE
+  // =====================================================
+
+  const [locationStatus, setLocationStatus] = useState("");
+  const [gettingLocation, setGettingLocation] = useState(false);
+
+  // =====================================================
+  // FORM DATA
+  // =====================================================
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -52,10 +62,13 @@ function Register() {
     city: "",
     area: "",
 
+    // GPS coordinates
+    latitude: "",
+    longitude: "",
+
     terms: false,
   });
-  const [locationStatus, setLocationStatus] = useState("");
-const [gettingLocation, setGettingLocation] = useState(false);
+
   // =====================================================
   // HANDLE INPUT CHANGES
   // =====================================================
@@ -71,111 +84,157 @@ const [gettingLocation, setGettingLocation] = useState(false);
     setError("");
     setSuccess("");
   };
-      const handleUseCurrentLocation = () => {
-  if (!navigator.geolocation) {
-    setLocationStatus(
-      "Location services are not supported by this browser."
-    );
-    return;
-  }
 
-  setGettingLocation(true);
-  setLocationStatus("Getting your current location...");
+  // =====================================================
+  // USE CURRENT LOCATION
+  // =====================================================
 
-  navigator.geolocation.getCurrentPosition(
-    async (position) => {
-      const { latitude, longitude } = position.coords;
+  const handleUseCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      setLocationStatus(
+        "Location services are not supported by this browser."
+      );
+      return;
+    }
 
-      try {
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`
-        );
+    setGettingLocation(true);
+    setLocationStatus("Getting your current location...");
+    setError("");
+    setSuccess("");
 
-        if (!response.ok) {
-          throw new Error("Unable to find address.");
-        }
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
 
-        const data = await response.json();
-        const address = data.address || {};
-
-        const state = address.state || "";
-
-        const district =
-          address.state_district ||
-          address.district ||
-          address.county ||
-          "";
-
-        const city =
-          address.city ||
-          address.town ||
-          address.village ||
-          address.municipality ||
-          "";
-
-        const area =
-          address.suburb ||
-          address.neighbourhood ||
-          address.residential ||
-          address.hamlet ||
-          "";
+        // -------------------------------------------------
+        // Save coordinates immediately
+        // -------------------------------------------------
 
         setFormData((prev) => ({
           ...prev,
-          state,
-          district,
-          city,
-          area,
+          latitude: latitude.toString(),
+          longitude: longitude.toString(),
         }));
 
-        setLocationStatus("Location detected successfully.");
-      } catch (error) {
-        console.error("Reverse geocoding error:", error);
+        try {
+          // -------------------------------------------------
+          // Reverse geocoding
+          // -------------------------------------------------
 
-        setLocationStatus(
-          "Location detected, but address details could not be loaded."
-        );
-      } finally {
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`
+          );
+
+          if (!response.ok) {
+            throw new Error("Unable to find address.");
+          }
+
+          const data = await response.json();
+          const address = data.address || {};
+
+          const state = address.state || "";
+
+          const district =
+            address.state_district ||
+            address.district ||
+            address.county ||
+            "";
+
+          const city =
+            address.city ||
+            address.town ||
+            address.village ||
+            address.municipality ||
+            "";
+
+          const area =
+            address.suburb ||
+            address.neighbourhood ||
+            address.residential ||
+            address.hamlet ||
+            "";
+
+          // -------------------------------------------------
+          // Save address + coordinates
+          // -------------------------------------------------
+
+          setFormData((prev) => ({
+            ...prev,
+
+            latitude: latitude.toString(),
+            longitude: longitude.toString(),
+
+            state,
+            district,
+            city,
+            area,
+          }));
+
+          setLocationStatus(
+            "Location detected successfully."
+          );
+        } catch (reverseError) {
+          console.error(
+            "Reverse geocoding error:",
+            reverseError
+          );
+
+          // Coordinates are still valid even if
+          // address lookup fails.
+
+          setLocationStatus(
+            "Location detected. Please enter the address manually."
+          );
+        } finally {
+          setGettingLocation(false);
+        }
+      },
+
+      // -----------------------------------------------------
+      // LOCATION ERROR
+      // -----------------------------------------------------
+
+      (error) => {
         setGettingLocation(false);
+
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            setLocationStatus(
+              "Location permission was denied. Please allow location access."
+            );
+            break;
+
+          case error.POSITION_UNAVAILABLE:
+            setLocationStatus(
+              "Your current location is unavailable."
+            );
+            break;
+
+          case error.TIMEOUT:
+            setLocationStatus(
+              "Location request timed out. Please try again."
+            );
+            break;
+
+          default:
+            setLocationStatus(
+              "Unable to detect your location."
+            );
+        }
+      },
+
+      // -----------------------------------------------------
+      // GPS OPTIONS
+      // -----------------------------------------------------
+
+      {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 0,
       }
-    },
+    );
+  };
 
-    (error) => {
-      setGettingLocation(false);
-
-      switch (error.code) {
-        case error.PERMISSION_DENIED:
-          setLocationStatus(
-            "Location permission was denied. Please allow location access."
-          );
-          break;
-
-        case error.POSITION_UNAVAILABLE:
-          setLocationStatus(
-            "Your current location is unavailable."
-          );
-          break;
-
-        case error.TIMEOUT:
-          setLocationStatus(
-            "Location request timed out. Please try again."
-          );
-          break;
-
-        default:
-          setLocationStatus(
-            "Unable to detect your location."
-          );
-      }
-    },
-
-    {
-      enableHighAccuracy: true,
-      timeout: 15000,
-      maximumAge: 0,
-    }
-  );
-};
   // =====================================================
   // WORKER REGISTRATION
   // =====================================================
@@ -186,9 +245,14 @@ const [gettingLocation, setGettingLocation] = useState(false);
     setError("");
     setSuccess("");
 
-    // -------------------------
-    // Frontend validation
-    // -------------------------
+    // -----------------------------------------------------
+    // FRONTEND VALIDATION
+    // -----------------------------------------------------
+
+    if (!formData.fullName.trim()) {
+      setError("Please enter your full name.");
+      return;
+    }
 
     if (Number(formData.age) < 19) {
       setError("Workers must be 19 years or older.");
@@ -211,7 +275,9 @@ const [gettingLocation, setGettingLocation] = useState(false);
     }
 
     if (!/^[6-9][0-9]{9}$/.test(formData.mobile)) {
-      setError("Please provide a valid 10-digit Indian mobile number.");
+      setError(
+        "Please provide a valid 10-digit Indian mobile number."
+      );
       return;
     }
 
@@ -225,14 +291,45 @@ const [gettingLocation, setGettingLocation] = useState(false);
       return;
     }
 
-    if (!formData.terms) {
-      setError("Please agree to the Terms and Conditions.");
+    // -----------------------------------------------------
+    // LOCATION VALIDATION
+    // -----------------------------------------------------
+
+    if (
+      !formData.latitude ||
+      !formData.longitude
+    ) {
+      setError(
+        "Please use Current Location before creating your worker account."
+      );
       return;
     }
 
-    // -------------------------
-    // Data sent to backend
-    // -------------------------
+    if (!formData.state.trim()) {
+      setError("Please provide your state.");
+      return;
+    }
+
+    if (!formData.district.trim()) {
+      setError("Please provide your district.");
+      return;
+    }
+
+    if (!formData.city.trim()) {
+      setError("Please provide your city or town.");
+      return;
+    }
+
+    if (!formData.terms) {
+      setError(
+        "Please agree to the Terms and Conditions."
+      );
+      return;
+    }
+
+    // =====================================================
+    // DATA SENT TO BACKEND
+    // =====================================================
 
     const workerData = {
       fullName: formData.fullName.trim(),
@@ -241,8 +338,12 @@ const [gettingLocation, setGettingLocation] = useState(false);
       password: formData.password,
 
       category: formData.category,
+
       age: Number(formData.age),
-      experienceYears: Number(formData.experienceYears),
+
+      experienceYears:
+        Number(formData.experienceYears),
+
       charges: Number(formData.charges),
 
       state: formData.state.trim(),
@@ -250,8 +351,22 @@ const [gettingLocation, setGettingLocation] = useState(false);
       city: formData.city.trim(),
       area: formData.area.trim(),
 
+      // IMPORTANT:
+      // GPS coordinates sent to Spring Boot
+      latitude: Number(formData.latitude),
+      longitude: Number(formData.longitude),
+
       about: formData.about.trim(),
     };
+
+    console.log(
+      "Worker registration data:",
+      workerData
+    );
+
+    // =====================================================
+    // API REQUEST
+    // =====================================================
 
     try {
       setLoading(true);
@@ -260,24 +375,28 @@ const [gettingLocation, setGettingLocation] = useState(false);
         "http://localhost:8080/api/auth/register/worker",
         {
           method: "POST",
+
           headers: {
             "Content-Type": "application/json",
           },
+
           body: JSON.stringify(workerData),
         }
       );
 
       // =================================================
       // SAFE RESPONSE HANDLING
-      // Prevents:
-      // "Unexpected end of JSON input"
       // =================================================
 
-      const contentType = response.headers.get("content-type");
+      const contentType =
+        response.headers.get("content-type");
 
       let result = null;
 
-      if (contentType && contentType.includes("application/json")) {
+      if (
+        contentType &&
+        contentType.includes("application/json")
+      ) {
         const text = await response.text();
 
         if (text) {
@@ -302,18 +421,22 @@ const [gettingLocation, setGettingLocation] = useState(false);
       // =================================================
 
       if (!response.ok) {
-        let errorMessage = "Worker registration failed.";
+        let errorMessage =
+          "Worker registration failed.";
 
         if (result?.message) {
           errorMessage = result.message;
         } else if (result?.error) {
           errorMessage = result.error;
         } else if (response.status === 409) {
-          errorMessage = "Email or mobile number is already registered.";
+          errorMessage =
+            "Email or mobile number is already registered.";
         } else if (response.status === 400) {
-          errorMessage = "Please check your registration details.";
+          errorMessage =
+            "Please check your registration details.";
         } else if (response.status === 500) {
-          errorMessage = "Server error. Please try again later.";
+          errorMessage =
+            "Server error. Please try again later.";
         }
 
         throw new Error(errorMessage);
@@ -324,10 +447,14 @@ const [gettingLocation, setGettingLocation] = useState(false);
       // =================================================
 
       setSuccess(
-        result?.message || "Worker registered successfully Please login to continue!"
+        result?.message ||
+          "Worker registered successfully!"
       );
 
-      // Clear form after successful registration
+      // =================================================
+      // CLEAR FORM
+      // =================================================
+
       setFormData({
         fullName: "",
         mobile: "",
@@ -346,21 +473,35 @@ const [gettingLocation, setGettingLocation] = useState(false);
         city: "",
         area: "",
 
+        latitude: "",
+        longitude: "",
+
         terms: false,
       });
+
+      setLocationStatus("");
     } catch (err) {
-      console.error("Worker registration error:", err);
+      console.error(
+        "Worker registration error:",
+        err
+      );
 
       setError(
-        err.message || "Unable to connect to the server."
+        err.message ||
+          "Unable to connect to the server."
       );
     } finally {
       setLoading(false);
     }
   };
 
+  // =====================================================
+  // UI
+  // =====================================================
+
   return (
     <div className="register-page">
+
       <div className="register-layout">
 
         {/* =====================================================
@@ -368,108 +509,164 @@ const [gettingLocation, setGettingLocation] = useState(false);
         ====================================================== */}
 
         <section className="register-content">
+
           <div className="register-content-inner">
 
             {/* Brand */}
+
             <div className="register-brand">
+
               <div className="register-brand-icon">
                 <Briefcase size={28} />
               </div>
 
               <div>
+
                 <h2>
                   Worker<span> Spot</span>
                 </h2>
 
-                <p>Opportunities for skilled workers</p>
+                <p>
+                  Opportunities for skilled workers
+                </p>
+
               </div>
+
             </div>
 
             {/* Badge */}
+
             <div className="register-badge">
+
               <Sparkles size={15} />
-              <span>Join Worker Spot</span>
+
+              <span>
+                Join Worker Spot
+              </span>
+
             </div>
 
             {/* Main Heading */}
+
             <div className="register-message">
+
               <h1>
-                Turn your <span>skills</span> into opportunities.
+                Turn your <span>skills</span>{" "}
+                into opportunities.
               </h1>
 
               <p>
-                Create your Worker Spot account and connect with customers
-                looking for skilled workers in your area.
+                Create your Worker Spot account
+                and connect with customers looking
+                for skilled workers in your area.
               </p>
+
             </div>
 
             {/* Benefits */}
+
             <div className="register-features">
 
               <div className="register-feature">
+
                 <div className="feature-icon">
                   <HandCoins size={20} />
                 </div>
 
                 <div>
-                  <h3>No registration fees</h3>
+
+                  <h3>
+                    No registration fees
+                  </h3>
+
                   <p>
-                    Worker Spot does not charge workers to join.
+                    Worker Spot does not charge
+                    workers to join.
                   </p>
+
                 </div>
+
               </div>
 
               <div className="register-feature">
+
                 <div className="feature-icon">
                   <CheckCircle size={20} />
                 </div>
 
                 <div>
-                  <h3>Keep your earnings</h3>
+
+                  <h3>
+                    Keep your earnings
+                  </h3>
+
                   <p>
                     Your service charges are yours.
                   </p>
+
                 </div>
+
               </div>
 
               <div className="register-feature">
+
                 <div className="feature-icon">
                   <Clock size={20} />
                 </div>
 
                 <div>
-                  <h3>Work on your terms</h3>
+
+                  <h3>
+                    Work on your terms
+                  </h3>
+
                   <p>
-                    Choose when and which services you accept.
+                    Choose when and which services
+                    you accept.
                   </p>
+
                 </div>
+
               </div>
 
               <div className="register-feature">
+
                 <div className="feature-icon">
                   <Users size={20} />
                 </div>
 
                 <div>
-                  <h3>Connect with customers</h3>
+
+                  <h3>
+                    Connect with customers
+                  </h3>
+
                   <p>
-                    Get opportunities from customers nearby.
+                    Get opportunities from
+                    customers nearby.
                   </p>
+
                 </div>
+
               </div>
 
             </div>
 
             {/* Bottom Message */}
+
             <div className="register-side-note">
+
               <ShieldCheck size={18} />
 
               <span>
-                You remain an independent service provider.
+                You remain an independent
+                service provider.
               </span>
+
             </div>
 
           </div>
+
         </section>
 
         {/* =====================================================
@@ -481,21 +678,28 @@ const [gettingLocation, setGettingLocation] = useState(false);
           <div className="register-container">
 
             {/* Header */}
+
             <div className="register-header">
 
               <div className="register-icon">
                 <UserPlus size={27} />
               </div>
 
-              <h1>Create Worker Account</h1>
+              <h1>
+                Create Worker Account
+              </h1>
 
               <p>
-                Register as a worker and start receiving opportunities.
+                Register as a worker and start
+                receiving opportunities.
               </p>
 
             </div>
 
-            {/* Form */}
+            {/* =================================================
+                FORM
+            ================================================= */}
+
             <form onSubmit={handleSubmit}>
 
               {/* =================================================
@@ -503,10 +707,15 @@ const [gettingLocation, setGettingLocation] = useState(false);
               ================================================= */}
 
               {/* Full Name */}
+
               <div className="register-form-group">
-                <label>Full Name</label>
+
+                <label>
+                  Full Name
+                </label>
 
                 <div className="register-input-box">
+
                   <User size={19} />
 
                   <input
@@ -517,14 +726,21 @@ const [gettingLocation, setGettingLocation] = useState(false);
                     onChange={handleChange}
                     required
                   />
+
                 </div>
+
               </div>
 
               {/* Mobile */}
+
               <div className="register-form-group">
-                <label>Mobile Number</label>
+
+                <label>
+                  Mobile Number
+                </label>
 
                 <div className="register-input-box">
+
                   <Phone size={19} />
 
                   <input
@@ -537,14 +753,21 @@ const [gettingLocation, setGettingLocation] = useState(false);
                     maxLength="10"
                     required
                   />
+
                 </div>
+
               </div>
 
               {/* Email */}
+
               <div className="register-form-group">
-                <label>Email Address</label>
+
+                <label>
+                  Email Address
+                </label>
 
                 <div className="register-input-box">
+
                   <Mail size={19} />
 
                   <input
@@ -555,18 +778,29 @@ const [gettingLocation, setGettingLocation] = useState(false);
                     onChange={handleChange}
                     required
                   />
+
                 </div>
+
               </div>
 
               {/* Password */}
+
               <div className="register-form-group">
-                <label>Password</label>
+
+                <label>
+                  Password
+                </label>
 
                 <div className="register-input-box">
+
                   <Lock size={19} />
 
                   <input
-                    type={showPassword ? "text" : "password"}
+                    type={
+                      showPassword
+                        ? "text"
+                        : "password"
+                    }
                     name="password"
                     placeholder="Create a password"
                     value={formData.password}
@@ -579,7 +813,9 @@ const [gettingLocation, setGettingLocation] = useState(false);
                     type="button"
                     className="register-password-button"
                     onClick={() =>
-                      setShowPassword(!showPassword)
+                      setShowPassword(
+                        !showPassword
+                      )
                     }
                   >
                     {showPassword ? (
@@ -588,18 +824,29 @@ const [gettingLocation, setGettingLocation] = useState(false);
                       <Eye size={19} />
                     )}
                   </button>
+
                 </div>
+
               </div>
 
               {/* Confirm Password */}
+
               <div className="register-form-group">
-                <label>Confirm Password</label>
+
+                <label>
+                  Confirm Password
+                </label>
 
                 <div className="register-input-box">
+
                   <Lock size={19} />
 
                   <input
-                    type={showConfirmPassword ? "text" : "password"}
+                    type={
+                      showConfirmPassword
+                        ? "text"
+                        : "password"
+                    }
                     name="confirmPassword"
                     placeholder="Confirm your password"
                     value={formData.confirmPassword}
@@ -611,7 +858,9 @@ const [gettingLocation, setGettingLocation] = useState(false);
                     type="button"
                     className="register-password-button"
                     onClick={() =>
-                      setShowConfirmPassword(!showConfirmPassword)
+                      setShowConfirmPassword(
+                        !showConfirmPassword
+                      )
                     }
                   >
                     {showConfirmPassword ? (
@@ -620,7 +869,9 @@ const [gettingLocation, setGettingLocation] = useState(false);
                       <Eye size={19} />
                     )}
                   </button>
+
                 </div>
+
               </div>
 
               {/* =================================================
@@ -628,10 +879,15 @@ const [gettingLocation, setGettingLocation] = useState(false);
               ================================================= */}
 
               {/* Category */}
+
               <div className="register-form-group">
-                <label>Work Category</label>
+
+                <label>
+                  Work Category
+                </label>
 
                 <div className="register-input-box">
+
                   <Briefcase size={19} />
 
                   <select
@@ -640,30 +896,63 @@ const [gettingLocation, setGettingLocation] = useState(false);
                     onChange={handleChange}
                     required
                   >
+
                     <option value="">
                       Select your category
                     </option>
 
-                    <option value="Plumber">Plumber</option>
-                    <option value="Electrician">Electrician</option>
-                    <option value="Carpenter">Carpenter</option>
-                    <option value="Mechanic">Mechanic</option>
-                    <option value="Painter">Painter</option>
+                    <option value="Plumber">
+                      Plumber
+                    </option>
+
+                    <option value="Electrician">
+                      Electrician
+                    </option>
+
+                    <option value="Carpenter">
+                      Carpenter
+                    </option>
+
+                    <option value="Mechanic">
+                      Mechanic
+                    </option>
+
+                    <option value="Painter">
+                      Painter
+                    </option>
+
                     <option value="AC Technician">
                       AC Technician
                     </option>
-                    <option value="Mason">Mason</option>
-                    <option value="Welder">Welder</option>
-                    <option value="Other">Other</option>
+
+                    <option value="Mason">
+                      Mason
+                    </option>
+
+                    <option value="Welder">
+                      Welder
+                    </option>
+
+                    <option value="Other">
+                      Other
+                    </option>
+
                   </select>
+
                 </div>
+
               </div>
 
               {/* Age */}
+
               <div className="register-form-group">
-                <label>Age</label>
+
+                <label>
+                  Age
+                </label>
 
                 <div className="register-input-box">
+
                   <Calendar size={19} />
 
                   <input
@@ -676,18 +965,25 @@ const [gettingLocation, setGettingLocation] = useState(false);
                     onChange={handleChange}
                     required
                   />
+
                 </div>
 
                 <small>
                   Workers must be 19 years or older.
                 </small>
+
               </div>
 
               {/* Experience */}
+
               <div className="register-form-group">
-                <label>Experience</label>
+
+                <label>
+                  Experience
+                </label>
 
                 <div className="register-input-box">
+
                   <Wrench size={19} />
 
                   <input
@@ -695,22 +991,32 @@ const [gettingLocation, setGettingLocation] = useState(false);
                     name="experienceYears"
                     placeholder="Years of experience"
                     min="0"
-                    value={formData.experienceYears}
+                    value={
+                      formData.experienceYears
+                    }
                     onChange={handleChange}
                     required
                   />
+
                 </div>
 
                 <small>
-                  Enter your total professional experience in years.
+                  Enter your total professional
+                  experience in years.
                 </small>
+
               </div>
 
               {/* Charges */}
+
               <div className="register-form-group">
-                <label>Service Charges</label>
+
+                <label>
+                  Service Charges
+                </label>
 
                 <div className="register-input-box">
+
                   <IndianRupee size={19} />
 
                   <input
@@ -723,18 +1029,26 @@ const [gettingLocation, setGettingLocation] = useState(false);
                     onChange={handleChange}
                     required
                   />
+
                 </div>
 
                 <small>
-                  Set the amount you normally charge for your service.
+                  Set the amount you normally
+                  charge for your service.
                 </small>
+
               </div>
 
               {/* About */}
+
               <div className="register-form-group">
-                <label>About You</label>
+
+                <label>
+                  About You
+                </label>
 
                 <div className="register-input-box register-textarea-box">
+
                   <FileText size={19} />
 
                   <textarea
@@ -745,51 +1059,66 @@ const [gettingLocation, setGettingLocation] = useState(false);
                     maxLength="2000"
                     rows="4"
                   />
+
                 </div>
 
                 <small>
                   Maximum 2000 characters.
                 </small>
+
               </div>
 
               {/* =================================================
                   LOCATION
               ================================================= */}
-                                    <div className="register-location-header">
 
-  <div>
-    <h3>Service Location</h3>
-
-    <p>
-      Enter your location manually or use your current location.
-    </p>
-  </div>
-
-  <button
-    type="button"
-    className="register-location-button"
-    onClick={handleUseCurrentLocation}
-    disabled={gettingLocation}
-  >
-    <LocateFixed size={18} />
-
-    {gettingLocation
-      ? "Detecting Location..."
-      : "Use Current Location"}
-  </button>
-
-</div>
-
-{locationStatus && (
-  <p className="register-location-status">
-    {locationStatus}
-  </p>
-)}
-              {/* State */}
               <div className="register-form-group">
-                <label>State</label>
+
+                <label>
+                  Worker Location
+                </label>
+
+                {/* Current Location Button */}
+
+                <div className="register-location-action">
+
+                  <button
+                    type="button"
+                    className="register-location-button"
+                    onClick={
+                      handleUseCurrentLocation
+                    }
+                    disabled={gettingLocation}
+                  >
+
+                    <LocateFixed size={18} />
+
+                    {gettingLocation
+                      ? "Detecting Location..."
+                      : "Use Current Location"}
+
+                  </button>
+
+                  {locationStatus && (
+                    <p className="register-location-status">
+                      {locationStatus}
+                    </p>
+                  )}
+
+                </div>
+
+              </div>
+
+              {/* State */}
+
+              <div className="register-form-group">
+
+                <label>
+                  State
+                </label>
 
                 <div className="register-input-box">
+
                   <MapPin size={19} />
 
                   <input
@@ -800,14 +1129,21 @@ const [gettingLocation, setGettingLocation] = useState(false);
                     onChange={handleChange}
                     required
                   />
+
                 </div>
+
               </div>
 
               {/* District */}
+
               <div className="register-form-group">
-                <label>District</label>
+
+                <label>
+                  District
+                </label>
 
                 <div className="register-input-box">
+
                   <MapPin size={19} />
 
                   <input
@@ -818,14 +1154,21 @@ const [gettingLocation, setGettingLocation] = useState(false);
                     onChange={handleChange}
                     required
                   />
+
                 </div>
+
               </div>
 
               {/* City */}
+
               <div className="register-form-group">
-                <label>City / Town</label>
+
+                <label>
+                  City / Town
+                </label>
 
                 <div className="register-input-box">
+
                   <MapPin size={19} />
 
                   <input
@@ -836,14 +1179,21 @@ const [gettingLocation, setGettingLocation] = useState(false);
                     onChange={handleChange}
                     required
                   />
+
                 </div>
+
               </div>
 
               {/* Area */}
+
               <div className="register-form-group">
-                <label>Area / Village</label>
+
+                <label>
+                  Area / Village
+                </label>
 
                 <div className="register-input-box">
+
                   <MapPin size={19} />
 
                   <input
@@ -853,8 +1203,37 @@ const [gettingLocation, setGettingLocation] = useState(false);
                     value={formData.area}
                     onChange={handleChange}
                   />
+
                 </div>
+
               </div>
+
+              {/* =================================================
+                  GPS INFORMATION
+              ================================================= */}
+
+              {formData.latitude &&
+                formData.longitude && (
+                  <div className="register-location-detected">
+
+                    <CheckCircle size={17} />
+
+                    <div>
+
+                      <strong>
+                        GPS location saved
+                      </strong>
+
+                      <small>
+                        Location coordinates will
+                        be used to help nearby
+                        customers find you.
+                      </small>
+
+                    </div>
+
+                  </div>
+                )}
 
               {/* =================================================
                   WORKER POLICY
@@ -863,32 +1242,44 @@ const [gettingLocation, setGettingLocation] = useState(false);
               <div className="worker-policy">
 
                 <div className="worker-policy-title">
+
                   <ShieldCheck size={19} />
 
                   <h3>
-                    Worker Independence & No Worker Fees
+                    Worker Independence & No
+                    Worker Fees
                   </h3>
+
                 </div>
 
                 <p>
-                  Workers on Worker Spot are independent service
-                  providers and are not employees, agents, partners,
-                  or representatives of Worker Spot.
+                  Workers on Worker Spot are
+                  independent service providers
+                  and are not employees, agents,
+                  partners, or representatives of
+                  Worker Spot.
                 </p>
 
                 <p>
+
                   <strong>
-                    Worker Spot does not charge workers
+                    Worker Spot does not charge
+                    workers
                   </strong>{" "}
-                  any registration fee, subscription fee, booking fee,
-                  commission, platform fee, or service fee for using
-                  the platform.
+                  any registration fee,
+                  subscription fee, booking fee,
+                  commission, platform fee, or
+                  service fee for using the
+                  platform.
+
                 </p>
 
                 <p>
-                  Workers independently decide whether to accept
-                  service requests and are responsible for providing
-                  their services to customers.
+                  Workers independently decide
+                  whether to accept service
+                  requests and are responsible for
+                  providing their services to
+                  customers.
                 </p>
 
               </div>
@@ -908,7 +1299,9 @@ const [gettingLocation, setGettingLocation] = useState(false);
                 />
 
                 <span>
+
                   I have read and agree to the{" "}
+
                   <a
                     href="/terms"
                     target="_blank"
@@ -916,7 +1309,9 @@ const [gettingLocation, setGettingLocation] = useState(false);
                   >
                     Terms & Conditions
                   </a>{" "}
+
                   and{" "}
+
                   <a
                     href="/privacy"
                     target="_blank"
@@ -924,13 +1319,17 @@ const [gettingLocation, setGettingLocation] = useState(false);
                   >
                     Privacy Policy
                   </a>
+
                   .
+
                 </span>
 
               </label>
 
               {/* Safety */}
+
               <p className="registration-safety">
+
                 <ShieldCheck size={14} />
 
                 Please read our{" "}
@@ -942,11 +1341,13 @@ const [gettingLocation, setGettingLocation] = useState(false);
                 >
                   Safety Guidelines
                 </a>{" "}
+
                 before using Worker Spot.
+
               </p>
 
               {/* =================================================
-                  ERROR MESSAGE
+                  ERROR
               ================================================= */}
 
               {error && (
@@ -956,13 +1357,18 @@ const [gettingLocation, setGettingLocation] = useState(false);
               )}
 
               {/* =================================================
-                  SUCCESS MESSAGE
+                  SUCCESS
               ================================================= */}
 
               {success && (
                 <div className="register-success">
+
                   <CheckCircle size={18} />
-                  <span>{success}</span>
+
+                  <span>
+                    {success}
+                  </span>
+
                 </div>
               )}
 
@@ -975,23 +1381,31 @@ const [gettingLocation, setGettingLocation] = useState(false);
                 className="register-button"
                 disabled={loading}
               >
+
                 {loading ? (
                   <>
                     <Clock size={19} />
+
                     Creating Account...
                   </>
                 ) : (
                   <>
                     <UserPlus size={19} />
+
                     Create Worker Account
+
                     <ArrowRight size={18} />
                   </>
                 )}
+
               </button>
 
             </form>
 
-            {/* Login */}
+            {/* =================================================
+                LOGIN
+            ================================================= */}
+
             <div className="register-login">
 
               <p>
@@ -1009,6 +1423,7 @@ const [gettingLocation, setGettingLocation] = useState(false);
         </section>
 
       </div>
+
     </div>
   );
 }

@@ -21,6 +21,10 @@ import "./WorkerProfile.css";
 function WorkerProfile() {
   const navigate = useNavigate();
 
+  // =====================================================
+  // PROFILE STATE
+  // =====================================================
+
   const [profile, setProfile] = useState({
     name: "",
     mobile: "",
@@ -32,6 +36,11 @@ function WorkerProfile() {
     district: "",
     city: "",
     area: "",
+
+    // GPS LOCATION
+    latitude: null,
+    longitude: null,
+
     charges: "",
     availability: "Available",
     about: "",
@@ -59,7 +68,9 @@ function WorkerProfile() {
         const token = localStorage.getItem("token");
 
         if (!token) {
-          setError("Your session has expired. Please login again.");
+          setError(
+            "Your session has expired. Please login again."
+          );
           return;
         }
 
@@ -74,11 +85,14 @@ function WorkerProfile() {
           }
         );
 
-        const contentType = response.headers.get("content-type");
+        const contentType =
+          response.headers.get("content-type");
 
         let result = null;
 
-        if (contentType?.includes("application/json")) {
+        if (
+          contentType?.includes("application/json")
+        ) {
           const text = await response.text();
 
           if (text) {
@@ -92,18 +106,25 @@ function WorkerProfile() {
 
         if (!response.ok) {
           throw new Error(
-            result?.message || "Unable to load worker profile."
+            result?.message ||
+              "Unable to load worker profile."
           );
         }
 
-        // Backend fields → Frontend fields
+        // =================================================
+        // BACKEND → FRONTEND
+        // =================================================
+
         setProfile({
           name: result.fullName || "",
+
           mobile: result.mobile || "",
+
           email: result.email || "",
 
           age:
-            result.age !== null && result.age !== undefined
+            result.age !== null &&
+            result.age !== undefined
               ? result.age
               : "",
 
@@ -116,9 +137,28 @@ function WorkerProfile() {
               : "",
 
           state: result.state || "",
+
           district: result.district || "",
+
           city: result.city || "",
+
           area: result.area || "",
+
+          // =================================================
+          // GPS
+          // =================================================
+
+          latitude:
+            result.latitude !== null &&
+            result.latitude !== undefined
+              ? Number(result.latitude)
+              : null,
+
+          longitude:
+            result.longitude !== null &&
+            result.longitude !== undefined
+              ? Number(result.longitude)
+              : null,
 
           charges:
             result.charges !== null &&
@@ -133,11 +173,30 @@ function WorkerProfile() {
 
           about: result.about || "",
         });
+
+        // =================================================
+        // GPS STATUS
+        // =================================================
+
+        if (
+          result.latitude !== null &&
+          result.latitude !== undefined &&
+          result.longitude !== null &&
+          result.longitude !== undefined
+        ) {
+          setLocationStatus(
+            "Saved location is available."
+          );
+        }
       } catch (err) {
-        console.error("Load worker profile error:", err);
+        console.error(
+          "Load worker profile error:",
+          err
+        );
 
         setError(
-          err.message || "Unable to load your profile."
+          err.message ||
+            "Unable to load your profile."
         );
       } finally {
         setLoadingProfile(false);
@@ -176,14 +235,32 @@ function WorkerProfile() {
     }
 
     setGettingLocation(true);
-    setLocationStatus("Getting your current location...");
+    setLocationStatus(
+      "Getting your current location..."
+    );
     setError("");
+    setSuccess("");
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
-        const { latitude, longitude } = position.coords;
+        const { latitude, longitude } =
+          position.coords;
+
+        console.log(
+          "GPS latitude:",
+          latitude
+        );
+
+        console.log(
+          "GPS longitude:",
+          longitude
+        );
 
         try {
+          // =================================================
+          // REVERSE GEOCODING
+          // =================================================
+
           const response = await fetch(
             `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`
           );
@@ -195,9 +272,11 @@ function WorkerProfile() {
           }
 
           const data = await response.json();
+
           const address = data.address || {};
 
-          const state = address.state || "";
+          const state =
+            address.state || "";
 
           const district =
             address.state_district ||
@@ -219,16 +298,32 @@ function WorkerProfile() {
             address.hamlet ||
             "";
 
+          // =================================================
+          // SAVE GPS + ADDRESS INTO STATE
+          // =================================================
+
           setProfile((prev) => ({
             ...prev,
+
             state,
+
             district,
+
             city,
+
             area,
+
+            // IMPORTANT
+            // Save actual GPS coordinates
+            latitude,
+
+            longitude,
           }));
 
           setLocationStatus(
-            "Location detected successfully."
+            `Location detected successfully. GPS: ${latitude.toFixed(
+              6
+            )}, ${longitude.toFixed(6)}`
           );
         } catch (error) {
           console.error(
@@ -236,8 +331,21 @@ function WorkerProfile() {
             error
           );
 
+          // =================================================
+          // EVEN IF ADDRESS LOOKUP FAILS,
+          // SAVE GPS COORDINATES
+          // =================================================
+
+          setProfile((prev) => ({
+            ...prev,
+            latitude,
+            longitude,
+          }));
+
           setLocationStatus(
-            "Location detected, but address details could not be loaded."
+            `GPS detected, but address details could not be loaded. GPS: ${latitude.toFixed(
+              6
+            )}, ${longitude.toFixed(6)}`
           );
         } finally {
           setGettingLocation(false);
@@ -291,9 +399,9 @@ function WorkerProfile() {
     setError("");
     setSuccess("");
 
-    // -------------------------
-    // Basic validation
-    // -------------------------
+    // ===================================================
+    // BASIC VALIDATION
+    // ===================================================
 
     if (!profile.name.trim()) {
       setError("Name is required.");
@@ -301,22 +409,30 @@ function WorkerProfile() {
     }
 
     if (Number(profile.age) < 19) {
-      setError("Workers must be 19 years or older.");
+      setError(
+        "Workers must be 19 years or older."
+      );
       return;
     }
 
     if (Number(profile.age) > 100) {
-      setError("Please provide a valid age.");
+      setError(
+        "Please provide a valid age."
+      );
       return;
     }
 
     if (Number(profile.experience) < 0) {
-      setError("Experience cannot be negative.");
+      setError(
+        "Experience cannot be negative."
+      );
       return;
     }
 
     if (Number(profile.charges) < 0) {
-      setError("Charges cannot be negative.");
+      setError(
+        "Charges cannot be negative."
+      );
       return;
     }
 
@@ -331,14 +447,35 @@ function WorkerProfile() {
     }
 
     if (!profile.city.trim()) {
-      setError("City / Town is required.");
+      setError(
+        "City / Town is required."
+      );
+      return;
+    }
+
+    // ===================================================
+    // GPS VALIDATION
+    // ===================================================
+
+    if (
+      profile.latitude === null ||
+      profile.latitude === undefined ||
+      profile.longitude === null ||
+      profile.longitude === undefined ||
+      Number.isNaN(Number(profile.latitude)) ||
+      Number.isNaN(Number(profile.longitude))
+    ) {
+      setError(
+        "Please use your current location before saving your profile."
+      );
       return;
     }
 
     try {
       setSaving(true);
 
-      const token = localStorage.getItem("token");
+      const token =
+        localStorage.getItem("token");
 
       if (!token) {
         throw new Error(
@@ -346,33 +483,77 @@ function WorkerProfile() {
         );
       }
 
-      // Backend DTO field names
+      // =================================================
+      // BACKEND DTO DATA
+      // =================================================
+
       const workerData = {
-        fullName: profile.name.trim(),
+        fullName:
+          profile.name.trim(),
 
-        age: Number(profile.age),
+        age:
+          Number(profile.age),
 
-        category: profile.skill.trim(),
+        category:
+          profile.skill.trim(),
 
-        experienceYears: Number(
-          profile.experience
-        ),
+        experienceYears:
+          Number(profile.experience),
 
-        state: profile.state.trim(),
+        state:
+          profile.state.trim(),
 
-        district: profile.district.trim(),
+        district:
+          profile.district.trim(),
 
-        city: profile.city.trim(),
+        city:
+          profile.city.trim(),
 
-        area: profile.area.trim(),
+        area:
+          profile.area.trim(),
 
-        charges: Number(profile.charges),
+        // =================================================
+        // GPS
+        // =================================================
+
+        latitude:
+          Number(profile.latitude),
+
+        longitude:
+          Number(profile.longitude),
+
+        charges:
+          Number(profile.charges),
 
         availability:
           profile.availability.toUpperCase(),
 
-        about: profile.about.trim(),
+        about:
+          profile.about.trim(),
       };
+
+      // =================================================
+      // DEBUG
+      // =================================================
+
+      console.log(
+        "Worker profile data being sent:",
+        workerData
+      );
+
+      console.log(
+        "Sending latitude:",
+        workerData.latitude
+      );
+
+      console.log(
+        "Sending longitude:",
+        workerData.longitude
+      );
+
+      // =================================================
+      // UPDATE API
+      // =================================================
 
       const response = await fetch(
         "http://localhost:8080/api/workers/me",
@@ -381,24 +562,34 @@ function WorkerProfile() {
 
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
+            "Content-Type":
+              "application/json",
           },
 
-          body: JSON.stringify(workerData),
+          body:
+            JSON.stringify(workerData),
         }
       );
 
       const contentType =
-        response.headers.get("content-type");
+        response.headers.get(
+          "content-type"
+        );
 
       let result = null;
 
-      if (contentType?.includes("application/json")) {
-        const text = await response.text();
+      if (
+        contentType?.includes(
+          "application/json"
+        )
+      ) {
+        const text =
+          await response.text();
 
         if (text) {
           try {
-            result = JSON.parse(text);
+            result =
+              JSON.parse(text);
           } catch {
             result = null;
           }
@@ -412,15 +603,23 @@ function WorkerProfile() {
         );
       }
 
+      // =================================================
+      // SUCCESS
+      // =================================================
+
       setSuccess(
         result?.message ||
           "Worker profile updated successfully!"
       );
 
-      // Refresh profile data from backend
-      // after successful update.
+      // =================================================
+      // GO TO DASHBOARD
+      // =================================================
+
       setTimeout(() => {
-        navigate("/worker-dashboard");
+        navigate(
+          "/worker-dashboard"
+        );
       }, 1200);
     } catch (err) {
       console.error(
@@ -444,10 +643,17 @@ function WorkerProfile() {
   if (loadingProfile) {
     return (
       <div className="worker-profile-page">
+
         <div className="worker-profile-loading">
+
           <Clock3 size={24} />
-          <p>Loading your profile...</p>
+
+          <p>
+            Loading your profile...
+          </p>
+
         </div>
+
       </div>
     );
   }
@@ -459,32 +665,46 @@ function WorkerProfile() {
   return (
     <div className="worker-profile-page">
 
-      {/* Header */}
+      {/* =================================================
+          HEADER
+      ================================================= */}
+
       <div className="worker-profile-page-header">
 
         <button
           type="button"
           className="worker-profile-back"
           onClick={() =>
-            navigate("/worker-dashboard")
+            navigate(
+              "/worker-dashboard"
+            )
           }
         >
           <ArrowLeft size={18} />
+
           Back to Dashboard
         </button>
 
         <div>
-          <h1>Edit Profile</h1>
+
+          <h1>
+            Edit Profile
+          </h1>
 
           <p>
-            Keep your worker information updated to
-            help customers find you.
+            Keep your worker information
+            updated to help customers
+            find you.
           </p>
+
         </div>
 
       </div>
 
-      {/* Form */}
+      {/* =================================================
+          FORM
+      ================================================= */}
+
       <form
         className="worker-profile-form"
         onSubmit={handleSubmit}
@@ -503,15 +723,23 @@ function WorkerProfile() {
             </div>
 
             <div>
-              <h2>Personal Information</h2>
-              <p>Your basic profile information</p>
+
+              <h2>
+                Personal Information
+              </h2>
+
+              <p>
+                Your basic profile information
+              </p>
+
             </div>
 
           </div>
 
           <div className="worker-profile-fields">
 
-            {/* Name */}
+            {/* NAME */}
+
             <div className="worker-profile-field">
 
               <label htmlFor="name">
@@ -536,7 +764,8 @@ function WorkerProfile() {
 
             </div>
 
-            {/* Mobile */}
+            {/* MOBILE */}
+
             <div className="worker-profile-field">
 
               <label htmlFor="mobile">
@@ -557,12 +786,14 @@ function WorkerProfile() {
               </div>
 
               <small>
-                Mobile number cannot be changed here.
+                Mobile number cannot be
+                changed here.
               </small>
 
             </div>
 
-            {/* Email */}
+            {/* EMAIL */}
+
             <div className="worker-profile-field">
 
               <label htmlFor="email">
@@ -583,12 +814,14 @@ function WorkerProfile() {
               </div>
 
               <small>
-                Email address cannot be changed here.
+                Email address cannot be
+                changed here.
               </small>
 
             </div>
 
-            {/* Age */}
+            {/* AGE */}
+
             <div className="worker-profile-field">
 
               <label htmlFor="age">
@@ -632,17 +865,23 @@ function WorkerProfile() {
             </div>
 
             <div>
-              <h2>Professional Information</h2>
+
+              <h2>
+                Professional Information
+              </h2>
+
               <p>
                 Tell customers about your service
               </p>
+
             </div>
 
           </div>
 
           <div className="worker-profile-fields">
 
-            {/* Skill */}
+            {/* SKILL */}
+
             <div className="worker-profile-field">
 
               <label htmlFor="skill">
@@ -667,7 +906,8 @@ function WorkerProfile() {
 
             </div>
 
-            {/* Experience */}
+            {/* EXPERIENCE */}
+
             <div className="worker-profile-field">
 
               <label htmlFor="experience">
@@ -684,7 +924,9 @@ function WorkerProfile() {
                   type="number"
                   min="0"
                   placeholder="Years of experience"
-                  value={profile.experience}
+                  value={
+                    profile.experience
+                  }
                   onChange={handleChange}
                   required
                 />
@@ -697,7 +939,8 @@ function WorkerProfile() {
 
             </div>
 
-            {/* Charges */}
+            {/* CHARGES */}
+
             <div className="worker-profile-field">
 
               <label htmlFor="charges">
@@ -715,7 +958,9 @@ function WorkerProfile() {
                   min="0"
                   step="0.01"
                   placeholder="Enter your charges"
-                  value={profile.charges}
+                  value={
+                    profile.charges
+                  }
                   onChange={handleChange}
                   required
                 />
@@ -728,7 +973,8 @@ function WorkerProfile() {
 
             </div>
 
-            {/* Availability */}
+            {/* AVAILABILITY */}
+
             <div className="worker-profile-field">
 
               <label htmlFor="availability">
@@ -742,9 +988,12 @@ function WorkerProfile() {
                 <select
                   id="availability"
                   name="availability"
-                  value={profile.availability}
+                  value={
+                    profile.availability
+                  }
                   onChange={handleChange}
                 >
+
                   <option value="Available">
                     Available
                   </option>
@@ -752,6 +1001,7 @@ function WorkerProfile() {
                   <option value="Busy">
                     Busy
                   </option>
+
                 </select>
 
               </div>
@@ -775,23 +1025,33 @@ function WorkerProfile() {
             </div>
 
             <div>
-              <h2>Location</h2>
+
+              <h2>
+                Location
+              </h2>
 
               <p>
-                Where customers can find your service
+                Where customers can find
+                your service
               </p>
+
             </div>
 
           </div>
 
-          {/* Current Location */}
+          {/* CURRENT LOCATION */}
+
           <div className="worker-profile-location-action">
 
             <button
               type="button"
               className="worker-profile-location-button"
-              onClick={handleUseCurrentLocation}
-              disabled={gettingLocation}
+              onClick={
+                handleUseCurrentLocation
+              }
+              disabled={
+                gettingLocation
+              }
             >
 
               <LocateFixed size={17} />
@@ -812,7 +1072,8 @@ function WorkerProfile() {
 
           <div className="worker-profile-fields">
 
-            {/* State */}
+            {/* STATE */}
+
             <div className="worker-profile-field">
 
               <label htmlFor="state">
@@ -828,8 +1089,12 @@ function WorkerProfile() {
                   name="state"
                   type="text"
                   placeholder="Enter state"
-                  value={profile.state}
-                  onChange={handleChange}
+                  value={
+                    profile.state
+                  }
+                  onChange={
+                    handleChange
+                  }
                   required
                 />
 
@@ -837,7 +1102,8 @@ function WorkerProfile() {
 
             </div>
 
-            {/* District */}
+            {/* DISTRICT */}
+
             <div className="worker-profile-field">
 
               <label htmlFor="district">
@@ -853,8 +1119,12 @@ function WorkerProfile() {
                   name="district"
                   type="text"
                   placeholder="Enter district"
-                  value={profile.district}
-                  onChange={handleChange}
+                  value={
+                    profile.district
+                  }
+                  onChange={
+                    handleChange
+                  }
                   required
                 />
 
@@ -862,7 +1132,8 @@ function WorkerProfile() {
 
             </div>
 
-            {/* City */}
+            {/* CITY */}
+
             <div className="worker-profile-field">
 
               <label htmlFor="city">
@@ -878,8 +1149,12 @@ function WorkerProfile() {
                   name="city"
                   type="text"
                   placeholder="Enter city or town"
-                  value={profile.city}
-                  onChange={handleChange}
+                  value={
+                    profile.city
+                  }
+                  onChange={
+                    handleChange
+                  }
                   required
                 />
 
@@ -887,7 +1162,8 @@ function WorkerProfile() {
 
             </div>
 
-            {/* Area */}
+            {/* AREA */}
+
             <div className="worker-profile-field">
 
               <label htmlFor="area">
@@ -903,8 +1179,12 @@ function WorkerProfile() {
                   name="area"
                   type="text"
                   placeholder="Enter area or village"
-                  value={profile.area}
-                  onChange={handleChange}
+                  value={
+                    profile.area
+                  }
+                  onChange={
+                    handleChange
+                  }
                 />
 
               </div>
@@ -928,11 +1208,16 @@ function WorkerProfile() {
             </div>
 
             <div>
-              <h2>About Your Service</h2>
+
+              <h2>
+                About Your Service
+              </h2>
 
               <p>
-                Tell customers what you can help them with
+                Tell customers what you
+                can help them with
               </p>
+
             </div>
 
           </div>
@@ -949,12 +1234,19 @@ function WorkerProfile() {
               rows="5"
               maxLength="2000"
               placeholder="Describe your skills, services and experience..."
-              value={profile.about}
-              onChange={handleChange}
+              value={
+                profile.about
+              }
+              onChange={
+                handleChange
+              }
             />
 
             <div className="worker-profile-character-count">
-              {profile.about.length}/2000
+              {
+                profile.about.length
+              }
+              /2000
             </div>
 
           </div>
@@ -987,7 +1279,9 @@ function WorkerProfile() {
             type="button"
             className="worker-profile-cancel"
             onClick={() =>
-              navigate("/worker-dashboard")
+              navigate(
+                "/worker-dashboard"
+              )
             }
             disabled={saving}
           >
