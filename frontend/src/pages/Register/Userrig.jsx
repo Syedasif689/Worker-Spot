@@ -85,7 +85,7 @@ function CustomerRegister() {
     "366870706548333338313437";
 
   const MSG91_TOKEN_AUTH =
-    "561254AZ1GDCyb7Kh6a81f047P1";
+    "561254TY6eDVgBv1CE6a81eafdP1";
 
 
   const MSG91_CAPTCHA_ID =
