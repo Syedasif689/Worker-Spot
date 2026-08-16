@@ -73,45 +73,56 @@ public class AuthService {
     // WORKER REGISTRATION
     // =========================
 
-    @Transactional
-    public User registerWorker(WorkerRegisterRequest request) {
+@Transactional
+public User registerWorker(WorkerRegisterRequest request) {
 
-        validateDuplicateUser(request.getEmail(), request.getMobile());
+    validateDuplicateUser(request.getEmail(), request.getMobile());
 
-        if (request.getAge() < 19) {
-            throw new IllegalArgumentException(
-                    "Worker must be at least 19 years old"
-            );
-        }
-
-        User user = createUser(
-                request.getFullName(),
-                request.getEmail(),
-                request.getMobile(),
-                request.getPassword(),
-                Role.WORKER
+    if (request.getAge() < 19) {
+        throw new IllegalArgumentException(
+                "Worker must be at least 19 years old"
         );
-
-        User savedUser = userRepository.save(user);
-
-        WorkerProfile workerProfile = new WorkerProfile();
-
-        workerProfile.setUser(savedUser);
-        workerProfile.setAge(request.getAge());
-        workerProfile.setCategory(request.getCategory());
-        workerProfile.setExperienceYears(request.getExperienceYears());
-        workerProfile.setState(request.getState());
-        workerProfile.setDistrict(request.getDistrict());
-        workerProfile.setCity(request.getCity());
-        workerProfile.setArea(request.getArea());
-        workerProfile.setCharges(request.getCharges());
-        workerProfile.setAbout(request.getAbout());
-
-        workerProfileRepository.save(workerProfile);
-
-        return savedUser;
     }
 
+    if (request.getLatitude() == null || request.getLongitude() == null) {
+        throw new IllegalArgumentException(
+                "Current location is required for worker registration"
+        );
+    }
+
+    User user = createUser(
+            request.getFullName(),
+            request.getEmail(),
+            request.getMobile(),
+            request.getPassword(),
+            Role.WORKER
+    );
+
+    User savedUser = userRepository.save(user);
+
+    WorkerProfile workerProfile = new WorkerProfile();
+
+    workerProfile.setUser(savedUser);
+
+    workerProfile.setAge(request.getAge());
+    workerProfile.setCategory(request.getCategory());
+    workerProfile.setExperienceYears(request.getExperienceYears());
+
+    workerProfile.setState(request.getState());
+    workerProfile.setDistrict(request.getDistrict());
+    workerProfile.setCity(request.getCity());
+    workerProfile.setArea(request.getArea());
+
+    workerProfile.setLatitude(request.getLatitude());
+    workerProfile.setLongitude(request.getLongitude());
+
+    workerProfile.setCharges(request.getCharges());
+    workerProfile.setAbout(request.getAbout());
+
+    workerProfileRepository.save(workerProfile);
+
+    return savedUser;
+}
     // =========================
     // COMMON USER CREATION
     // =========================

@@ -1,7 +1,20 @@
 package com.workerspot.entity;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "worker_profiles")
@@ -40,6 +53,11 @@ public class WorkerProfile {
 
     @Column(length = 100)
     private String area;
+    @Column
+   private Double latitude;
+
+    @Column
+   private Double longitude;
 
     @Column(nullable = false)
     private double charges;
@@ -108,7 +126,21 @@ public class WorkerProfile {
     public void setExperienceYears(int experienceYears) {
         this.experienceYears = experienceYears;
     }
+     public Double getLatitude() {
+    return latitude;
+}
 
+public void setLatitude(Double latitude) {
+    this.latitude = latitude;
+}
+
+public Double getLongitude() {
+    return longitude;
+}
+
+public void setLongitude(Double longitude) {
+    this.longitude = longitude;
+}
     public String getState() {
         return state;
     }

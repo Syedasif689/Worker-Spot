@@ -1,6 +1,7 @@
 package com.workerspot.security;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,6 +24,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.jwtService = jwtService;
     }
 
+    // =====================================================
+    // PUBLIC ENDPOINTS
+    // =====================================================
+
+    @Override
+    protected boolean shouldNotFilter(
+            HttpServletRequest request
+    ) {
+
+        String path = request.getServletPath();
+
+        return path.equals("/api/auth/login")
+                || path.equals("/api/auth/register/customer")
+                || path.equals("/api/auth/register/worker");
+    }
+
+    // =====================================================
+    // JWT FILTER
+    // =====================================================
+
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
@@ -33,27 +54,36 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String authHeader =
                 request.getHeader("Authorization");
 
-        // No Authorization header
-        if (authHeader == null ||
-            !authHeader.startsWith("Bearer ")) {
+        // =================================================
+        // NO JWT
+        // =================================================
+
+        if (authHeader == null
+                || !authHeader.startsWith("Bearer ")) {
 
             filterChain.doFilter(request, response);
             return;
         }
 
-        // Extract JWT
+        // =================================================
+        // EXTRACT TOKEN
+        // =================================================
+
         String token = authHeader.substring(7);
 
         try {
 
-            String email = jwtService.extractEmail(token);
+            String email =
+                    jwtService.extractEmail(token);
 
-            // Only authenticate if the current request
-            // has not already been authenticated
-            if (email != null &&
-                SecurityContextHolder
-                    .getContext()
-                    .getAuthentication() == null) {
+            // =================================================
+            // AUTHENTICATE USER
+            // =================================================
+
+            if (email != null
+                    && SecurityContextHolder
+                            .getContext()
+                            .getAuthentication() == null) {
 
                 if (jwtService.isTokenValid(token)) {
 
@@ -69,7 +99,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             new UsernamePasswordAuthenticationToken(
                                     email,
                                     null,
-                                    java.util.List.of(authority)
+                                    List.of(authority)
                             );
 
                     authentication.setDetails(
@@ -79,19 +109,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                     SecurityContextHolder
                             .getContext()
-                            .setAuthentication(authentication);
+                            .setAuthentication(
+                                    authentication
+                            );
                 }
             }
 
         } catch (Exception e) {
 
-            // Invalid or expired JWT.
-            // Leave the request unauthenticated.
             System.out.println(
                     "JWT authentication failed: "
-                    + e.getMessage()
+                            + e.getMessage()
             );
         }
+
+        // =================================================
+        // CONTINUE REQUEST
+        // =================================================
 
         filterChain.doFilter(request, response);
     }

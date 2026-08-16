@@ -11,8 +11,16 @@ import jakarta.validation.constraints.Size;
 
 public class WorkerRegisterRequest {
 
+    // ==========================================
+    // PERSONAL INFORMATION
+    // ==========================================
+
     @NotBlank(message = "Full name is required")
-    @Size(min = 2, max = 100, message = "Full name must be between 2 and 100 characters")
+    @Size(
+        min = 2,
+        max = 100,
+        message = "Full name must be between 2 and 100 characters"
+    )
     private String fullName;
 
     @NotBlank(message = "Mobile number is required")
@@ -24,49 +32,111 @@ public class WorkerRegisterRequest {
 
     @NotBlank(message = "Email is required")
     @Email(message = "Please provide a valid email address")
-    @Size(max = 150, message = "Email must not exceed 150 characters")
+    @Size(
+        max = 150,
+        message = "Email must not exceed 150 characters"
+    )
     private String email;
 
     @NotBlank(message = "Password is required")
-    @Size(min = 8, max = 100, message = "Password must be between 8 and 100 characters")
+    @Size(
+        min = 8,
+        max = 100,
+        message = "Password must be between 8 and 100 characters"
+    )
     private String password;
 
+
+    // ==========================================
+    // WORKER INFORMATION
+    // ==========================================
+
     @NotBlank(message = "Category is required")
-    @Size(max = 100, message = "Category must not exceed 100 characters")
+    @Size(
+        max = 100,
+        message = "Category must not exceed 100 characters"
+    )
     private String category;
 
     @NotNull(message = "Age is required")
-    @Min(value = 19, message = "Worker must be at least 19 years old")
-    @Max(value = 100, message = "Please provide a valid age")
+    @Min(
+        value = 19,
+        message = "Worker must be at least 19 years old"
+    )
+    @Max(
+        value = 100,
+        message = "Please provide a valid age"
+    )
     private Integer age;
 
     @NotNull(message = "Experience is required")
-    @Min(value = 0, message = "Experience cannot be negative")
+    @Min(
+        value = 0,
+        message = "Experience cannot be negative"
+    )
     private Integer experienceYears;
 
+    @NotNull(message = "Charges are required")
+    @DecimalMin(
+        value = "0.0",
+        inclusive = true,
+        message = "Charges cannot be negative"
+    )
+    private Double charges;
+
+    @Size(
+        max = 2000,
+        message = "About section must not exceed 2000 characters"
+    )
+    private String about;
+
+
+    // ==========================================
+    // ADDRESS
+    // ==========================================
+
     @NotBlank(message = "State is required")
-    @Size(max = 100, message = "State must not exceed 100 characters")
+    @Size(
+        max = 100,
+        message = "State must not exceed 100 characters"
+    )
     private String state;
 
     @NotBlank(message = "District is required")
-    @Size(max = 100, message = "District must not exceed 100 characters")
+    @Size(
+        max = 100,
+        message = "District must not exceed 100 characters"
+    )
     private String district;
 
     @NotBlank(message = "City/Town is required")
-    @Size(max = 100, message = "City/Town must not exceed 100 characters")
+    @Size(
+        max = 100,
+        message = "City/Town must not exceed 100 characters"
+    )
     private String city;
 
-    @Size(max = 100, message = "Area must not exceed 100 characters")
+    @Size(
+        max = 100,
+        message = "Area must not exceed 100 characters"
+    )
     private String area;
 
-    @NotNull(message = "Charges are required")
-    @DecimalMin(value = "0.0", inclusive = true, message = "Charges cannot be negative")
-    private Double charges;
 
-    @Size(max = 2000, message = "About section must not exceed 2000 characters")
-    private String about;
+    // ==========================================
+    // GPS LOCATION
+    // ==========================================
 
-    // Getters and Setters
+    @NotNull(message = "Latitude is required")
+    private Double latitude;
+
+    @NotNull(message = "Longitude is required")
+    private Double longitude;
+
+
+    // ==========================================
+    // GETTERS & SETTERS
+    // ==========================================
 
     public String getFullName() {
         return fullName;
@@ -76,6 +146,7 @@ public class WorkerRegisterRequest {
         this.fullName = fullName;
     }
 
+
     public String getMobile() {
         return mobile;
     }
@@ -83,6 +154,7 @@ public class WorkerRegisterRequest {
     public void setMobile(String mobile) {
         this.mobile = mobile;
     }
+
 
     public String getEmail() {
         return email;
@@ -92,6 +164,7 @@ public class WorkerRegisterRequest {
         this.email = email;
     }
 
+
     public String getPassword() {
         return password;
     }
@@ -99,6 +172,7 @@ public class WorkerRegisterRequest {
     public void setPassword(String password) {
         this.password = password;
     }
+
 
     public String getCategory() {
         return category;
@@ -108,6 +182,7 @@ public class WorkerRegisterRequest {
         this.category = category;
     }
 
+
     public Integer getAge() {
         return age;
     }
@@ -115,6 +190,7 @@ public class WorkerRegisterRequest {
     public void setAge(Integer age) {
         this.age = age;
     }
+
 
     public Integer getExperienceYears() {
         return experienceYears;
@@ -124,37 +200,6 @@ public class WorkerRegisterRequest {
         this.experienceYears = experienceYears;
     }
 
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    public String getDistrict() {
-        return district;
-    }
-
-    public void setDistrict(String district) {
-        this.district = district;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getArea() {
-        return area;
-    }
-
-    public void setArea(String area) {
-        this.area = area;
-    }
 
     public Double getCharges() {
         return charges;
@@ -164,11 +209,66 @@ public class WorkerRegisterRequest {
         this.charges = charges;
     }
 
+
     public String getAbout() {
         return about;
     }
 
     public void setAbout(String about) {
         this.about = about;
+    }
+
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+
+    public String getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(String district) {
+        this.district = district;
+    }
+
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+
+    public String getArea() {
+        return area;
+    }
+
+    public void setArea(String area) {
+        this.area = area;
+    }
+
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 }

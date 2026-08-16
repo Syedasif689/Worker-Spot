@@ -13,10 +13,18 @@ public class WorkerProfileUpdateRequest {
     private String city;
     private String area;
 
+    private Double latitude;
+    private Double longitude;
+
     private double charges;
     private String availability;
 
     private String about;
+
+
+    // ==========================================
+    // FULL NAME
+    // ==========================================
 
     public String getFullName() {
         return fullName;
@@ -26,6 +34,11 @@ public class WorkerProfileUpdateRequest {
         this.fullName = fullName;
     }
 
+
+    // ==========================================
+    // AGE
+    // ==========================================
+
     public int getAge() {
         return age;
     }
@@ -33,6 +46,11 @@ public class WorkerProfileUpdateRequest {
     public void setAge(int age) {
         this.age = age;
     }
+
+
+    // ==========================================
+    // CATEGORY
+    // ==========================================
 
     public String getCategory() {
         return category;
@@ -42,6 +60,11 @@ public class WorkerProfileUpdateRequest {
         this.category = category;
     }
 
+
+    // ==========================================
+    // EXPERIENCE
+    // ==========================================
+
     public int getExperienceYears() {
         return experienceYears;
     }
@@ -49,6 +72,11 @@ public class WorkerProfileUpdateRequest {
     public void setExperienceYears(int experienceYears) {
         this.experienceYears = experienceYears;
     }
+
+
+    // ==========================================
+    // STATE
+    // ==========================================
 
     public String getState() {
         return state;
@@ -58,6 +86,11 @@ public class WorkerProfileUpdateRequest {
         this.state = state;
     }
 
+
+    // ==========================================
+    // DISTRICT
+    // ==========================================
+
     public String getDistrict() {
         return district;
     }
@@ -65,6 +98,11 @@ public class WorkerProfileUpdateRequest {
     public void setDistrict(String district) {
         this.district = district;
     }
+
+
+    // ==========================================
+    // CITY
+    // ==========================================
 
     public String getCity() {
         return city;
@@ -74,6 +112,11 @@ public class WorkerProfileUpdateRequest {
         this.city = city;
     }
 
+
+    // ==========================================
+    // AREA
+    // ==========================================
+
     public String getArea() {
         return area;
     }
@@ -81,6 +124,37 @@ public class WorkerProfileUpdateRequest {
     public void setArea(String area) {
         this.area = area;
     }
+
+
+    // ==========================================
+    // LATITUDE
+    // ==========================================
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+
+    // ==========================================
+    // LONGITUDE
+    // ==========================================
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+
+    // ==========================================
+    // CHARGES
+    // ==========================================
 
     public double getCharges() {
         return charges;
@@ -90,6 +164,11 @@ public class WorkerProfileUpdateRequest {
         this.charges = charges;
     }
 
+
+    // ==========================================
+    // AVAILABILITY
+    // ==========================================
+
     public String getAvailability() {
         return availability;
     }
@@ -97,6 +176,11 @@ public class WorkerProfileUpdateRequest {
     public void setAvailability(String availability) {
         this.availability = availability;
     }
+
+
+    // ==========================================
+    // ABOUT
+    // ==========================================
 
     public String getAbout() {
         return about;

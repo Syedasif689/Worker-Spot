@@ -72,7 +72,7 @@ public ResponseEntity<?> login(
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(Map.of(
-                        "message", "Worker registered successfu lly Please login to continue!",
+                        "message", "Worker registered successfully Please login to continue!",
                         "userId", user.getId(),
                         "role", user.getRole()
                 ));

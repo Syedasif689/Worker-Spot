@@ -1,5 +1,6 @@
 package com.workerspot.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
@@ -8,14 +9,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.workerspot.dto.NearbyWorkerResponse;
 import com.workerspot.dto.WorkerProfileUpdateRequest;
 import com.workerspot.entity.Availability;
 import com.workerspot.entity.User;
 import com.workerspot.entity.WorkerProfile;
 import com.workerspot.repository.UserRepository;
 import com.workerspot.repository.WorkerProfileRepository;
+import com.workerspot.service.WorkerProfileService;
 
 @RestController
 @RequestMapping("/api/workers")
@@ -23,14 +27,21 @@ public class WorkerProfileController {
 
     private final UserRepository userRepository;
     private final WorkerProfileRepository workerProfileRepository;
+    private final WorkerProfileService workerProfileService;
 
     public WorkerProfileController(
             UserRepository userRepository,
-            WorkerProfileRepository workerProfileRepository
+            WorkerProfileRepository workerProfileRepository,
+            WorkerProfileService workerProfileService
     ) {
         this.userRepository = userRepository;
         this.workerProfileRepository = workerProfileRepository;
+        this.workerProfileService = workerProfileService;
     }
+
+    // =====================================================
+    // GET MY PROFILE
+    // =====================================================
 
     @GetMapping("/me")
     public ResponseEntity<?> getMyProfile(
@@ -55,128 +66,267 @@ public class WorkerProfileController {
                         );
 
         return ResponseEntity.ok(
-        Map.ofEntries(
-                Map.entry("userId", user.getId()),
-                Map.entry("fullName", user.getFullName()),
-                Map.entry("email", user.getEmail()),
-                Map.entry("mobile", user.getMobile()),
-                Map.entry("role", user.getRole()),
+                Map.ofEntries(
 
-                Map.entry(
-                        "workerProfileId",
-                        workerProfile.getId()
-                ),
+                        Map.entry(
+                                "userId",
+                                user.getId()
+                        ),
 
-                Map.entry(
-                        "category",
-                        workerProfile.getCategory()
-                ),
+                        Map.entry(
+                                "fullName",
+                                user.getFullName() == null
+                                        ? ""
+                                        : user.getFullName()
+                        ),
 
-                Map.entry(
-                        "age",
-                        workerProfile.getAge()
-                ),
+                        Map.entry(
+                                "email",
+                                user.getEmail() == null
+                                        ? ""
+                                        : user.getEmail()
+                        ),
 
-                Map.entry(
-                        "experienceYears",
-                        workerProfile.getExperienceYears()
-                ),
+                        Map.entry(
+                                "mobile",
+                                user.getMobile() == null
+                                        ? ""
+                                        : user.getMobile()
+                        ),
 
-                Map.entry(
-                        "state",
-                        workerProfile.getState()
-                ),
+                        Map.entry(
+                                "role",
+                                user.getRole()
+                        ),
 
-                Map.entry(
-                        "district",
-                        workerProfile.getDistrict()
-                ),
+                        Map.entry(
+                                "workerProfileId",
+                                workerProfile.getId()
+                        ),
 
-                Map.entry(
-                        "city",
-                        workerProfile.getCity()
-                ),
+                        Map.entry(
+                                "category",
+                                workerProfile.getCategory() == null
+                                        ? ""
+                                        : workerProfile.getCategory()
+                        ),
 
-                Map.entry(
-                        "area",
-                        workerProfile.getArea() == null
-                                ? ""
-                                : workerProfile.getArea()
-                ),
+                        Map.entry(
+                                "age",
+                                workerProfile.getAge()
+                        ),
 
-                Map.entry(
-                        "charges",
-                        workerProfile.getCharges()
-                ),
+                        Map.entry(
+                                "experienceYears",
+                                workerProfile.getExperienceYears()
+                        ),
 
-                Map.entry(
-                        "availability",
-                        workerProfile.getAvailability()
-                ),
+                        Map.entry(
+                                "state",
+                                workerProfile.getState() == null
+                                        ? ""
+                                        : workerProfile.getState()
+                        ),
 
-                Map.entry(
-                        "about",
-                        workerProfile.getAbout() == null
-                                ? ""
-                                : workerProfile.getAbout()
+                        Map.entry(
+                                "district",
+                                workerProfile.getDistrict() == null
+                                        ? ""
+                                        : workerProfile.getDistrict()
+                        ),
+
+                        Map.entry(
+                                "city",
+                                workerProfile.getCity() == null
+                                        ? ""
+                                        : workerProfile.getCity()
+                        ),
+
+                        Map.entry(
+                                "area",
+                                workerProfile.getArea() == null
+                                        ? ""
+                                        : workerProfile.getArea()
+                        ),
+
+                        Map.entry(
+                                "latitude",
+                                workerProfile.getLatitude()
+                        ),
+
+                        Map.entry(
+                                "longitude",
+                                workerProfile.getLongitude()
+                        ),
+
+                        Map.entry(
+                                "charges",
+                                workerProfile.getCharges()
+                        ),
+
+                        Map.entry(
+                                "availability",
+                                workerProfile.getAvailability() == null
+                                        ? "AVAILABLE"
+                                        : workerProfile.getAvailability()
+                        ),
+
+                        Map.entry(
+                                "about",
+                                workerProfile.getAbout() == null
+                                        ? ""
+                                        : workerProfile.getAbout()
+                        )
                 )
-        )
-);
+        );
     }
+
+
+    // =====================================================
+    // UPDATE MY PROFILE
+    // =====================================================
+
     @PutMapping("/me")
-public ResponseEntity<?> updateMyProfile(
-        Authentication authentication,
-        @RequestBody WorkerProfileUpdateRequest request
-) {
+    public ResponseEntity<?> updateMyProfile(
+            Authentication authentication,
+            @RequestBody WorkerProfileUpdateRequest request
+    ) {
 
-    String email = authentication.getName();
+        String email = authentication.getName();
 
-    User user = userRepository
-            .findByEmail(email)
-            .orElseThrow(() ->
-                    new RuntimeException("User not found")
-            );
+        User user = userRepository
+                .findByEmail(email)
+                .orElseThrow(() ->
+                        new RuntimeException("User not found")
+                );
 
-    WorkerProfile workerProfile =
-            workerProfileRepository
-                    .findByUser(user)
-                    .orElseThrow(() ->
-                            new RuntimeException(
-                                    "Worker profile not found"
-                            )
-                    );
+        WorkerProfile workerProfile =
+                workerProfileRepository
+                        .findByUser(user)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Worker profile not found"
+                                )
+                        );
 
-    // Update user information
-    user.setFullName(request.getFullName());
+        // =================================
+        // USER INFORMATION
+        // =================================
 
-    // Update worker profile information
-    workerProfile.setAge(request.getAge());
-    workerProfile.setCategory(request.getCategory());
-    workerProfile.setExperienceYears(request.getExperienceYears());
+        user.setFullName(
+                request.getFullName()
+        );
 
-    workerProfile.setState(request.getState());
-    workerProfile.setDistrict(request.getDistrict());
-    workerProfile.setCity(request.getCity());
-    workerProfile.setArea(request.getArea());
 
-    workerProfile.setCharges(request.getCharges());
+        // =================================
+        // WORKER INFORMATION
+        // =================================
 
-    workerProfile.setAvailability(
-            Availability.valueOf(
-                    request.getAvailability().toUpperCase()
-            )
-    );
+        workerProfile.setAge(
+                request.getAge()
+        );
 
-    workerProfile.setAbout(request.getAbout());
+        workerProfile.setCategory(
+                request.getCategory()
+        );
 
-    userRepository.save(user);
-    workerProfileRepository.save(workerProfile);
+        workerProfile.setExperienceYears(
+                request.getExperienceYears()
+        );
 
-    return ResponseEntity.ok(
-            Map.of(
-                    "message",
-                    "Worker profile updated successfully"
-            )
-    );
-}
+
+        // =================================
+        // ADDRESS
+        // =================================
+
+        workerProfile.setState(
+                request.getState()
+        );
+
+        workerProfile.setDistrict(
+                request.getDistrict()
+        );
+
+        workerProfile.setCity(
+                request.getCity()
+        );
+
+        workerProfile.setArea(
+                request.getArea()
+        );
+
+
+        // =================================
+        // GPS LOCATION
+        // =================================
+
+        workerProfile.setLatitude(
+                request.getLatitude()
+        );
+
+        workerProfile.setLongitude(
+                request.getLongitude()
+        );
+
+
+        // =================================
+        // SERVICE INFORMATION
+        // =================================
+
+        workerProfile.setCharges(
+                request.getCharges()
+        );
+
+        workerProfile.setAvailability(
+                Availability.valueOf(
+                        request.getAvailability()
+                                .toUpperCase()
+                )
+        );
+
+        workerProfile.setAbout(
+                request.getAbout()
+        );
+
+
+        // =================================
+        // SAVE
+        // =================================
+
+        userRepository.save(user);
+
+        workerProfileRepository.save(
+                workerProfile
+        );
+
+
+        return ResponseEntity.ok(
+                Map.of(
+                        "message",
+                        "Worker profile updated successfully"
+                )
+        );
+    }
+
+
+    // =====================================================
+    // FIND NEARBY WORKERS
+    // =====================================================
+
+    @GetMapping("/nearby")
+    public ResponseEntity<?> findNearbyWorkers(
+            @RequestParam double latitude,
+            @RequestParam double longitude,
+            @RequestParam String category
+    ) {
+
+        List<NearbyWorkerResponse> workers =
+                workerProfileService.findNearbyWorkers(
+                        latitude,
+                        longitude,
+                        category
+                );
+
+        return ResponseEntity.ok(workers);
+    }
 }
