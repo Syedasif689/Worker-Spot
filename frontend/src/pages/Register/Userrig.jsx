@@ -111,9 +111,10 @@ function CustomerRegister() {
 
 
       const accessToken =
-        data?.token ||
-        data?.["access-token"] ||
-        data?.accessToken;
+  data?.token ||
+  data?.["access-token"] ||
+  data?.accessToken ||
+  data?.message;
 
 
       if (!accessToken) {
@@ -728,10 +729,11 @@ function CustomerRegister() {
           );
 
 
-          const accessToken =
-            data?.token ||
-            data?.["access-token"] ||
-            data?.accessToken;
+             const accessToken =
+  data?.token ||
+  data?.["access-token"] ||
+  data?.accessToken ||
+  data?.message;
 
 
           if (!accessToken) {
