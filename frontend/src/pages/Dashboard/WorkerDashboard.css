@@ -3,29 +3,32 @@
 ========================================================= */
 
 .worker-dashboard {
-  min-height: 100vh;
-  width: 100%;
-  display: flex;
-
-  background: #0b0f14;
-  color: #ffffff;
-
-  overflow-x: hidden;
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    background: #0b0f14;
+    color: #ffffff;
+    overflow-x: hidden;
+    font-family: "Inter", "Segoe UI", Arial, sans-serif;
 }
 
 
 /* =========================================================
-   MAIN AREA
+   MAIN CONTENT
 ========================================================= */
 
 .worker-main {
-  flex: 1;
-  min-width: 0;
-
-  margin-left: 270px;
-
-  max-width: 100%;
-  overflow-x: hidden;
+    flex: 1;
+    min-width: 0;
+    margin-left: 260px;
+    min-height: 100vh;
+    background:
+        radial-gradient(
+            circle at 85% 0%,
+            rgba(255, 138, 0, 0.06),
+            transparent 30%
+        ),
+        #0b0f14;
 }
 
 
@@ -34,121 +37,517 @@
 ========================================================= */
 
 .worker-dashboard-content {
-  width: 100%;
-  max-width: 1600px;
-
-  box-sizing: border-box;
-
-  margin: 0 auto;
-  padding: 30px;
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 28px 32px 50px;
+    box-sizing: border-box;
 }
 
 
 /* =========================================================
-   GENERAL BUTTON
+   PROFILE + AVAILABILITY GRID
+========================================================= */
+
+.worker-dashboard-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(300px, 0.8fr);
+    gap: 22px;
+    margin-top: 22px;
+    margin-bottom: 24px;
+}
+
+
+/* =========================================================
+   GENERAL DASHBOARD CARDS
+========================================================= */
+
+.worker-dashboard-content > * {
+    box-sizing: border-box;
+}
+
+
+/*
+   These styles help if your child components use
+   common card classes.
+*/
+
+.worker-card,
+.worker-profile-card,
+.worker-availability,
+.worker-requests,
+.worker-recent-jobs,
+.worker-quick-actions,
+.worker-stats-card {
+    background: #111820;
+    border: 1px solid #202a35;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+}
+
+
+/* =========================================================
+   HOVER EFFECT
+========================================================= */
+
+.worker-card:hover,
+.worker-profile-card:hover,
+.worker-availability:hover,
+.worker-requests:hover,
+.worker-recent-jobs:hover,
+.worker-quick-actions:hover,
+.worker-stats-card:hover {
+    border-color: rgba(255, 138, 0, 0.25);
+    transition: border-color 0.25s ease,
+                box-shadow 0.25s ease,
+                transform 0.25s ease;
+}
+
+
+/* =========================================================
+   COMMON HEADINGS
+========================================================= */
+
+.worker-dashboard-content h1,
+.worker-dashboard-content h2,
+.worker-dashboard-content h3,
+.worker-dashboard-content h4 {
+    margin-top: 0;
+    color: #ffffff;
+}
+
+.worker-dashboard-content p {
+    color: #9ba7b4;
+}
+
+
+/* =========================================================
+   ORANGE BRAND TEXT
+========================================================= */
+
+.worker-dashboard .highlight,
+.worker-dashboard .brand-orange {
+    color: #ff8a00;
+}
+
+
+/* =========================================================
+   BUTTONS
 ========================================================= */
 
 .worker-dashboard button {
-  font-family: inherit;
+    font-family: inherit;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.worker-dashboard button:active {
+    transform: scale(0.98);
+}
+
+.worker-dashboard .primary-btn,
+.worker-dashboard .btn-primary {
+    background: #ff8a00;
+    color: #ffffff;
+    border: none;
+    border-radius: 9px;
+    padding: 10px 18px;
+    font-weight: 600;
+}
+
+.worker-dashboard .primary-btn:hover,
+.worker-dashboard .btn-primary:hover {
+    background: #ff9d2e;
+    box-shadow: 0 6px 20px rgba(255, 138, 0, 0.25);
 }
 
 
 /* =========================================================
-   TABLET
+   STATUS BADGES
 ========================================================= */
 
-@media (max-width: 1100px) {
+.worker-dashboard .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 11px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+}
 
-  .worker-main {
-    margin-left: 0;
-  }
+.worker-dashboard .status.available {
+    color: #4ade80;
+    background: rgba(74, 222, 128, 0.1);
+    border: 1px solid rgba(74, 222, 128, 0.2);
+}
 
-  .worker-dashboard-content {
-    padding: 25px;
-  }
+.worker-dashboard .status.busy {
+    color: #f87171;
+    background: rgba(248, 113, 113, 0.1);
+    border: 1px solid rgba(248, 113, 113, 0.2);
+}
 
+.worker-dashboard .status.pending {
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.1);
+    border: 1px solid rgba(251, 191, 36, 0.2);
+}
+
+.worker-dashboard .status.accepted {
+    color: #4ade80;
+    background: rgba(74, 222, 128, 0.1);
+    border: 1px solid rgba(74, 222, 128, 0.2);
+}
+
+.worker-dashboard .status.rejected {
+    color: #f87171;
+    background: rgba(248, 113, 113, 0.1);
+    border: 1px solid rgba(248, 113, 113, 0.2);
 }
 
 
 /* =========================================================
-   MOBILE
+   INPUTS
 ========================================================= */
 
-@media (max-width: 768px) {
-
-  .worker-dashboard-content {
-    padding: 20px 16px;
-  }
-
-}
-
-
-/* =========================================================
-   SMALL MOBILE
-========================================================= */
-
-@media (max-width: 480px) {
-
-  .worker-main {
-    width: 100%;
-    min-width: 0;
-
-    margin-left: 0;
-  }
-
-  .worker-dashboard-content {
+.worker-dashboard input,
+.worker-dashboard select,
+.worker-dashboard textarea {
     width: 100%;
     box-sizing: border-box;
+    background: #0d131a;
+    color: #ffffff;
+    border: 1px solid #27313d;
+    border-radius: 9px;
+    padding: 11px 13px;
+    outline: none;
+    font-family: inherit;
+}
 
+.worker-dashboard input::placeholder,
+.worker-dashboard textarea::placeholder {
+    color: #66717e;
+}
+
+.worker-dashboard input:focus,
+.worker-dashboard select:focus,
+.worker-dashboard textarea:focus {
+    border-color: #ff8a00;
+    box-shadow: 0 0 0 3px rgba(255, 138, 0, 0.08);
+}
+
+
+/* =========================================================
+   SCROLLBAR
+========================================================= */
+
+.worker-dashboard ::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+}
+
+.worker-dashboard ::-webkit-scrollbar-track {
+    background: #0b0f14;
+}
+
+.worker-dashboard ::-webkit-scrollbar-thumb {
+    background: #2b3540;
+    border-radius: 10px;
+}
+
+.worker-dashboard ::-webkit-scrollbar-thumb:hover {
+    background: #ff8a00;
+}
+
+
+/* =========================================================
+   SECTIONS
+========================================================= */
+
+.worker-dashboard-content > .worker-requests,
+.worker-dashboard-content > .worker-recent-jobs,
+.worker-dashboard-content > .worker-quick-actions {
+    margin-top: 22px;
+}
+
+
+/* =========================================================
+   TABLES
+========================================================= */
+
+.worker-dashboard table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.worker-dashboard th {
+    text-align: left;
+    padding: 13px 15px;
+    color: #7f8b98;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid #202a35;
+}
+
+.worker-dashboard td {
+    padding: 15px;
+    color: #d8dee5;
+    border-bottom: 1px solid #1c252f;
+}
+
+.worker-dashboard tr:last-child td {
+    border-bottom: none;
+}
+
+
+/* =========================================================
+   REQUEST CARDS
+========================================================= */
+
+.worker-dashboard .request-card {
+    background: #0d131a;
+    border: 1px solid #202a35;
+    border-radius: 13px;
+    padding: 18px;
+    margin-bottom: 12px;
+    transition: 0.2s ease;
+}
+
+.worker-dashboard .request-card:hover {
+    border-color: rgba(255, 138, 0, 0.35);
+    transform: translateY(-1px);
+}
+
+.worker-dashboard .request-card:last-child {
+    margin-bottom: 0;
+}
+
+
+/* =========================================================
+   ACTION BUTTON GROUP
+========================================================= */
+
+.worker-dashboard .action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.worker-dashboard .accept-btn {
+    background: #ff8a00;
+    color: white;
+    border: none;
+    padding: 9px 15px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.worker-dashboard .accept-btn:hover {
+    background: #ff9d2e;
+}
+
+.worker-dashboard .reject-btn {
+    background: transparent;
+    color: #f87171;
+    border: 1px solid rgba(248, 113, 113, 0.35);
+    padding: 9px 15px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.worker-dashboard .reject-btn:hover {
+    background: rgba(248, 113, 113, 0.08);
+}
+
+
+/* =========================================================
+   QUICK ACTIONS
+========================================================= */
+
+.worker-dashboard .quick-action {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #0d131a;
+    border: 1px solid #202a35;
+    border-radius: 12px;
     padding: 14px;
-  }
+    transition: 0.2s ease;
+}
 
+.worker-dashboard .quick-action:hover {
+    border-color: rgba(255, 138, 0, 0.3);
+    background: #111820;
+}
+
+.worker-dashboard .quick-action-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: rgba(255, 138, 0, 0.1);
+    color: #ff8a00;
 }
 
 
 /* =========================================================
-   PREVENT HORIZONTAL SCROLLING
+   EMPTY STATES
 ========================================================= */
 
-html,
-body {
-  overflow-x: hidden;
+.worker-dashboard .empty-state {
+    text-align: center;
+    padding: 35px 20px;
+    color: #7f8b98;
 }
 
-.worker-dashboard,
-.worker-main {
-  max-width: 100%;
-  overflow-x: hidden;
+.worker-dashboard .empty-state svg {
+    margin-bottom: 10px;
+    color: #596572;
 }
 
 
 /* =========================================================
-   HIDE SCROLLBARS
-   Scrolling still works
+   LOADING
 ========================================================= */
 
-html,
-body {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+.worker-dashboard .loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 180px;
+    color: #9ba7b4;
 }
 
-html::-webkit-scrollbar,
-body::-webkit-scrollbar {
-  display: none;
-  width: 0;
-  height: 0;
+
+/* =========================================================
+   RESPONSIVE — LAPTOP
+========================================================= */
+
+@media (max-width: 1200px) {
+
+    .worker-main {
+        margin-left: 240px;
+    }
+
+    .worker-dashboard-content {
+        padding: 25px 24px 45px;
+    }
+
+    .worker-dashboard-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
-.worker-dashboard,
-.worker-main {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+
+/* =========================================================
+   RESPONSIVE — TABLET
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .worker-main {
+        margin-left: 0;
+    }
+
+    .worker-dashboard-content {
+        padding: 22px 20px 40px;
+    }
+
+    .worker-dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        margin-top: 18px;
+        margin-bottom: 20px;
+    }
+
+    .worker-dashboard-content > .worker-requests,
+    .worker-dashboard-content > .worker-recent-jobs,
+    .worker-dashboard-content > .worker-quick-actions {
+        margin-top: 18px;
+    }
 }
 
-.worker-dashboard::-webkit-scrollbar,
-.worker-main::-webkit-scrollbar {
-  display: none;
-  width: 0;
-  height: 0;
+
+/* =========================================================
+   RESPONSIVE — MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .worker-dashboard-content {
+        padding: 18px 14px 35px;
+    }
+
+    .worker-dashboard-grid {
+        gap: 14px;
+        margin-top: 14px;
+        margin-bottom: 14px;
+    }
+
+    .worker-dashboard-content > .worker-requests,
+    .worker-dashboard-content > .worker-recent-jobs,
+    .worker-dashboard-content > .worker-quick-actions {
+        margin-top: 14px;
+    }
+
+    .worker-card,
+    .worker-profile-card,
+    .worker-availability,
+    .worker-requests,
+    .worker-recent-jobs,
+    .worker-quick-actions {
+        border-radius: 13px;
+    }
+
+    .worker-dashboard table {
+        min-width: 650px;
+    }
+
+    .worker-dashboard .table-container {
+        overflow-x: auto;
+        width: 100%;
+    }
+
+    .worker-dashboard .action-buttons {
+        width: 100%;
+    }
+
+    .worker-dashboard .accept-btn,
+    .worker-dashboard .reject-btn {
+        flex: 1;
+        min-width: 100px;
+    }
+}
+
+
+/* =========================================================
+   VERY SMALL MOBILE
+========================================================= */
+
+@media (max-width: 400px) {
+
+    .worker-dashboard-content {
+        padding: 15px 10px 30px;
+    }
+
+    .worker-dashboard .action-buttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .worker-dashboard .accept-btn,
+    .worker-dashboard .reject-btn {
+        width: 100%;
+    }
 }

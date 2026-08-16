@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   MapPin,
   LocateFixed,
@@ -19,14 +20,16 @@ import {
   IndianRupee,
   RefreshCw,
   Calendar,
+  Lock,
 } from "lucide-react";
 
 import "./CustomerDashboard.css";
-// ✅ Correct – two levels up
 import BookingModal from "../../components/booking/BookingModal";
 import CustomerBookings from "../../components/booking/CustomerBookings";
 
 function CustomerDashboard() {
+  const navigate = useNavigate();
+
   // =====================================================
   // LOCATION
   // =====================================================
@@ -71,6 +74,69 @@ function CustomerDashboard() {
   // =====================================================
 
   const [showBookings, setShowBookings] = useState(false);
+
+  // =====================================================
+  // BOOKING ACCESS - BACKEND AUTHORITY
+  // =====================================================
+
+  const FREE_BOOKING_LIMIT = 3;
+
+  const [freeBookingsUsed, setFreeBookingsUsed] = useState(0);
+  const [freeBookingsRemaining, setFreeBookingsRemaining] = useState(
+    FREE_BOOKING_LIMIT
+  );
+  const [freeBookingsCompleted, setFreeBookingsCompleted] = useState(false);
+  const [bookingCredits, setBookingCredits] = useState(0);
+  const [canBook, setCanBook] = useState(true);
+  const [loadingBookingAccess, setLoadingBookingAccess] = useState(true);
+
+  // =====================================================
+  // LOAD BOOKING ACCESS FROM BACKEND
+  // =====================================================
+
+  useEffect(() => {
+    const loadBookingAccess = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          setLoadingBookingAccess(false);
+          return;
+        }
+
+        const response = await fetch(
+          "http://localhost:8080/api/bookings/access",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: "application/json",
+            },
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data?.message || "Unable to load booking access.");
+        }
+
+        console.log("Booking access from backend:", data);
+
+        setFreeBookingsUsed(Number(data.freeBookingsUsed ?? 0));
+        setFreeBookingsRemaining(Number(data.freeBookingsRemaining ?? 0));
+        setFreeBookingsCompleted(Boolean(data.freeBookingsCompleted));
+        setBookingCredits(Number(data.bookingCredits ?? 0));
+        setCanBook(Boolean(data.canBook));
+      } catch (error) {
+        console.error("Booking access error:", error);
+      } finally {
+        setLoadingBookingAccess(false);
+      }
+    };
+
+    loadBookingAccess();
+  }, []);
 
   // =====================================================
   // CATEGORIES
@@ -433,6 +499,15 @@ function CustomerDashboard() {
   // =====================================================
 
   const handleViewWorker = (worker) => {
+    // =====================================================
+    // BOOKING ACCESS LOCK
+    // =====================================================
+
+    if (!canBook) {
+      navigate("/customer/booking-credits");
+      return;
+    }
+
     setSelectedWorker(worker);
     setProblemDescription("");
     setBookingResponse(null);
@@ -499,6 +574,35 @@ function CustomerDashboard() {
 
       setBookingResponse(data);
       setShowSuccess(true);
+
+      // =====================================================
+      // REFRESH BOOKING ACCESS FROM BACKEND
+      // =====================================================
+
+      try {
+        const accessResponse = await fetch(
+          "http://localhost:8080/api/bookings/access",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: "application/json",
+            },
+          }
+        );
+
+        const accessData = await accessResponse.json();
+
+        if (accessResponse.ok) {
+          setFreeBookingsUsed(Number(accessData.freeBookingsUsed ?? 0));
+          setFreeBookingsRemaining(Number(accessData.freeBookingsRemaining ?? 0));
+          setFreeBookingsCompleted(Boolean(accessData.freeBookingsCompleted));
+          setBookingCredits(Number(accessData.bookingCredits ?? 0));
+          setCanBook(Boolean(accessData.canBook));
+        }
+      } catch (accessError) {
+        console.error("Unable to refresh booking access:", accessError);
+      }
     } catch (error) {
       alert(error.message || "Unable to send booking request. Please try again.");
     } finally {
@@ -537,6 +641,14 @@ function CustomerDashboard() {
         </div>
 
         <div className="customer-dashboard-topbar-actions">
+          <button
+            type="button"
+            className="customer-dashboard-credit-button"
+            onClick={() => navigate("/customer/booking-credits")}
+          >
+            <IndianRupee size={18} />
+            <span>Booking Credits</span>
+          </button>
           <button type="button" className="customer-dashboard-my-bookings" onClick={toggleBookings}>
             <Calendar size={18} />
             <span>My Bookings</span>
@@ -546,10 +658,15 @@ function CustomerDashboard() {
             <Menu size={22} />
           </button>
 
-          <button type="button" className="customer-dashboard-profile">
-            <UserRound size={19} />
-            <span>Profile</span>
-          </button>
+            <button
+  type="button"
+  className="customer-dashboard-profile"
+  onClick={() => navigate("/customer-profile")}
+>
+  <UserRound size={19} />
+  <span>Profile</span>
+</button>
+            
         </div>
       </header>
 
@@ -727,85 +844,122 @@ function CustomerDashboard() {
             <div className="customer-worker-list">
               {workers.map((worker, index) => (
                 <article
-                  className="customer-worker-card"
+                  className={`customer-worker-card ${!canBook ? "free-tier-locked" : ""}`}
                   key={worker.workerId ?? `worker-${index}`}
+                  style={{ position: "relative" }}
                 >
-                  {/* HEADER */}
-                  <div className="customer-worker-header">
-                    <div className="customer-worker-avatar">
-                      <UserRound size={25} />
+                  {/* =================================================
+                      WORKER CARD CONTENT (BLURRED WHEN LOCKED)
+                  ================================================= */}
+                  <div
+                    className="customer-worker-card-content"
+                    style={{
+                      filter: !canBook ? "blur(4px)" : "none",
+                      pointerEvents: !canBook ? "none" : "auto",
+                      transition: "filter 0.3s ease",
+                    }}
+                  >
+                    {/* HEADER */}
+                    <div className="customer-worker-header">
+                      <div className="customer-worker-avatar">
+                        <UserRound size={25} />
+                      </div>
+                      <div className="customer-worker-main">
+                        <h3>{worker.fullName || "Worker"}</h3>
+                        <span className="customer-worker-category">
+                          <Wrench size={14} />
+                          {worker.category || selectedCategory}
+                        </span>
+                      </div>
+                      <div
+                        className={`customer-worker-availability ${
+                          String(worker.availability).toUpperCase() === "AVAILABLE"
+                            ? "available"
+                            : "busy"
+                        }`}
+                      >
+                        <span></span>
+                        {getAvailabilityText(worker.availability)}
+                      </div>
                     </div>
-                    <div className="customer-worker-main">
-                      <h3>{worker.fullName || "Worker"}</h3>
-                      <span className="customer-worker-category">
-                        <Wrench size={14} />
-                        {worker.category || selectedCategory}
+
+                    {/* DETAILS */}
+                    <div className="customer-worker-details">
+                      <div className="customer-worker-detail">
+                        <BriefcaseBusiness size={17} />
+                        <div>
+                          <small>Experience</small>
+                          <strong>{worker.experienceYears ?? 0} years</strong>
+                        </div>
+                      </div>
+                      <div className="customer-worker-detail">
+                        <IndianRupee size={17} />
+                        <div>
+                          <small>Charges</small>
+                          <strong>₹{Number(worker.charges ?? 0).toFixed(2)}/hour</strong>
+                        </div>
+                      </div>
+                      <div className="customer-worker-detail">
+                        <Navigation size={17} />
+                        <div>
+                          <small>Distance</small>
+                          <strong>{formatDistance(worker.distanceKm)}</strong>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* LOCATION */}
+                    <div className="customer-worker-location">
+                      <MapPin size={17} />
+                      <span>
+                        {[worker.area, worker.city, worker.district, worker.state]
+                          .filter(Boolean)
+                          .join(", ") || "Location unavailable"}
                       </span>
                     </div>
-                    <div
-                      className={`customer-worker-availability ${
-                        String(worker.availability).toUpperCase() === "AVAILABLE"
-                          ? "available"
-                          : "busy"
-                      }`}
-                    >
-                      <span></span>
-                      {getAvailabilityText(worker.availability)}
+
+                    {/* ABOUT */}
+                    {worker.about && (
+                      <div className="customer-worker-about">
+                        <p>{worker.about}</p>
+                      </div>
+                    )}
+
+                    {/* ACTION */}
+                    <div className="customer-worker-actions">
+                      <button
+                        type="button"
+                        className="customer-worker-view-button"
+                        onClick={() => handleViewWorker(worker)}
+                      >
+                        View Worker
+                      </button>
                     </div>
                   </div>
 
-                  {/* DETAILS */}
-                  <div className="customer-worker-details">
-                    <div className="customer-worker-detail">
-                      <BriefcaseBusiness size={17} />
-                      <div>
-                        <small>Experience</small>
-                        <strong>{worker.experienceYears ?? 0} years</strong>
+                  {/* =================================================
+                      FREE TIER LOCK OVERLAY (CLEAR, NOT BLURRED)
+                  ================================================= */}
+                  {!loadingBookingAccess && !canBook && (
+                    <div className="customer-worker-lock-overlay">
+                      <div className="customer-worker-lock-content">
+                        <div className="customer-worker-lock-icon">
+                          <Lock size={28} />
+                        </div>
+                        <h3>Booking Access Required</h3>
+                        <p>Your 3 free bookings have been completed.</p>
+                        <span>Purchase Booking Credits to continue booking workers.</span>
+                        <button
+                          type="button"
+                          className="customer-worker-unlock-button"
+                          onClick={() => navigate("/customer/booking-credits")}
+                        >
+                          <IndianRupee size={17} />
+                          Buy Booking Credits
+                        </button>
                       </div>
-                    </div>
-                    <div className="customer-worker-detail">
-                      <IndianRupee size={17} />
-                      <div>
-                        <small>Charges</small>
-                        <strong>₹{Number(worker.charges ?? 0).toFixed(2)}/hour</strong>
-                      </div>
-                    </div>
-                    <div className="customer-worker-detail">
-                      <Navigation size={17} />
-                      <div>
-                        <small>Distance</small>
-                        <strong>{formatDistance(worker.distanceKm)}</strong>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* LOCATION */}
-                  <div className="customer-worker-location">
-                    <MapPin size={17} />
-                    <span>
-                      {[worker.area, worker.city, worker.district, worker.state]
-                        .filter(Boolean)
-                        .join(", ") || "Location unavailable"}
-                    </span>
-                  </div>
-
-                  {/* ABOUT */}
-                  {worker.about && (
-                    <div className="customer-worker-about">
-                      <p>{worker.about}</p>
                     </div>
                   )}
-
-                  {/* ACTION */}
-                  <div className="customer-worker-actions">
-                    <button
-                      type="button"
-                      className="customer-worker-view-button"
-                      onClick={() => handleViewWorker(worker)}
-                    >
-                      View Worker
-                    </button>
-                  </div>
                 </article>
               ))}
             </div>

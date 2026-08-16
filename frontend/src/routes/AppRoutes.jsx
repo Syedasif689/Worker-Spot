@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import Home from "../pages/Home/Home";
 import Categories from "../components/Category/Categories";
 import HowItWorks from "../components/HowItWorks/HowItWorks";
@@ -9,11 +10,16 @@ import Terms from "../pages/Terms/Terms";
 import Privacy from "../pages/Privacy/Privacy";
 import Safety from "../pages/Safety/Safety";
 import Userrig from "../pages/Register/Userrig";
+
 import CustomerLogin from "../pages/Login/CustomerLogin";
 import WorkerLogin from "../pages/Login/WorkerLogin";
+
 import WorkerDashboard from "../pages/Dashboard/WorkerDashboard";
 import WorkerProfile from "../pages/WorkerProfile";
 import CustomerDashboard from "../pages/Dashboard/CustomerDashboard";
+
+import BookingCredits from "../pages/customer/BookingCredits";
+import CustomerProfile from "../pages/CustomerProfile";
 
 function AppRoutes() {
   return (
@@ -29,15 +35,28 @@ function AppRoutes() {
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/safety" element={<Safety />} />
         <Route path="/userrig" element={<Userrig />} />
-        <Route path="/customer-login" element={<CustomerLogin />}/>
-        <Route path="/worker-login" element={<WorkerLogin />}/>
-        <Route path="/worker-dashboard" element={<WorkerDashboard />}/>
-        <Route path="/worker-profile" element={<WorkerProfile />}/>
-        <Route path="/customer-dashboard" element={<CustomerDashboard />}/>
+
+        <Route path="/customer-login" element={<CustomerLogin />} />
+        <Route path="/worker-login" element={<WorkerLogin />} />
+
+        <Route path="/worker-dashboard" element={<WorkerDashboard />} />
+        <Route path="/worker-profile" element={<WorkerProfile />} />
+
+        <Route path="/customer-dashboard" element={<CustomerDashboard />} />
+
+        {/* BOOKING CREDITS */}
+        <Route
+          path="/customer/booking-credits"
+          element={<BookingCredits />}
+        />
+        <Route
+          path="/customer-profile"
+          element={<CustomerProfile />}
+        />
       </Routes>
+      
     </BrowserRouter>
   );
-} 
-  
+}
 
 export default AppRoutes;
