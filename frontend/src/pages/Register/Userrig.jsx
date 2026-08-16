@@ -15,10 +15,10 @@ import {
   Sparkles,
   CheckCircle,
   Phone,
+  KeyRound,
 } from "lucide-react";
 
 import "./Userrig.css";
-
 
 function CustomerRegister() {
 
@@ -41,8 +41,17 @@ function CustomerRegister() {
   const [otpLoading, setOtpLoading] =
     useState(false);
 
+  const [verifyLoading, setVerifyLoading] =
+    useState(false);
+
   const [mobileVerified, setMobileVerified] =
     useState(false);
+
+  const [otpSent, setOtpSent] =
+    useState(false);
+
+  const [otp, setOtp] =
+    useState("");
 
   const [mobileVerificationId, setMobileVerificationId] =
     useState("");
@@ -61,12 +70,26 @@ function CustomerRegister() {
   // =====================================================
   // MSG91 CONFIGURATION
   // =====================================================
+  //
+  // Widget name in MSG91:
+  //
+  // WorkerSpotOTP
+  //
+  // IMPORTANT:
+  // Use the widget token here.
+  // Do NOT put your MSG91 AuthKey in React.
+  //
+  // =====================================================
 
   const MSG91_WIDGET_ID =
     "366870706548333338313437";
 
   const MSG91_TOKEN_AUTH =
-    "561254TY6eDVgBv1CE6a81eafdP1";
+    "YOUR_MSG91_WIDGET_TOKEN";
+
+
+  const MSG91_CAPTCHA_ID =
+    "workerspot-msg91-captcha";
 
 
   // =====================================================
@@ -87,17 +110,6 @@ function CustomerRegister() {
       );
 
 
-      /*
-       * MSG91 returns the verified access token.
-       *
-       * Depending on the widget response format,
-       * the token may be available as:
-       *
-       * data.token
-       * data["access-token"]
-       * data.accessToken
-       */
-
       const accessToken =
         data?.token ||
         data?.["access-token"] ||
@@ -107,22 +119,24 @@ function CustomerRegister() {
       if (!accessToken) {
 
         console.error(
-          "MSG91 verification succeeded but no access token was returned.",
+          "MSG91 verification succeeded but access token was not returned.",
           data
         );
 
-        setError(
-          "Mobile verification completed, but verification token was not received. Please try again."
-        );
-
         setMobileVerified(false);
+
+        setMobileVerificationId("");
+
+        setError(
+          "OTP verification completed, but the verification token was not received. Please try again."
+        );
 
         return;
       }
 
 
       // -------------------------------------------------
-      // STORE VERIFIED TOKEN
+      // STORE VERIFIED ACCESS TOKEN
       // -------------------------------------------------
 
       setMobileVerificationId(
@@ -135,13 +149,22 @@ function CustomerRegister() {
       );
 
 
+      setOtpSent(
+        false
+      );
+
+
+      setOtp(
+        ""
+      );
+
+
       setError("");
 
 
       console.log(
         "Mobile number successfully verified."
       );
-
     };
 
 
@@ -149,11 +172,11 @@ function CustomerRegister() {
     // FAILURE CALLBACK
     // ---------------------------------------------------
 
-    window.handleWorkerSpotOTPFailure = (error) => {
+    window.handleWorkerSpotOTPFailure = (err) => {
 
       console.error(
         "MSG91 OTP failure:",
-        error
+        err
       );
 
 
@@ -161,39 +184,36 @@ function CustomerRegister() {
         false
       );
 
+
       setMobileVerificationId(
         ""
       );
 
 
-      setError(
-        "Mobile number verification failed. Please try again."
+      setVerifyLoading(
+        false
       );
 
+
+      setOtpLoading(
+        false
+      );
+
+
+      setError(
+        "Mobile number verification failed. Please check the OTP and try again."
+      );
     };
 
 
     // ---------------------------------------------------
-    // CHECK IF SCRIPT ALREADY EXISTS
+    // EXISTING SCRIPT
     // ---------------------------------------------------
 
     const existingScript =
       document.querySelector(
         'script[data-workerspot-msg91="true"]'
       );
-
-
-    if (existingScript) {
-
-      initializeMSG91();
-
-      return () => {
-
-        delete window.handleWorkerSpotOTPSuccess;
-        delete window.handleWorkerSpotOTPFailure;
-
-      };
-    }
 
 
     // ---------------------------------------------------
@@ -211,14 +231,91 @@ function CustomerRegister() {
       exposeMethods:
         true,
 
+      captchaRenderId:
+        MSG91_CAPTCHA_ID,
 
       success:
         window.handleWorkerSpotOTPSuccess,
 
-
       failure:
         window.handleWorkerSpotOTPFailure,
     };
+
+
+    // ---------------------------------------------------
+    // INITIALIZE MSG91
+    // ---------------------------------------------------
+
+    const initializeMSG91 = () => {
+
+      if (
+        typeof window.initSendOTP !==
+        "function"
+      ) {
+
+        console.warn(
+          "MSG91 initSendOTP is not available yet."
+        );
+
+        return;
+      }
+
+
+      try {
+
+        window.initSendOTP(
+          window.workerSpotMSG91Configuration
+        );
+
+
+        console.log(
+          "MSG91 OTP widget initialized."
+        );
+
+      } catch (err) {
+
+        console.error(
+          "MSG91 initialization error:",
+          err
+        );
+
+        setError(
+          "Unable to initialize mobile verification."
+        );
+      }
+    };
+
+
+    // ---------------------------------------------------
+    // SCRIPT ALREADY LOADED
+    // ---------------------------------------------------
+
+    if (existingScript) {
+
+      if (
+        typeof window.initSendOTP ===
+        "function"
+      ) {
+
+        initializeMSG91();
+
+      } else {
+
+        existingScript.addEventListener(
+          "load",
+          initializeMSG91,
+          { once: true }
+        );
+      }
+
+
+      return () => {
+
+        delete window.handleWorkerSpotOTPSuccess;
+
+        delete window.handleWorkerSpotOTPFailure;
+      };
+    }
 
 
     // ---------------------------------------------------
@@ -232,8 +329,10 @@ function CustomerRegister() {
     script.src =
       "https://verify.msg91.com/otp-provider.js";
 
+
     script.async =
       true;
+
 
     script.dataset.workerspotMsg91 =
       "true";
@@ -247,7 +346,6 @@ function CustomerRegister() {
 
 
       initializeMSG91();
-
     };
 
 
@@ -259,9 +357,8 @@ function CustomerRegister() {
 
 
       setError(
-        "Unable to load mobile verification service. Please check your internet connection and try again."
+        "Unable to load mobile verification service. Please check your internet connection."
       );
-
     };
 
 
@@ -277,35 +374,9 @@ function CustomerRegister() {
     return () => {
 
       delete window.handleWorkerSpotOTPSuccess;
+
       delete window.handleWorkerSpotOTPFailure;
-
     };
-
-
-    // ===================================================
-    // INITIALIZE MSG91
-    // ===================================================
-
-    function initializeMSG91() {
-
-      if (
-        typeof window.initSendOTP !==
-        "function"
-      ) {
-
-        console.warn(
-          "MSG91 initSendOTP is not available yet."
-        );
-
-        return;
-      }
-
-
-      window.initSendOTP(
-        window.workerSpotMSG91Configuration
-      );
-
-    }
 
   }, []);
 
@@ -325,29 +396,20 @@ function CustomerRegister() {
 
 
     // ---------------------------------------------------
-    // MOBILE CHANGE
+    // MOBILE
     // ---------------------------------------------------
 
     if (name === "mobile") {
 
-      /*
-       * Only allow numbers.
-       */
-
       const numericValue =
-        value.replace(
-          /\D/g,
-          ""
-        ).slice(
-          0,
-          10
-        );
+        value
+          .replace(/\D/g, "")
+          .slice(0, 10);
 
 
-      /*
-       * If mobile number changes after verification,
-       * the previous verification is no longer valid.
-       */
+      // -------------------------------------------------
+      // MOBILE CHANGED
+      // -------------------------------------------------
 
       if (
         numericValue !==
@@ -362,6 +424,13 @@ function CustomerRegister() {
           ""
         );
 
+        setOtpSent(
+          false
+        );
+
+        setOtp(
+          ""
+        );
       }
 
 
@@ -381,12 +450,36 @@ function CustomerRegister() {
 
 
     // ---------------------------------------------------
+    // OTP
+    // ---------------------------------------------------
+
+    if (name === "otp") {
+
+      const numericOtp =
+        value
+          .replace(/\D/g, "")
+          .slice(0, 6);
+
+
+      setOtp(
+        numericOtp
+      );
+
+
+      setError("");
+
+      return;
+    }
+
+
+    // ---------------------------------------------------
     // OTHER INPUTS
     // ---------------------------------------------------
 
     setFormData(
       (prev) => ({
         ...prev,
+
         [name]:
           type === "checkbox"
             ? checked
@@ -396,12 +489,11 @@ function CustomerRegister() {
 
 
     setError("");
-
   };
 
 
   // =====================================================
-  // SEND / OPEN OTP VERIFICATION
+  // SEND OTP
   // =====================================================
 
   const handleVerifyMobile = () => {
@@ -410,7 +502,7 @@ function CustomerRegister() {
 
 
     // ---------------------------------------------------
-    // VALIDATE MOBILE
+    // MOBILE VALIDATION
     // ---------------------------------------------------
 
     const mobile =
@@ -431,9 +523,7 @@ function CustomerRegister() {
     }
 
 
-    if (
-      mobileVerified
-    ) {
+    if (mobileVerified) {
 
       setError(
         "Mobile number is already verified."
@@ -444,18 +534,20 @@ function CustomerRegister() {
 
 
     // ---------------------------------------------------
-    // MSG91 AVAILABILITY
+    // CHECK MSG91
     // ---------------------------------------------------
 
     if (
       typeof window.sendOtp !==
-      "function" &&
-      typeof window.initSendOTP !==
       "function"
     ) {
 
       setError(
         "Mobile verification service is still loading. Please wait a moment and try again."
+      );
+
+      console.error(
+        "MSG91 sendOtp() is not available."
       );
 
       return;
@@ -470,43 +562,74 @@ function CustomerRegister() {
     try {
 
       /*
-       * MSG91's widget normally exposes its own
-       * verification UI/methods.
+       * MSG91 expects the mobile number
+       * with country code.
        *
-       * If the widget has exposed methods enabled,
-       * try to trigger OTP using the mobile number.
+       * India:
+       *
+       * 91XXXXXXXXXX
+       *
+       * No + sign.
        */
 
-      if (
-        typeof window.sendOtp ===
-        "function"
-      ) {
-
-        window.sendOtp(
-          mobile
-        );
-
-      } else {
-
-        console.log(
-          "MSG91 widget initialized. Use the widget verification UI."
-        );
-
-      }
+      const mobileWithCountryCode =
+        "91" + mobile;
 
 
-      /*
-       * Give the widget a moment to open/display.
-       */
+      console.log(
+        "Sending OTP to:",
+        mobileWithCountryCode
+      );
 
-      setTimeout(() => {
 
-        setOtpLoading(
-          false
-        );
+      window.sendOtp(
 
-      }, 1000);
+        mobileWithCountryCode,
 
+        (data) => {
+
+          console.log(
+            "MSG91 OTP sent successfully:",
+            data
+          );
+
+
+          setOtpLoading(
+            false
+          );
+
+
+          setOtpSent(
+            true
+          );
+
+
+          setError("");
+        },
+
+        (err) => {
+
+          console.error(
+            "MSG91 send OTP error:",
+            err
+          );
+
+
+          setOtpLoading(
+            false
+          );
+
+
+          setOtpSent(
+            false
+          );
+
+
+          setError(
+            "Unable to send OTP. Please complete the captcha and try again."
+          );
+        }
+      );
 
     } catch (err) {
 
@@ -522,11 +645,208 @@ function CustomerRegister() {
 
 
       setError(
-        "Unable to start mobile verification. Please try again."
+        "Unable to start OTP verification. Please try again."
+      );
+    }
+  };
+
+
+  // =====================================================
+  // VERIFY OTP
+  // =====================================================
+
+  const handleVerifyOTP = () => {
+
+    setError("");
+
+
+    // ---------------------------------------------------
+    // OTP VALIDATION
+    // ---------------------------------------------------
+
+    if (
+      !/^[0-9]{4,6}$/.test(
+        otp
+      )
+    ) {
+
+      setError(
+        "Please enter the OTP received on your mobile."
       );
 
+      return;
     }
 
+
+    // ---------------------------------------------------
+    // MSG91 VERIFY METHOD
+    // ---------------------------------------------------
+
+    if (
+      typeof window.verifyOtp !==
+      "function"
+    ) {
+
+      setError(
+        "OTP verification service is not ready. Please refresh the page and try again."
+      );
+
+      console.error(
+        "MSG91 verifyOtp() is not available."
+      );
+
+      return;
+    }
+
+
+    setVerifyLoading(
+      true
+    );
+
+
+    try {
+
+      console.log(
+        "Verifying OTP..."
+      );
+
+
+      window.verifyOtp(
+
+        otp,
+
+        (data) => {
+
+          console.log(
+            "MSG91 OTP verification response:",
+            data
+          );
+
+
+          setVerifyLoading(
+            false
+          );
+
+
+          const accessToken =
+            data?.token ||
+            data?.["access-token"] ||
+            data?.accessToken;
+
+
+          if (!accessToken) {
+
+            setMobileVerified(
+              false
+            );
+
+            setMobileVerificationId(
+              ""
+            );
+
+
+            setError(
+              "OTP was verified, but MSG91 did not return a verification token."
+            );
+
+            return;
+          }
+
+
+          // -------------------------------------------------
+          // VERIFIED
+          // -------------------------------------------------
+
+          setMobileVerificationId(
+            accessToken
+          );
+
+
+          setMobileVerified(
+            true
+          );
+
+
+          setOtpSent(
+            false
+          );
+
+
+          setOtp(
+            ""
+          );
+
+
+          setError("");
+
+
+          console.log(
+            "Mobile number verified successfully."
+          );
+        },
+
+        (err) => {
+
+          console.error(
+            "MSG91 verify OTP error:",
+            err
+          );
+
+
+          setVerifyLoading(
+            false
+          );
+
+
+          setMobileVerified(
+            false
+          );
+
+
+          setMobileVerificationId(
+            ""
+          );
+
+
+          setError(
+            "Invalid OTP or OTP expired. Please try again."
+          );
+        }
+      );
+
+    } catch (err) {
+
+      console.error(
+        "OTP verification error:",
+        err
+      );
+
+
+      setVerifyLoading(
+        false
+      );
+
+
+      setError(
+        "Unable to verify OTP. Please try again."
+      );
+    }
+  };
+
+
+  // =====================================================
+  // RESEND OTP
+  // =====================================================
+
+  const handleResendOTP = () => {
+
+    setOtp("");
+
+    setError("");
+
+    setOtpSent(false);
+
+    handleVerifyMobile();
   };
 
 
@@ -547,8 +867,7 @@ function CustomerRegister() {
     // ---------------------------------------------------
 
     if (
-      formData.fullName.trim().length <
-      2
+      formData.fullName.trim().length < 2
     ) {
 
       setError(
@@ -615,12 +934,11 @@ function CustomerRegister() {
     // ---------------------------------------------------
 
     if (
-      formData.password !==
-      formData.confirmPassword
+      formData.password.length < 8
     ) {
 
       setError(
-        "Passwords do not match."
+        "Password must be at least 8 characters."
       );
 
       return;
@@ -628,12 +946,12 @@ function CustomerRegister() {
 
 
     if (
-      formData.password.length <
-      8
+      formData.password !==
+      formData.confirmPassword
     ) {
 
       setError(
-        "Password must be at least 8 characters."
+        "Passwords do not match."
       );
 
       return;
@@ -686,20 +1004,15 @@ function CustomerRegister() {
                   formData.fullName.trim(),
 
                 email:
-                  formData.email.trim().toLowerCase(),
+                  formData.email
+                    .trim()
+                    .toLowerCase(),
 
                 mobile:
                   formData.mobile.trim(),
 
                 password:
                   formData.password,
-
-                /*
-                 * MSG91 verified access token.
-                 *
-                 * Backend will validate this token
-                 * directly with MSG91.
-                 */
 
                 mobileVerificationId:
                   mobileVerificationId,
@@ -714,6 +1027,7 @@ function CustomerRegister() {
 
       let data = {};
 
+
       try {
 
         data =
@@ -722,7 +1036,6 @@ function CustomerRegister() {
       } catch {
 
         data = {};
-
       }
 
 
@@ -730,6 +1043,7 @@ function CustomerRegister() {
         "Backend status:",
         response.status
       );
+
 
       console.log(
         "Backend response:",
@@ -750,7 +1064,6 @@ function CustomerRegister() {
           data.error ||
           "Customer registration failed."
         );
-
       }
 
 
@@ -764,7 +1077,7 @@ function CustomerRegister() {
 
 
       // -------------------------------------------------
-      // RESET FORM
+      // RESET
       // -------------------------------------------------
 
       setFormData({
@@ -787,6 +1100,16 @@ function CustomerRegister() {
       );
 
 
+      setOtpSent(
+        false
+      );
+
+
+      setOtp(
+        ""
+      );
+
+
     } catch (err) {
 
       console.error(
@@ -800,15 +1123,12 @@ function CustomerRegister() {
         "Something went wrong. Please try again."
       );
 
-
     } finally {
 
       setLoading(
         false
       );
-
     }
-
   };
 
 
@@ -822,15 +1142,12 @@ function CustomerRegister() {
 
 
       {/* =================================================
-          LEFT HERO SECTION
+          LEFT HERO
       ================================================= */}
 
       <section className="customer-hero">
 
         <div className="customer-hero-content">
-
-
-          {/* Brand Badge */}
 
           <div className="customer-hero-badge">
 
@@ -843,10 +1160,7 @@ function CustomerRegister() {
           </div>
 
 
-          {/* Hero Icons */}
-
           <div className="customer-hero-icon-group">
-
 
             <div className="customer-hero-icon-ring">
 
@@ -877,11 +1191,8 @@ function CustomerRegister() {
 
             </div>
 
-
           </div>
 
-
-          {/* Main Heading */}
 
           <h1>
 
@@ -903,8 +1214,6 @@ function CustomerRegister() {
           </p>
 
 
-          {/* Benefits */}
-
           <div className="customer-hero-benefits">
 
 
@@ -915,7 +1224,6 @@ function CustomerRegister() {
                 <HandCoins size={18} />
 
               </div>
-
 
               <div>
 
@@ -940,7 +1248,6 @@ function CustomerRegister() {
 
               </div>
 
-
               <div>
 
                 <strong>
@@ -963,7 +1270,6 @@ function CustomerRegister() {
                 <Clock size={18} />
 
               </div>
-
 
               <div>
 
@@ -988,7 +1294,6 @@ function CustomerRegister() {
 
               </div>
 
-
               <div>
 
                 <strong>
@@ -1003,7 +1308,6 @@ function CustomerRegister() {
 
             </div>
 
-
           </div>
 
         </div>
@@ -1012,19 +1316,15 @@ function CustomerRegister() {
 
 
       {/* =================================================
-          RIGHT REGISTRATION SECTION
+          RIGHT FORM
       ================================================= */}
 
       <section className="customer-form-panel">
 
-
         <div className="customer-register-card">
 
 
-          {/* Form Header */}
-
           <div className="customer-register-header">
-
 
             <div className="customer-register-icon">
 
@@ -1045,12 +1345,11 @@ function CustomerRegister() {
 
             </p>
 
-
           </div>
 
 
           {/* =================================================
-              REGISTRATION FORM
+              FORM
           ================================================= */}
 
           <form onSubmit={handleSubmit}>
@@ -1063,9 +1362,7 @@ function CustomerRegister() {
             <div className="form-group">
 
               <label htmlFor="fullName">
-
                 Full Name
-
               </label>
 
 
@@ -1084,7 +1381,6 @@ function CustomerRegister() {
                   required
                 />
 
-
               </div>
 
             </div>
@@ -1097,9 +1393,7 @@ function CustomerRegister() {
             <div className="form-group">
 
               <label htmlFor="email">
-
                 Email Address
-
               </label>
 
 
@@ -1118,22 +1412,19 @@ function CustomerRegister() {
                   required
                 />
 
-
               </div>
 
             </div>
 
 
             {/* =================================================
-                MOBILE NUMBER
+                MOBILE
             ================================================= */}
 
             <div className="form-group">
 
               <label htmlFor="mobile">
-
                 Mobile Number
-
               </label>
 
 
@@ -1155,15 +1446,31 @@ function CustomerRegister() {
                   disabled={mobileVerified}
                 />
 
-
               </div>
 
 
               {/* =================================================
-                  VERIFY MOBILE BUTTON
+                  HCAPTCHA
               ================================================= */}
 
-              {!mobileVerified ? (
+              {!mobileVerified && (
+
+                <div
+                  id={MSG91_CAPTCHA_ID}
+                  style={{
+                    marginTop: "12px",
+                    minHeight: "10px",
+                  }}
+                />
+
+              )}
+
+
+              {/* =================================================
+                  SEND OTP
+              ================================================= */}
+
+              {!mobileVerified && !otpSent && (
 
                 <button
                   type="button"
@@ -1181,12 +1488,112 @@ function CustomerRegister() {
                   <Phone size={18} />
 
                   {otpLoading
-                    ? "Starting Verification..."
-                    : "Verify Mobile with OTP"}
+                    ? "Sending OTP..."
+                    : "Send OTP"}
 
                 </button>
 
-              ) : (
+              )}
+
+
+              {/* =================================================
+                  OTP INPUT
+              ================================================= */}
+
+              {!mobileVerified && otpSent && (
+
+                <div
+                  style={{
+                    marginTop: "14px",
+                  }}
+                >
+
+                  <label
+                    htmlFor="otp"
+                    style={{
+                      display: "block",
+                      marginBottom: "8px",
+                    }}
+                  >
+
+                    Enter OTP
+
+                  </label>
+
+
+                  <div className="input-box">
+
+                    <KeyRound size={20} />
+
+
+                    <input
+                      id="otp"
+                      type="text"
+                      name="otp"
+                      inputMode="numeric"
+                      maxLength="6"
+                      placeholder="Enter OTP"
+                      value={otp}
+                      onChange={handleChange}
+                      autoComplete="one-time-code"
+                    />
+
+                  </div>
+
+
+                  <button
+                    type="button"
+                    className="register-button"
+                    onClick={handleVerifyOTP}
+                    disabled={
+                      verifyLoading ||
+                      otp.length < 4
+                    }
+                    style={{
+                      marginTop: "10px",
+                    }}
+                  >
+
+                    <CheckCircle size={18} />
+
+                    {verifyLoading
+                      ? "Verifying OTP..."
+                      : "Verify OTP"}
+
+                  </button>
+
+
+                  <button
+                    type="button"
+                    onClick={handleResendOTP}
+                    disabled={otpLoading}
+                    style={{
+                      marginTop: "8px",
+                      width: "100%",
+                      background: "transparent",
+                      border: "none",
+                      color: "#FF8A00",
+                      cursor: "pointer",
+                      fontWeight: "600",
+                    }}
+                  >
+
+                    {otpLoading
+                      ? "Sending..."
+                      : "Didn't receive OTP? Resend"}
+
+                  </button>
+
+                </div>
+
+              )}
+
+
+              {/* =================================================
+                  VERIFIED
+              ================================================= */}
+
+              {mobileVerified && (
 
                 <div
                   style={{
@@ -1218,9 +1625,7 @@ function CustomerRegister() {
             <div className="form-group">
 
               <label htmlFor="password">
-
                 Password
-
               </label>
 
 
@@ -1260,17 +1665,12 @@ function CustomerRegister() {
                 >
 
                   {showPassword ? (
-
                     <EyeOff size={20} />
-
                   ) : (
-
                     <Eye size={20} />
-
                   )}
 
                 </button>
-
 
               </div>
 
@@ -1280,7 +1680,6 @@ function CustomerRegister() {
                 Password must be at least 8 characters.
 
               </p>
-
 
             </div>
 
@@ -1334,17 +1733,12 @@ function CustomerRegister() {
                 >
 
                   {showConfirmPassword ? (
-
                     <EyeOff size={20} />
-
                   ) : (
-
                     <Eye size={20} />
-
                   )}
 
                 </button>
-
 
               </div>
 
@@ -1371,31 +1765,23 @@ function CustomerRegister() {
 
                 I agree to the{" "}
 
-
                 <a
                   href="/terms"
                   target="_blank"
                   rel="noreferrer"
                 >
-
                   Terms & Conditions
-
                 </a>
 
-
                 {" "}and{" "}
-
 
                 <a
                   href="/privacy"
                   target="_blank"
                   rel="noreferrer"
                 >
-
                   Privacy Policy
-
                 </a>
-
 
                 .
 
@@ -1405,7 +1791,7 @@ function CustomerRegister() {
 
 
             {/* =================================================
-                SAFETY NOTICE
+                SAFETY
             ================================================= */}
 
             <div className="registration-safety">
@@ -1417,17 +1803,13 @@ function CustomerRegister() {
 
                 Please read our{" "}
 
-
                 <a
                   href="/safety"
                   target="_blank"
                   rel="noreferrer"
                 >
-
                   Safety Guidelines
-
                 </a>
-
 
                 {" "}before using Worker Spot.
 
@@ -1475,22 +1857,18 @@ function CustomerRegister() {
 
 
             {/* =================================================
-                EXISTING ACCOUNT
+                LOGIN
             ================================================= */}
 
             <div className="already-account">
 
               <span>
-
                 Already have an account?
-
               </span>
 
 
               <a href="/customer-login">
-
                 Login as Customer
-
               </a>
 
             </div>
