@@ -6,7 +6,8 @@ RUN apt-get update \
     && apt-get install -y maven \
     && rm -rf /var/lib/apt/lists/*
 
-COPY . .
+COPY pom.xml .
+COPY src ./src
 
 RUN mvn clean package -DskipTests
 
