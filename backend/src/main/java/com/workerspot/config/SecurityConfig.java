@@ -23,7 +23,8 @@ public class SecurityConfig {
     public SecurityConfig(
             JwtAuthenticationFilter jwtAuthenticationFilter
     ) {
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.jwtAuthenticationFilter =
+                jwtAuthenticationFilter;
     }
 
     @Bean
@@ -40,24 +41,61 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(auth -> auth
 
-                // Public authentication endpoints
-                .requestMatchers(
-                    "/api/auth/register/customer",
-                    "/api/auth/register/worker",
-                    "/api/auth/login"
-                ).permitAll()
+    // =========================================
+    // PUBLIC AUTH APIs
+    // =========================================
 
-                // Browser CORS preflight
-                .requestMatchers(
-                    HttpMethod.OPTIONS,
-                    "/**"
-                ).permitAll()
+    .requestMatchers(
+        "/api/auth/register/customer",
+        "/api/auth/register/worker",
+        "/api/auth/login"
+    ).permitAll()
 
-                // Everything else requires JWT
-                .anyRequest().authenticated()
-            )
+    // =========================================
+    // CORS PREFLIGHT
+    // =========================================
 
-            // JWT filter
+    .requestMatchers(
+        HttpMethod.OPTIONS,
+        "/**"
+    ).permitAll()
+
+    // =========================================
+    // CUSTOMER APIs
+    // =========================================
+
+    .requestMatchers(
+        "/api/customers/**"
+    ).hasRole("CUSTOMER")
+
+    // =========================================
+    // NEARBY WORKER SEARCH
+    // CUSTOMER + WORKER CAN SEARCH
+    // =========================================
+
+    .requestMatchers(
+        "/api/workers/nearby"
+    ).hasAnyRole("CUSTOMER", "WORKER")
+
+    // =========================================
+    // WORKER APIs
+    // =========================================
+
+    .requestMatchers(
+        "/api/workers/**"
+    ).hasRole("WORKER")
+
+    // =========================================
+    // EVERYTHING ELSE
+    // =========================================
+
+    .anyRequest().authenticated()
+)
+
+            // =============================================
+            // JWT FILTER
+            // =============================================
+
             .addFilterBefore(
                 jwtAuthenticationFilter,
                 UsernamePasswordAuthenticationFilter.class
@@ -65,6 +103,7 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -75,7 +114,8 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(
                 List.of(
                     "http://localhost:5173",
-                    "http://localhost:5174"
+                    "http://localhost:5174",
+                    "https://worker-spot.vercel.app"
                 )
         );
 

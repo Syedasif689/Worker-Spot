@@ -4,56 +4,161 @@ import java.time.LocalDateTime;
 
 public class BookingResponse {
 
+    // =====================================================
+    // BOOKING
+    // =====================================================
+
     private Long bookingId;
 
+
     // =====================================================
-    // CUSTOMER-SAFE INFORMATION
+    // CUSTOMER-SAFE WORKER INFORMATION
     // =====================================================
 
     private Long workerId;
+
     private String workerName;
+
     private String workerCategory;
+
     private int workerExperienceYears;
 
+
     // =====================================================
-    // WORKER-SAFE INFORMATION
+    // WORKER-SAFE CUSTOMER INFORMATION
     // =====================================================
 
     private Long customerId;
+
     private String customerName;
 
+
     // =====================================================
-    // SERVICE
+    // SERVICE DETAILS
     // =====================================================
 
     private String category;
+
     private String problemDescription;
 
-    private String serviceLocation;
-    private String serviceState;
-    private String serviceDistrict;
-    private String serviceCity;
-    private String serviceArea;
-
-    private Double customerLatitude;
-    private Double customerLongitude;
 
     // =====================================================
-    // PAYMENT
+    // SERVICE LOCATION
+    // =====================================================
+
+    private String serviceLocation;
+
+    private String serviceState;
+
+    private String serviceDistrict;
+
+    private String serviceCity;
+
+    private String serviceArea;
+
+
+    // =====================================================
+    // CUSTOMER GPS
+    // =====================================================
+
+    private Double customerLatitude;
+
+    private Double customerLongitude;
+    // =====================================================
+// CUSTOMER BOOKING ACCESS
+// =====================================================
+//
+// Current Worker Spot booking access.
+//
+// First 3 bookings:
+//     freeBookingsUsed increases.
+//
+// After 3:
+//     bookingCredits are used.
+//
+// canBook:
+//     true  -> customer can book
+//     false -> customer must purchase credits
+//
+// =====================================================
+
+private int freeBookingsUsed;
+
+private int freeBookingsRemaining;
+
+private int bookingCredits;
+
+private boolean canBook;
+
+    // =====================================================
+    // WORKER PAYMENT
+    // =====================================================
+    //
+    // Worker Spot does NOT collect worker charges.
+    //
+    // Customer pays worker directly after work.
+    //
+    // platformFee remains 0 because Worker Spot's
+    // connection credits are purchased separately.
+    //
+    // Example:
+    //
+    // Worker charge = ₹500
+    //
+    // Customer → Worker = ₹500
+    //
+    // Worker Spot → Worker = ₹0
+    //
     // =====================================================
 
     private double workerCharges;
+
     private double platformFee;
+
     private double totalAmount;
+
     private boolean freeBooking;
+    
 
     // =====================================================
-    // STATUS
+    // BOOKING STATUS
     // =====================================================
 
     private String status;
 
+
+    // =====================================================
+    // 24-HOUR CONNECTION WINDOW
+    // =====================================================
+    //
+    // After worker marks booking COMPLETED:
+    //
+    // Customer and worker can still:
+    //
+    // - Call
+    // - Report a complaint
+    //
+    // for 24 hours.
+    //
+    // After 24 hours:
+    //
+    // - Calling disabled
+    // - Complaint/report connection disabled
+    // - Worker card becomes locked
+    //
+    // =====================================================
+
+    private boolean connectionActive;
+
+    private LocalDateTime connectionExpiresAt;
+
+
+    // =====================================================
+    // TIMESTAMPS
+    // =====================================================
+
     private LocalDateTime createdAt;
+
     private LocalDateTime updatedAt;
 
 
@@ -145,6 +250,14 @@ public class BookingResponse {
         return status;
     }
 
+    public boolean isConnectionActive() {
+        return connectionActive;
+    }
+
+    public LocalDateTime getConnectionExpiresAt() {
+        return connectionExpiresAt;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -152,7 +265,21 @@ public class BookingResponse {
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
+     public int getFreeBookingsUsed() {
+    return freeBookingsUsed;
+}
 
+public int getFreeBookingsRemaining() {
+    return freeBookingsRemaining;
+}
+
+public int getBookingCredits() {
+    return bookingCredits;
+}
+
+public boolean isCanBook() {
+    return canBook;
+}
 
     // =====================================================
     // SETTERS
@@ -242,6 +369,15 @@ public class BookingResponse {
         this.status = status;
     }
 
+    public void setConnectionActive(boolean connectionActive) {
+        this.connectionActive = connectionActive;
+    }
+
+    public void setConnectionExpiresAt(
+            LocalDateTime connectionExpiresAt) {
+        this.connectionExpiresAt = connectionExpiresAt;
+    }
+
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
@@ -249,4 +385,19 @@ public class BookingResponse {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+     public void setFreeBookingsUsed(int freeBookingsUsed) {
+    this.freeBookingsUsed = freeBookingsUsed;
+}
+
+public void setFreeBookingsRemaining(int freeBookingsRemaining) {
+    this.freeBookingsRemaining = freeBookingsRemaining;
+}
+
+public void setBookingCredits(int bookingCredits) {
+    this.bookingCredits = bookingCredits;
+}
+
+public void setCanBook(boolean canBook) {
+    this.canBook = canBook;
+}
 }

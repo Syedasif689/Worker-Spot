@@ -15,6 +15,7 @@ public class RegisterRequest {
     )
     private String fullName;
 
+
     @NotBlank(message = "Email is required")
     @Email(message = "Please provide a valid email address")
     @Size(
@@ -23,12 +24,14 @@ public class RegisterRequest {
     )
     private String email;
 
+
     @NotBlank(message = "Mobile number is required")
     @Pattern(
         regexp = "^[6-9][0-9]{9}$",
         message = "Please provide a valid 10-digit Indian mobile number"
     )
     private String mobile;
+
 
     @NotBlank(message = "Password is required")
     @Size(
@@ -38,7 +41,20 @@ public class RegisterRequest {
     )
     private String password;
 
-    // Getters and Setters
+
+    // =====================================================
+    // MSG91 MOBILE VERIFICATION
+    // =====================================================
+
+    @NotBlank(
+        message = "Mobile number verification is required"
+    )
+    private String mobileVerificationId;
+
+
+    // =====================================================
+    // GETTERS / SETTERS
+    // =====================================================
 
     public String getFullName() {
         return fullName;
@@ -48,6 +64,7 @@ public class RegisterRequest {
         this.fullName = fullName;
     }
 
+
     public String getEmail() {
         return email;
     }
@@ -55,6 +72,7 @@ public class RegisterRequest {
     public void setEmail(String email) {
         this.email = email;
     }
+
 
     public String getMobile() {
         return mobile;
@@ -64,11 +82,24 @@ public class RegisterRequest {
         this.mobile = mobile;
     }
 
+
     public String getPassword() {
         return password;
     }
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+
+    public String getMobileVerificationId() {
+        return mobileVerificationId;
+    }
+
+    public void setMobileVerificationId(
+            String mobileVerificationId
+    ) {
+        this.mobileVerificationId =
+                mobileVerificationId;
     }
 }

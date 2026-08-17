@@ -30,9 +30,9 @@ public class AuthController {
         this.authService = authService;
     }
 
-    // =========================
+    // =====================================================
     // CUSTOMER REGISTRATION
-    // =========================
+    // =====================================================
 
     @PostMapping("/register/customer")
     public ResponseEntity<?> registerCustomer(
@@ -44,37 +44,57 @@ public class AuthController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(Map.of(
-                        "message", "Customer registered successfully",
-                        "userId", user.getId(),
-                        "role", user.getRole()
+                        "message",
+                        "Customer registered successfully",
+
+                        "userId",
+                        user.getId(),
+
+                        "role",
+                        user.getRole()
                 ));
     }
-               @PostMapping("/login")
-public ResponseEntity<?> login(
-        @Valid @RequestBody LoginRequest request
-) {
 
-    LoginResponse response = authService.login(request);
 
-    return ResponseEntity.ok(response);
-}
-    // =========================
+    // =====================================================
+    // LOGIN
+    // =====================================================
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(
+            @Valid @RequestBody LoginRequest request
+    ) {
+
+        LoginResponse response =
+                authService.login(request);
+
+        return ResponseEntity.ok(response);
+    }
+
+
+    // =====================================================
     // WORKER REGISTRATION
-    // =========================
+    // =====================================================
 
     @PostMapping("/register/worker")
     public ResponseEntity<?> registerWorker(
             @Valid @RequestBody WorkerRegisterRequest request
     ) {
 
-        User user = authService.registerWorker(request);
+        User user =
+                authService.registerWorker(request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(Map.of(
-                        "message", "Worker registered successfully Please login to continue!",
-                        "userId", user.getId(),
-                        "role", user.getRole()
+                        "message",
+                        "Worker registered successfully. Please login to continue!",
+
+                        "userId",
+                        user.getId(),
+
+                        "role",
+                        user.getRole()
                 ));
     }
 }

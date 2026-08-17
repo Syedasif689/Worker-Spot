@@ -18,34 +18,111 @@ import jakarta.persistence.UniqueConstraint;
 @Table(
     name = "users",
     uniqueConstraints = {
-        @UniqueConstraint(name = "uk_user_email", columnNames = "email"),
-        @UniqueConstraint(name = "uk_user_mobile", columnNames = "mobile")
+        @UniqueConstraint(
+            name = "uk_user_email",
+            columnNames = "email"
+        ),
+        @UniqueConstraint(
+            name = "uk_user_mobile",
+            columnNames = "mobile"
+        )
     }
 )
 public class User {
+
+    // =====================================================
+    // ID
+    // =====================================================
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "full_name", nullable = false, length = 100)
+
+    // =====================================================
+    // BASIC USER INFORMATION
+    // =====================================================
+
+    @Column(
+        name = "full_name",
+        nullable = false,
+        length = 100
+    )
     private String fullName;
 
-    @Column(nullable = false, length = 150)
+
+    @Column(
+        nullable = false,
+        length = 150
+    )
     private String email;
 
-    @Column(nullable = false, length = 15)
+
+    @Column(
+        nullable = false,
+        length = 15
+    )
     private String mobile;
 
-    @Column(nullable = false)
+
+    // =====================================================
+    // MOBILE VERIFICATION
+    // =====================================================
+
+    /*
+     * Indicates whether the mobile number was successfully
+     * verified through OTP.
+     *
+     * false = mobile not verified
+     * true  = mobile verified
+     *
+     * New accounts should only be created after successful
+     * OTP verification, so normally this will be true for
+     * newly registered users.
+     */
+    @Column(
+        name = "mobile_verified",
+        nullable = false
+    )
+    private boolean mobileVerified = false;
+
+
+    // =====================================================
+    // PASSWORD
+    // =====================================================
+
+    /*
+     * Password is always stored as a BCrypt hash.
+     *
+     * NEVER store the user's plain-text password.
+     */
+    @Column(
+        nullable = false
+    )
     private String password;
 
+
+    // =====================================================
+    // ROLE
+    // =====================================================
+
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(
+        nullable = false,
+        length = 20
+    )
     private Role role;
 
-    @Column(nullable = false)
+
+    // =====================================================
+    // ACCOUNT STATUS
+    // =====================================================
+
+    @Column(
+        nullable = false
+    )
     private boolean active = true;
+
 
     // =====================================================
     // FREE BOOKINGS
@@ -59,8 +136,8 @@ public class User {
      * 2 = Two free bookings used
      * 3 = All free bookings used
      *
-     * After 3 free bookings, the customer pays
-     * the Worker Spot platform fee for future bookings.
+     * After 3 free bookings, the customer pays the
+     * Worker Spot platform fee for future bookings.
      */
     @Column(
         name = "free_bookings_used",
@@ -68,15 +145,39 @@ public class User {
     )
     private int freeBookingsUsed = 0;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+
+    // =====================================================
+    // CONSTANT
+    // =====================================================
+
+    /**
+     * Maximum number of free bookings allowed
+     * for every customer.
+     */
+    public static final int FREE_BOOKING_LIMIT = 3;
+
+
+    // =====================================================
+    // TIMESTAMPS
+    // =====================================================
+
+    @Column(
+        name = "created_at",
+        nullable = false,
+        updatable = false
+    )
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false)
+
+    @Column(
+        name = "updated_at",
+        nullable = false
+    )
     private LocalDateTime updatedAt;
 
 
     // =====================================================
-    // LIFECYCLE
+    // JPA LIFECYCLE
     // =====================================================
 
     @PrePersist
@@ -88,8 +189,11 @@ public class User {
         updatedAt = now;
 
         /*
-         * Make sure every newly created user starts
-         * with zero used free bookings.
+         * Every newly created user starts with:
+         *
+         * 0 used free bookings
+         *
+         * and mobile verification defaults to false.
          */
         if (freeBookingsUsed < 0) {
             freeBookingsUsed = 0;
@@ -101,71 +205,122 @@ public class User {
     protected void onUpdate() {
 
         updatedAt = LocalDateTime.now();
-
     }
 
 
     // =====================================================
-    // GETTERS AND SETTERS
+    // ID GETTER / SETTER
     // =====================================================
 
     public Long getId() {
         return id;
     }
 
+
     public void setId(Long id) {
         this.id = id;
     }
 
 
+    // =====================================================
+    // FULL NAME
+    // =====================================================
+
     public String getFullName() {
         return fullName;
     }
+
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
     }
 
 
+    // =====================================================
+    // EMAIL
+    // =====================================================
+
     public String getEmail() {
         return email;
     }
+
 
     public void setEmail(String email) {
         this.email = email;
     }
 
 
+    // =====================================================
+    // MOBILE
+    // =====================================================
+
     public String getMobile() {
         return mobile;
     }
+
 
     public void setMobile(String mobile) {
         this.mobile = mobile;
     }
 
 
+    // =====================================================
+    // MOBILE VERIFICATION
+    // =====================================================
+
+    /**
+     * Returns true when the mobile number has been
+     * successfully verified through OTP.
+     */
+    public boolean isMobileVerified() {
+        return mobileVerified;
+    }
+
+
+    /**
+     * Sets the mobile verification status.
+     */
+    public void setMobileVerified(boolean mobileVerified) {
+        this.mobileVerified = mobileVerified;
+    }
+
+
+    // =====================================================
+    // PASSWORD
+    // =====================================================
+
     public String getPassword() {
         return password;
     }
+
 
     public void setPassword(String password) {
         this.password = password;
     }
 
 
+    // =====================================================
+    // ROLE
+    // =====================================================
+
     public Role getRole() {
         return role;
     }
+
 
     public void setRole(Role role) {
         this.role = role;
     }
 
 
+    // =====================================================
+    // ACTIVE
+    // =====================================================
+
     public boolean isActive() {
         return active;
     }
+
 
     public void setActive(boolean active) {
         this.active = active;
@@ -180,10 +335,15 @@ public class User {
         return freeBookingsUsed;
     }
 
-    public void setFreeBookingsUsed(int freeBookingsUsed) {
+
+    public void setFreeBookingsUsed(
+            int freeBookingsUsed
+    ) {
 
         if (freeBookingsUsed < 0) {
+
             this.freeBookingsUsed = 0;
+
             return;
         }
 
@@ -192,15 +352,8 @@ public class User {
 
 
     // =====================================================
-    // BOOKING HELPER METHODS
+    // BOOKING HELPERS
     // =====================================================
-
-    /**
-     * Maximum number of free bookings allowed
-     * for every customer.
-     */
-    public static final int FREE_BOOKING_LIMIT = 3;
-
 
     /**
      * Returns true if the customer still has
@@ -213,7 +366,7 @@ public class User {
 
 
     /**
-     * Returns how many free bookings remain.
+     * Returns the number of free bookings remaining.
      */
     public int getRemainingFreeBookings() {
 
@@ -243,6 +396,7 @@ public class User {
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
+
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;

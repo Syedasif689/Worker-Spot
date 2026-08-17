@@ -2,7 +2,19 @@ package com.workerspot.entity;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "bookings")
@@ -42,7 +54,11 @@ public class Booking {
     // SERVICE LOCATION
     // =====================================================
 
-    @Column(name = "service_location", nullable = false, length = 500)
+    @Column(
+        name = "service_location",
+        nullable = false,
+        length = 500
+    )
     private String serviceLocation;
 
     @Column(name = "service_state", length = 100)
@@ -67,20 +83,59 @@ public class Booking {
     // PAYMENT
     // =====================================================
 
+    /*
+     * IMPORTANT:
+     *
+     * workerCharges = worker's own charge.
+     *
+     * Worker Spot does NOT collect this money.
+     *
+     * Customer pays the worker directly after the
+     * work is completed.
+     */
+
     @Column(name = "worker_charges", nullable = false)
     private double workerCharges;
+
+    /*
+     * Worker Spot platform fee is NOT added to workerCharges.
+     *
+     * Platform access is handled separately through
+     * booking credits.
+     *
+     * Therefore this remains 0 for normal bookings.
+     */
 
     @Column(name = "platform_fee", nullable = false)
     private double platformFee = 0.0;
 
+    /*
+     * This represents only the worker's service charge.
+     *
+     * Example:
+     *
+     * Worker charge = ₹500
+     *
+     * totalAmount = ₹500
+     *
+     * Worker Spot does NOT receive this ₹500.
+     */
+
     @Column(name = "total_amount", nullable = false)
     private double totalAmount;
+
+    /*
+     * TRUE for first 3 free Worker Spot bookings.
+     *
+     * FALSE when booking was made using purchased
+     * Worker Spot booking credits.
+     */
 
     @Column(name = "free_booking", nullable = false)
     private boolean freeBooking;
 
     // =====================================================
-    // STATUS
+    // BOOKING STATUS
     // =====================================================
 
     @Enumerated(EnumType.STRING)
@@ -88,13 +143,54 @@ public class Booking {
     private BookingStatus status = BookingStatus.PENDING;
 
     // =====================================================
+    // 24-HOUR CONNECTION WINDOW
+    // =====================================================
+
+    /*
+     * This field is NULL until the worker completes
+     * the booking.
+     *
+     * When worker presses "Completed":
+     *
+     * connectionExpiresAt =
+     *     completed time + 24 hours
+     *
+     * During this period:
+     *
+     * Customer:
+     *   - can see worker connection card
+     *   - can call through Worker Spot
+     *   - can report a complaint
+     *
+     * Worker:
+     *   - can communicate through the allowed
+     *     Worker Spot calling system
+     *
+     * After this time:
+     *
+     *   - connection is locked
+     *   - calling is disabled
+     *   - complaint connection is closed
+     */
+
+    @Column(name = "connection_expires_at")
+    private LocalDateTime connectionExpiresAt;
+
+    // =====================================================
     // TIMESTAMPS
     // =====================================================
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(
+        name = "created_at",
+        nullable = false,
+        updatable = false
+    )
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false)
+    @Column(
+        name = "updated_at",
+        nullable = false
+    )
     private LocalDateTime updatedAt;
 
     // =====================================================
@@ -251,6 +347,24 @@ public class Booking {
     public void setStatus(BookingStatus status) {
         this.status = status;
     }
+
+    // =====================================================
+    // 24-HOUR CONNECTION
+    // =====================================================
+
+    public LocalDateTime getConnectionExpiresAt() {
+        return connectionExpiresAt;
+    }
+
+    public void setConnectionExpiresAt(
+            LocalDateTime connectionExpiresAt
+    ) {
+        this.connectionExpiresAt = connectionExpiresAt;
+    }
+
+    // =====================================================
+    // TIMESTAMPS
+    // =====================================================
 
     public LocalDateTime getCreatedAt() {
         return createdAt;

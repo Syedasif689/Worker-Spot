@@ -83,6 +83,73 @@ public class BookingController {
         }
     }
 
+
+    // =====================================================
+    // CUSTOMER BOOKING ACCESS
+    // =====================================================
+    //
+    // Frontend uses this endpoint to determine:
+    //
+    // freeBookingsUsed
+    // freeBookingsRemaining
+    // freeBookingsCompleted
+    // bookingCredits
+    //
+    // IMPORTANT:
+    // When freeBookingsCompleted = true AND
+    // bookingCredits = 0,
+    // frontend should lock/blur worker cards.
+    //
+    // Example response:
+    //
+    // {
+    //   "freeBookingsUsed": 3,
+    //   "freeBookingsRemaining": 0,
+    //   "freeBookingsCompleted": true,
+    //   "bookingCredits": 0
+    // }
+    //
+    // =====================================================
+
+    @GetMapping("/access")
+    public ResponseEntity<?> getCustomerBookingAccess(
+            Authentication authentication
+    ) {
+
+        try {
+
+            String email = authentication.getName();
+
+            User customer =
+                    userRepository
+                            .findByEmail(email)
+                            .orElseThrow(() ->
+                                    new RuntimeException(
+                                            "Customer not found."
+                                    )
+                            );
+
+            Map<String, Object> access =
+                    bookingService.getCustomerBookingAccess(
+                            customer.getId()
+                    );
+
+            return ResponseEntity.ok(access);
+
+        } catch (RuntimeException e) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(
+                            Map.of(
+                                    "message",
+                                    e.getMessage()
+                            )
+                    );
+        }
+    }
+
+
     // =====================================================
     // CUSTOMER BOOKINGS
     // =====================================================
@@ -125,6 +192,7 @@ public class BookingController {
         }
     }
 
+
     // =====================================================
     // WORKER BOOKINGS
     // =====================================================
@@ -147,10 +215,9 @@ public class BookingController {
                                     )
                             );
 
-            // -------------------------------------------------
-            // IMPORTANT:
-            // User ID != WorkerProfile ID
-            // -------------------------------------------------
+            // =================================================
+            // USER ID != WORKER PROFILE ID
+            // =================================================
 
             WorkerProfile worker =
                     workerProfileRepository
@@ -181,6 +248,7 @@ public class BookingController {
         }
     }
 
+
     // =====================================================
     // ACCEPT BOOKING
     // =====================================================
@@ -204,9 +272,9 @@ public class BookingController {
                                     )
                             );
 
-            // -------------------------------------------------
+            // =================================================
             // USER ID -> WORKER PROFILE ID
-            // -------------------------------------------------
+            // =================================================
 
             WorkerProfile worker =
                     workerProfileRepository
@@ -238,6 +306,7 @@ public class BookingController {
         }
     }
 
+
     // =====================================================
     // REJECT BOOKING
     // =====================================================
@@ -261,9 +330,9 @@ public class BookingController {
                                     )
                             );
 
-            // -------------------------------------------------
+            // =================================================
             // USER ID -> WORKER PROFILE ID
-            // -------------------------------------------------
+            // =================================================
 
             WorkerProfile worker =
                     workerProfileRepository
@@ -276,6 +345,80 @@ public class BookingController {
 
             BookingResponse booking =
                     bookingService.rejectBooking(
+                            bookingId,
+                            worker.getId()
+                    );
+
+            return ResponseEntity.ok(booking);
+
+        } catch (RuntimeException e) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(
+                            Map.of(
+                                    "message",
+                                    e.getMessage()
+                            )
+                    );
+        }
+    }
+
+
+    // =====================================================
+    // COMPLETE BOOKING
+    // =====================================================
+    //
+    // Worker marks an ACCEPTED booking as COMPLETED.
+    //
+    // This:
+    //
+    // ACCEPTED
+    //     ↓
+    // COMPLETED
+    //
+    // BUSY
+    //     ↓
+    // AVAILABLE
+    //
+    // And starts the 24-hour connection window.
+    //
+    // =====================================================
+
+    @PutMapping("/{bookingId}/complete")
+    public ResponseEntity<?> completeBooking(
+            @PathVariable Long bookingId,
+            Authentication authentication
+    ) {
+
+        try {
+
+            String email = authentication.getName();
+
+            User workerUser =
+                    userRepository
+                            .findByEmail(email)
+                            .orElseThrow(() ->
+                                    new RuntimeException(
+                                            "Worker not found."
+                                    )
+                            );
+
+            // =================================================
+            // USER ID -> WORKER PROFILE ID
+            // =================================================
+
+            WorkerProfile worker =
+                    workerProfileRepository
+                            .findByUserId(workerUser.getId())
+                            .orElseThrow(() ->
+                                    new RuntimeException(
+                                            "Worker profile not found."
+                                    )
+                            );
+
+            BookingResponse booking =
+                    bookingService.completeBooking(
                             bookingId,
                             worker.getId()
                     );

@@ -1,6 +1,8 @@
 package com.workerspot.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +28,8 @@ public class BookingService {
     // =====================================================
 
     private static final int FREE_BOOKING_LIMIT = 3;
-    private static final double PLATFORM_FEE = 20.0;
+
+    private static final int CONNECTION_WINDOW_HOURS = 24;
 
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
@@ -45,6 +48,7 @@ public class BookingService {
         this.customerProfileRepository = customerProfileRepository;
     }
 
+
     // =====================================================
     // CREATE BOOKING
     // =====================================================
@@ -55,9 +59,9 @@ public class BookingService {
             BookingRequest request
     ) {
 
-        // -------------------------------------------------
+        // =================================================
         // CUSTOMER
-        // -------------------------------------------------
+        // =================================================
 
         User customer = userRepository
                 .findById(customerId)
@@ -67,9 +71,10 @@ public class BookingService {
                         )
                 );
 
-        // -------------------------------------------------
-        // VERIFY CUSTOMER ROLE
-        // -------------------------------------------------
+
+        // =================================================
+        // CUSTOMER ROLE
+        // =================================================
 
         if (customer.getRole() == null ||
                 !customer.getRole().name().equals("CUSTOMER")) {
@@ -79,9 +84,10 @@ public class BookingService {
             );
         }
 
-        // -------------------------------------------------
-        // VALIDATE WORKER ID
-        // -------------------------------------------------
+
+        // =================================================
+        // WORKER ID
+        // =================================================
 
         if (request.getWorkerId() == null) {
 
@@ -90,9 +96,10 @@ public class BookingService {
             );
         }
 
-        // -------------------------------------------------
-        // WORKER
-        // -------------------------------------------------
+
+        // =================================================
+        // FIND WORKER
+        // =================================================
 
         WorkerProfile worker =
                 workerProfileRepository
@@ -103,9 +110,10 @@ public class BookingService {
                                 )
                         );
 
-        // -------------------------------------------------
+
+        // =================================================
         // WORKER MUST BE AVAILABLE
-        // -------------------------------------------------
+        // =================================================
 
         if (worker.getAvailability() !=
                 Availability.AVAILABLE) {
@@ -115,9 +123,10 @@ public class BookingService {
             );
         }
 
-        // -------------------------------------------------
+
+        // =================================================
         // CUSTOMER PROFILE
-        // -------------------------------------------------
+        // =================================================
 
         CustomerProfile customerProfile =
                 customerProfileRepository
@@ -128,42 +137,62 @@ public class BookingService {
                                 )
                         );
 
-        // -------------------------------------------------
-        // FREE BOOKINGS
-        // -------------------------------------------------
+
+        // =================================================
+        // BOOKING ACCESS
+        // =================================================
 
         int freeBookingsUsed =
                 customerProfile.getFreeBookingsUsed();
 
+        int bookingCredits =
+                customerProfile.getBookingCredits();
+
+
         boolean freeBooking =
                 freeBookingsUsed < FREE_BOOKING_LIMIT;
 
-        // -------------------------------------------------
-        // PLATFORM FEE
-        // -------------------------------------------------
 
-        double platformFee =
-                freeBooking
-                        ? 0.0
-                        : PLATFORM_FEE;
+        // =================================================
+        // AFTER 3 FREE BOOKINGS
+        // =================================================
 
-        // -------------------------------------------------
-        // WORKER CHARGES
-        // -------------------------------------------------
+        if (!freeBooking && bookingCredits <= 0) {
+
+            throw new RuntimeException(
+                    "Your 3 free bookings are completed. "
+                    + "Please purchase a Worker Spot booking plan "
+                    + "to book another worker."
+            );
+        }
+
+
+        // =================================================
+        // WORKER CHARGE
+        // =================================================
 
         double workerCharges =
                 worker.getCharges();
 
-        // -------------------------------------------------
-        // TOTAL AMOUNT
-        // -------------------------------------------------
+
+        // =================================================
+        // WORKER SPOT PLATFORM FEE
+        // =================================================
+
+        double platformFee = 0.0;
+
+
+        // =================================================
+        // TOTAL WORKER PAYMENT
+        // =================================================
 
         double totalAmount =
-                workerCharges + platformFee;
+                workerCharges;
 
-        // -------------------------------------------------
+
+        // =================================================
         // CREATE BOOKING
-        // -------------------------------------------------
+        // =================================================
 
         Booking booking = new Booking();
 
@@ -171,9 +200,19 @@ public class BookingService {
 
         booking.setWorker(worker);
 
+
+        // =================================================
+        // CATEGORY
+        // =================================================
+
         booking.setCategory(
                 request.getCategory()
         );
+
+
+        // =================================================
+        // SERVICE LOCATION
+        // =================================================
 
         booking.setServiceLocation(
                 request.getServiceLocation()
@@ -195,6 +234,11 @@ public class BookingService {
                 request.getServiceArea()
         );
 
+
+        // =================================================
+        // CUSTOMER GPS
+        // =================================================
+
         booking.setCustomerLatitude(
                 request.getCustomerLatitude()
         );
@@ -203,9 +247,19 @@ public class BookingService {
                 request.getCustomerLongitude()
         );
 
+
+        // =================================================
+        // PROBLEM DESCRIPTION
+        // =================================================
+
         booking.setProblemDescription(
                 request.getProblemDescription()
         );
+
+
+        // =================================================
+        // PAYMENT INFORMATION
+        // =================================================
 
         booking.setWorkerCharges(
                 workerCharges
@@ -223,28 +277,34 @@ public class BookingService {
                 freeBooking
         );
 
-        // -------------------------------------------------
-        // WORKER MUST ACCEPT
-        // -------------------------------------------------
+
+        // =================================================
+        // CONNECTION WINDOW
+        // =================================================
+
+        booking.setConnectionExpiresAt(null);
+
+
+        // =================================================
+        // INITIAL STATUS
+        // =================================================
 
         booking.setStatus(
                 BookingStatus.PENDING
         );
 
-        // -------------------------------------------------
-        // SAVE
-        // -------------------------------------------------
+
+        // =================================================
+        // SAVE BOOKING
+        // =================================================
 
         Booking savedBooking =
                 bookingRepository.save(booking);
 
-        // -------------------------------------------------
-        // CONSUME FREE BOOKING
-        //
-        // IMPORTANT:
-        // The free attempt is consumed when the booking
-        // request is created.
-        // -------------------------------------------------
+
+        // =================================================
+        // CONSUME BOOKING ACCESS
+        // =================================================
 
         if (freeBooking) {
 
@@ -252,17 +312,35 @@ public class BookingService {
                     freeBookingsUsed + 1
             );
 
-            customerProfileRepository.save(
-                    customerProfile
+        } else {
+
+            customerProfile.setBookingCredits(
+                    bookingCredits - 1
             );
         }
 
-        // -------------------------------------------------
-        // SAFE RESPONSE
-        // -------------------------------------------------
 
-        return toBookingResponse(savedBooking);
+        customerProfileRepository.save(
+                customerProfile
+        );
+
+
+        // =================================================
+        // RETURN
+        // =================================================
+        //
+        // IMPORTANT:
+        //
+        // customerProfile has already been updated above.
+        // Therefore toBookingResponse() will now return
+        // the NEW booking-access state.
+        // =================================================
+
+        return toBookingResponse(
+                savedBooking
+        );
     }
+
 
     // =====================================================
     // CUSTOMER BOOKINGS
@@ -281,6 +359,7 @@ public class BookingService {
                 .toList();
     }
 
+
     // =====================================================
     // WORKER BOOKINGS
     // =====================================================
@@ -297,6 +376,91 @@ public class BookingService {
                 .map(this::toBookingResponse)
                 .toList();
     }
+
+
+    // =====================================================
+    // CUSTOMER BOOKING ACCESS
+    // =====================================================
+    //
+    // This tells the frontend whether the customer can
+    // currently book workers.
+    //
+    // First 3 bookings:
+    //
+    //     freeBookingsUsed < 3
+    //
+    // After 3:
+    //
+    //     bookingCredits > 0
+    //
+    // Therefore:
+    //
+    //     canBook = true
+    //         if free bookings remain
+    //         OR paid credits remain
+    //
+    //     canBook = false
+    //         if 3 free bookings are completed
+    //         AND no paid credits remain.
+    //
+    // =====================================================
+
+    public Map<String, Object> getCustomerBookingAccess(
+            Long customerId
+    ) {
+
+        CustomerProfile customerProfile =
+                customerProfileRepository
+                        .findByUserId(customerId)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Customer profile not found."
+                                )
+                        );
+
+
+        int freeBookingsUsed =
+                customerProfile.getFreeBookingsUsed();
+
+
+        int freeBookingsRemaining =
+                Math.max(
+                        FREE_BOOKING_LIMIT - freeBookingsUsed,
+                        0
+                );
+
+
+        boolean freeBookingsCompleted =
+                freeBookingsUsed >= FREE_BOOKING_LIMIT;
+
+
+        int bookingCredits =
+                customerProfile.getBookingCredits();
+
+
+        boolean canBook =
+                !freeBookingsCompleted ||
+                bookingCredits > 0;
+
+
+        return Map.of(
+                "freeBookingsUsed",
+                freeBookingsUsed,
+
+                "freeBookingsRemaining",
+                freeBookingsRemaining,
+
+                "freeBookingsCompleted",
+                freeBookingsCompleted,
+
+                "bookingCredits",
+                bookingCredits,
+
+                "canBook",
+                canBook
+        );
+    }
+
 
     // =====================================================
     // ACCEPT BOOKING
@@ -317,9 +481,10 @@ public class BookingService {
                                 )
                         );
 
-        // -------------------------------------------------
+
+        // =================================================
         // SECURITY CHECK
-        // -------------------------------------------------
+        // =================================================
 
         if (booking.getWorker() == null ||
                 !booking.getWorker()
@@ -331,9 +496,10 @@ public class BookingService {
             );
         }
 
-        // -------------------------------------------------
+
+        // =================================================
         // MUST BE PENDING
-        // -------------------------------------------------
+        // =================================================
 
         if (booking.getStatus() !=
                 BookingStatus.PENDING) {
@@ -343,9 +509,10 @@ public class BookingService {
             );
         }
 
-        // -------------------------------------------------
-        // WORKER MUST STILL BE AVAILABLE
-        // -------------------------------------------------
+
+        // =================================================
+        // WORKER MUST BE AVAILABLE
+        // =================================================
 
         WorkerProfile worker =
                 booking.getWorker();
@@ -358,17 +525,19 @@ public class BookingService {
             );
         }
 
-        // -------------------------------------------------
+
+        // =================================================
         // ACCEPT
-        // -------------------------------------------------
+        // =================================================
 
         booking.setStatus(
                 BookingStatus.ACCEPTED
         );
 
-        // -------------------------------------------------
+
+        // =================================================
         // WORKER BECOMES BUSY
-        // -------------------------------------------------
+        // =================================================
 
         worker.setAvailability(
                 Availability.BUSY
@@ -376,15 +545,27 @@ public class BookingService {
 
         workerProfileRepository.save(worker);
 
+
+        // =================================================
+        // CONNECTION EXPIRY
+        // =================================================
+
+        booking.setConnectionExpiresAt(null);
+
+
         Booking savedBooking =
                 bookingRepository.save(booking);
 
-        // -------------------------------------------------
-        // SAFE RESPONSE
-        // -------------------------------------------------
 
-        return toBookingResponse(savedBooking);
+        // =================================================
+        // RETURN
+        // =================================================
+
+        return toBookingResponse(
+                savedBooking
+        );
     }
+
 
     // =====================================================
     // REJECT BOOKING
@@ -405,9 +586,10 @@ public class BookingService {
                                 )
                         );
 
-        // -------------------------------------------------
+
+        // =================================================
         // SECURITY CHECK
-        // -------------------------------------------------
+        // =================================================
 
         if (booking.getWorker() == null ||
                 !booking.getWorker()
@@ -419,9 +601,10 @@ public class BookingService {
             );
         }
 
-        // -------------------------------------------------
+
+        // =================================================
         // MUST BE PENDING
-        // -------------------------------------------------
+        // =================================================
 
         if (booking.getStatus() !=
                 BookingStatus.PENDING) {
@@ -431,23 +614,187 @@ public class BookingService {
             );
         }
 
-        // -------------------------------------------------
+
+        // =================================================
         // REJECT
-        // -------------------------------------------------
+        // =================================================
 
         booking.setStatus(
                 BookingStatus.REJECTED
         );
 
+        booking.setConnectionExpiresAt(null);
+
+
         Booking savedBooking =
                 bookingRepository.save(booking);
 
-        // -------------------------------------------------
-        // SAFE RESPONSE
-        // -------------------------------------------------
 
-        return toBookingResponse(savedBooking);
+        return toBookingResponse(
+                savedBooking
+        );
     }
+
+
+    // =====================================================
+    // COMPLETE BOOKING
+    // =====================================================
+
+    @Transactional
+    public BookingResponse completeBooking(
+            Long bookingId,
+            Long workerId
+    ) {
+
+        Booking booking =
+                bookingRepository
+                        .findById(bookingId)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Booking not found."
+                                )
+                        );
+
+
+        // =================================================
+        // SECURITY CHECK
+        // =================================================
+
+        if (booking.getWorker() == null ||
+                !booking.getWorker()
+                        .getId()
+                        .equals(workerId)) {
+
+            throw new RuntimeException(
+                    "You are not authorized to complete this booking."
+            );
+        }
+
+
+        // =================================================
+        // MUST BE ACCEPTED
+        // =================================================
+
+        if (booking.getStatus() !=
+                BookingStatus.ACCEPTED) {
+
+            throw new RuntimeException(
+                    "Only accepted bookings can be completed."
+            );
+        }
+
+
+        // =================================================
+        // COMPLETION TIME
+        // =================================================
+
+        LocalDateTime completedAt =
+                LocalDateTime.now();
+
+
+        // =================================================
+        // COMPLETE BOOKING
+        // =================================================
+
+        booking.setStatus(
+                BookingStatus.COMPLETED
+        );
+
+
+        // =================================================
+        // START 24-HOUR CONNECTION WINDOW
+        // =================================================
+
+        booking.setConnectionExpiresAt(
+                completedAt.plusHours(
+                        CONNECTION_WINDOW_HOURS
+                )
+        );
+
+
+        // =================================================
+        // WORKER BECOMES AVAILABLE
+        // =================================================
+
+        WorkerProfile worker =
+                booking.getWorker();
+
+        worker.setAvailability(
+                Availability.AVAILABLE
+        );
+
+        workerProfileRepository.save(
+                worker
+        );
+
+
+        // =================================================
+        // SAVE BOOKING
+        // =================================================
+
+        Booking savedBooking =
+                bookingRepository.save(
+                        booking
+                );
+
+
+        return toBookingResponse(
+                savedBooking
+        );
+    }
+
+
+    // =====================================================
+    // CHECK 24-HOUR CONNECTION
+    // =====================================================
+
+    public boolean isConnectionActive(
+            Booking booking
+    ) {
+
+        if (booking == null) {
+            return false;
+        }
+
+
+        if (booking.getStatus() !=
+                BookingStatus.COMPLETED) {
+
+            return false;
+        }
+
+
+        LocalDateTime expiresAt =
+                booking.getConnectionExpiresAt();
+
+
+        if (expiresAt == null) {
+            return false;
+        }
+
+
+        return LocalDateTime.now()
+                .isBefore(expiresAt);
+    }
+
+
+    // =====================================================
+    // REQUIRE ACTIVE CONNECTION
+    // =====================================================
+
+    public void requireActiveConnection(
+            Booking booking
+    ) {
+
+        if (!isConnectionActive(booking)) {
+
+            throw new RuntimeException(
+                    "The 24-hour Worker Spot connection "
+                    + "window has expired."
+            );
+        }
+    }
+
 
     // =====================================================
     // SAFE BOOKING RESPONSE
@@ -460,9 +807,10 @@ public class BookingService {
         BookingResponse response =
                 new BookingResponse();
 
-        // -------------------------------------------------
+
+        // =================================================
         // BOOKING
-        // -------------------------------------------------
+        // =================================================
 
         response.setBookingId(
                 booking.getId()
@@ -476,9 +824,10 @@ public class BookingService {
                 booking.getProblemDescription()
         );
 
-        // -------------------------------------------------
+
+        // =================================================
         // SERVICE LOCATION
-        // -------------------------------------------------
+        // =================================================
 
         response.setServiceLocation(
                 booking.getServiceLocation()
@@ -500,6 +849,11 @@ public class BookingService {
                 booking.getServiceArea()
         );
 
+
+        // =================================================
+        // CUSTOMER GPS
+        // =================================================
+
         response.setCustomerLatitude(
                 booking.getCustomerLatitude()
         );
@@ -508,29 +862,31 @@ public class BookingService {
                 booking.getCustomerLongitude()
         );
 
-        // -------------------------------------------------
-        // PAYMENT
-        // -------------------------------------------------
+
+        // =================================================
+        // WORKER PAYMENT
+        // =================================================
 
         response.setWorkerCharges(
                 booking.getWorkerCharges()
         );
 
         response.setPlatformFee(
-                booking.getPlatformFee()
+                0.0
         );
 
         response.setTotalAmount(
-                booking.getTotalAmount()
+                booking.getWorkerCharges()
         );
 
         response.setFreeBooking(
                 booking.isFreeBooking()
         );
 
-        // -------------------------------------------------
+
+        // =================================================
         // STATUS
-        // -------------------------------------------------
+        // =================================================
 
         if (booking.getStatus() != null) {
 
@@ -539,86 +895,170 @@ public class BookingService {
             );
         }
 
+
+        // =================================================
+        // TIMESTAMPS
+        // =================================================
+
         response.setCreatedAt(
                 booking.getCreatedAt()
         );
-         response.setUpdatedAt(
+
+        response.setUpdatedAt(
                 booking.getUpdatedAt()
         );
 
+
         // =================================================
-        // CUSTOMER INFORMATION
+        // CUSTOMER
         // =================================================
 
-           if (booking.getCustomer() != null) {
+        if (booking.getCustomer() != null) {
 
-    response.setCustomerId(
-            booking.getCustomer().getId()
-    );
+            response.setCustomerId(
+                    booking.getCustomer().getId()
+            );
 
-    response.setCustomerName(
-            booking.getCustomer().getFullName()
-    );
-}
+            response.setCustomerName(
+                    booking.getCustomer()
+                            .getFullName()
+            );
+        }
 
-      // =================================================
-// WORKER INFORMATION
-// =================================================
 
-if (booking.getWorker() != null) {
+        // =================================================
+        // WORKER
+        // =================================================
 
-    response.setWorkerId(
-            booking.getWorker().getId()
-    );
+        if (booking.getWorker() != null) {
 
-    if (booking.getWorker().getUser() != null) {
+            response.setWorkerId(
+                    booking.getWorker().getId()
+            );
 
-        response.setWorkerName(
-                booking.getWorker()
-                        .getUser()
-                        .getFullName()
+
+            if (booking.getWorker().getUser() != null) {
+
+                response.setWorkerName(
+                        booking.getWorker()
+                                .getUser()
+                                .getFullName()
+                );
+            }
+
+
+            response.setWorkerCategory(
+                    booking.getWorker()
+                            .getCategory()
+            );
+
+
+            response.setWorkerExperienceYears(
+                    booking.getWorker()
+                            .getExperienceYears()
+            );
+        }
+
+
+        // =================================================
+        // 24-HOUR CONNECTION
+        // =================================================
+
+        response.setConnectionExpiresAt(
+                booking.getConnectionExpiresAt()
         );
-    }
 
-    response.setWorkerCategory(
-            booking.getWorker()
-                    .getCategory()
-    );
+        response.setConnectionActive(
+                isConnectionActive(booking)
+        );
 
-    response.setWorkerExperienceYears(
-            booking.getWorker()
-                    .getExperienceYears()
-    );
-}
 
-        /*
-         * =================================================
-         * PRIVACY
-         * =================================================
-         *
-         * NEVER return:
-         *
-         * customer email
-         * customer mobile
-         * worker email
-         * worker mobile
-         *
-         * Contact between customer and worker will later
-         * be handled through Worker Spot's hidden-number
-         * calling system.
-         *
-         * Workers are NOT charged any platform fee.
-         *
-         * Customer pays:
-         *
-         * First 3 bookings:
-         *     Worker charges only
-         *
-         * After 3 free bookings:
-         *     Worker charges + ₹20 platform fee
-         *
-         * =================================================
-         */
+        // =================================================
+        // CUSTOMER BOOKING ACCESS
+        // =================================================
+        //
+        // This is the important part for the frontend.
+        //
+        // The response now tells the frontend:
+        //
+        // freeBookingsUsed
+        // freeBookingsRemaining
+        // bookingCredits
+        // canBook
+        //
+        // =================================================
+
+        if (booking.getCustomer() != null) {
+
+            CustomerProfile customerProfile =
+                    customerProfileRepository
+                            .findByUser(
+                                    booking.getCustomer()
+                            )
+                            .orElse(null);
+
+
+            if (customerProfile != null) {
+
+                int freeBookingsUsed =
+                        customerProfile
+                                .getFreeBookingsUsed();
+
+
+                int freeBookingsRemaining =
+                        Math.max(
+                                FREE_BOOKING_LIMIT
+                                        - freeBookingsUsed,
+                                0
+                        );
+
+
+                int bookingCredits =
+                        customerProfile
+                                .getBookingCredits();
+
+
+                boolean canBook =
+                        freeBookingsUsed
+                                < FREE_BOOKING_LIMIT
+                        || bookingCredits > 0;
+
+
+                response.setFreeBookingsUsed(
+                        freeBookingsUsed
+                );
+
+                response.setFreeBookingsRemaining(
+                        freeBookingsRemaining
+                );
+
+                response.setBookingCredits(
+                        bookingCredits
+                );
+
+                response.setCanBook(
+                        canBook
+                );
+            }
+        }
+
+
+        // =================================================
+        // PRIVACY
+        // =================================================
+        //
+        // NEVER return:
+        //
+        // Customer:
+        //   email
+        //   mobile
+        //
+        // Worker:
+        //   email
+        //   mobile
+        //
+        // Communication remains inside Worker Spot.
+        // =================================================
 
         return response;
     }
