@@ -26,9 +26,9 @@ function WorkerAvailability() {
                     );
                 }
 
-                const response = await fetch(
-                    "http://localhost:8080/api/workers/me",
-                    {
+               const response = await fetch(
+  `${import.meta.env.VITE_API_URL}/api/workers/me`,
+  {
                         method: "GET",
                         headers: {
                             Authorization: `Bearer ${token}`,

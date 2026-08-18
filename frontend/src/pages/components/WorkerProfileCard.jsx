@@ -30,8 +30,8 @@ function WorkerProfileCard() {
                 }
 
                 const response = await fetch(
-                    "http://localhost:8080/api/workers/me",
-                    {
+  `${import.meta.env.VITE_API_URL}/api/workers/me`,
+  {
                         method: "GET",
                         headers: {
                             Authorization: `Bearer ${token}`,

@@ -110,12 +110,13 @@ function CustomerRegister() {
       );
 
 
-      const accessToken =
-  data?.token ||
-  data?.["access-token"] ||
-  data?.accessToken ||
-  data?.message;
-
+       const accessToken =
+  typeof data?.message === "string"
+    ? data.message.trim()
+    : data?.token ||
+      data?.["access-token"] ||
+      data?.accessToken ||
+      "";
 
       if (!accessToken) {
 
@@ -728,12 +729,10 @@ function CustomerRegister() {
             false
           );
 
-
-             const accessToken =
+                   const accessToken =
   data?.token ||
   data?.["access-token"] ||
-  data?.accessToken ||
-  data?.message;
+  data?.accessToken;
 
 
           if (!accessToken) {
@@ -988,9 +987,9 @@ function CustomerRegister() {
     try {
 
       const response =
-        await fetch(
-          "http://localhost:8080/api/auth/register/customer",
-          {
+       await fetch(
+  `${import.meta.env.VITE_API_URL}/api/auth/register/customer`,
+  {
             method:
               "POST",
 

@@ -104,9 +104,9 @@ function CustomerDashboard() {
           return;
         }
 
-        const response = await fetch(
-          "http://localhost:8080/api/bookings/access",
-          {
+           const response = await fetch(
+  `${import.meta.env.VITE_API_URL}/api/bookings/access`,
+  {
             method: "GET",
             headers: {
               Authorization: `Bearer ${token}`,
@@ -223,10 +223,10 @@ function CustomerDashboard() {
       }
 
       const url =
-        `http://localhost:8080/api/workers/nearby` +
-        `?latitude=${encodeURIComponent(latitude)}` +
-        `&longitude=${encodeURIComponent(longitude)}` +
-        `&category=${encodeURIComponent(category)}`;
+  `${import.meta.env.VITE_API_URL}/api/workers/nearby` +
+  `?latitude=${encodeURIComponent(latitude)}` +
+  `&longitude=${encodeURIComponent(longitude)}` +
+  `&category=${encodeURIComponent(category)}`;
 
       console.log("================================");
       console.log("NEARBY WORKER SEARCH");
@@ -557,7 +557,7 @@ function CustomerDashboard() {
 
     try {
       setIsCreatingBooking(true);
-      const response = await fetch("http://localhost:8080/api/bookings", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/bookings`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -581,8 +581,8 @@ function CustomerDashboard() {
 
       try {
         const accessResponse = await fetch(
-          "http://localhost:8080/api/bookings/access",
-          {
+  `${import.meta.env.VITE_API_URL}/api/bookings/access`,
+  {
             method: "GET",
             headers: {
               Authorization: `Bearer ${token}`,

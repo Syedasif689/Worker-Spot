@@ -37,7 +37,7 @@ function WorkerRequests() {
   // =====================================================
 
   const API_BASE_URL =
-    "http://localhost:8080";
+    import.meta.env.VITE_API_URL || "https://your-worker-spot-backend.onrender.com";
 
 
   // =====================================================

@@ -50,7 +50,7 @@ function CustomerProfile() {
       }
 
       const response = await fetch(
-        "http://localhost:8080/api/customers/me",
+  `${import.meta.env.VITE_API_URL}/api/customers/me`,
         {
           method: "GET",
           headers: {
@@ -105,8 +105,8 @@ function CustomerProfile() {
       }
 
       const response = await fetch(
-        "http://localhost:8080/api/customers/me",
-        {
+  `${import.meta.env.VITE_API_URL}/api/customers/me`,
+  {
           method: "PUT",
           headers: {
             Authorization: `Bearer ${token}`,
