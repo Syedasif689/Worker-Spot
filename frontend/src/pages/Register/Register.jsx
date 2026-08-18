@@ -371,7 +371,7 @@ function Register() {
     try {
       setLoading(true);
 
-      const response = awaitfetch(
+        const response = await fetch(
   `${import.meta.env.VITE_API_URL}/api/auth/register/worker`,
   {
           method: "POST",
