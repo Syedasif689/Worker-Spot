@@ -20,12 +20,15 @@ const CustomerBookings = ({ token }) => {
       else setRefreshing(true);
       setError("");
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login/customer`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: "application/json",
-        },
-      });
+        const response = await fetch(
+  `${import.meta.env.VITE_API_URL}/api/bookings/customer`,
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+  }
+);
 
       const data = await response.json();
 
