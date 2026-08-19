@@ -1,4 +1,4 @@
-package com.workerspot.controller;
+package com.workerspot.control;
 
 import java.util.Map;
 
