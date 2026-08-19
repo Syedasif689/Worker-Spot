@@ -1,6 +1,7 @@
 com\workerspot\repository\WorkerProfileRepository.class
 com\workerspot\dto\WorkerProfileUpdateRequest.class
 com\workerspot\repository\BookingRepository.class
+com\workerspot\control\AuthController.class
 com\workerspot\dto\BookingCreditPurchaseResponse.class
 com\workerspot\dto\LoginResponse.class
 com\workerspot\service\BookingCreditService.class
@@ -9,7 +10,6 @@ com\workerspot\repository\BookingCreditTransactionRepository.class
 com\workerspot\dto\BookingResponse.class
 com\workerspot\config\PasswordConfig.class
 com\workerspot\exception\GlobalExceptionHandler.class
-com\workerspot\controller\WorkerProfileController.class
 com\workerspot\entity\WorkerProfile.class
 com\workerspot\control\CustomerController.class
 com\workerspot\dto\LoginRequest.class
@@ -23,19 +23,20 @@ com\workerspot\control\BookingController.class
 com\workerspot\entity\Availability.class
 com\workerspot\WorkerSpotApplication.class
 com\workerspot\control\BookingCreditController$CreditBalanceResponse.class
+com\workerspot\control\HealthController.class
 com\workerspot\entity\Booking.class
 com\workerspot\dto\NearbyWorkerResponse.class
 com\workerspot\service\MSG91VerificationService.class
 com\workerspot\control\BookingCreditController.class
 com\workerspot\security\JwtAuthenticationFilter.class
 com\workerspot\config\SecurityConfig.class
+com\workerspot\control\WorkerProfileController.class
 com\workerspot\dto\WorkerRegisterRequest.class
 com\workerspot\entity\CustomerProfile.class
 com\workerspot\entity\User.class
 com\workerspot\repository\CustomerProfileRepository.class
 com\workerspot\dto\CustomerProfileUpdateRequest.class
 com\workerspot\entity\Role.class
-com\workerspot\controller\AuthController.class
 com\workerspot\repository\UserRepository.class
 com\workerspot\dto\BookingCreditPurchaseRequest.class
 com\workerspot\entity\BookingStatus.class

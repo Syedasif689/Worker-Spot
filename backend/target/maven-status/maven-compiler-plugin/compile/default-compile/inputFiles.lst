@@ -5,6 +5,7 @@ D:\Worker Spot\backend\src\main\java\com\workerspot\control\AuthController.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\control\BookingController.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\control\BookingCreditController.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\control\CustomerController.java
+D:\Worker Spot\backend\src\main\java\com\workerspot\control\HealthController.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\control\WorkerProfileController.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\dto\BookingCreditPurchaseRequest.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\dto\BookingCreditPurchaseResponse.java
