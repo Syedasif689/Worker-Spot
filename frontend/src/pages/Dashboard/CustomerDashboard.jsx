@@ -74,6 +74,7 @@ function CustomerDashboard() {
   // =====================================================
 
   const [showBookings, setShowBookings] = useState(false);
+  const [customerBookings, setCustomerBookings] = useState([]);
 
   // =====================================================
   // BOOKING ACCESS - BACKEND AUTHORITY
@@ -493,27 +494,82 @@ function CustomerDashboard() {
   const getAvailabilityText = (availability) => {
     return String(availability).toUpperCase() === "AVAILABLE" ? "Available" : "Busy";
   };
+  // =====================================================
+// CHECK WORKER BOOKING STATUS
+// =====================================================
 
+const getWorkerBooking = (workerId) => {
+  return customerBookings.find(
+    (booking) =>
+      Number(booking.workerId) === Number(workerId) &&
+      booking.status !== "REJECTED"
+  );
+};
   // =====================================================
   // BOOKING MODAL HANDLERS
   // =====================================================
 
-  const handleViewWorker = (worker) => {
-    // =====================================================
-    // BOOKING ACCESS LOCK
-    // =====================================================
+ const handleViewWorker = (worker) => {
 
-    if (!canBook) {
-      navigate("/customer/booking-credits");
+  // =====================================================
+  // BOOKING ACCESS LOCK
+  // =====================================================
+
+  if (!canBook) {
+    navigate("/customer/booking-credits");
+    return;
+  }
+
+
+  // =====================================================
+  // CHECK EXISTING BOOKING
+  // =====================================================
+
+  const existingBooking =
+    getWorkerBooking(worker.workerId);
+
+
+  if (existingBooking) {
+
+    const status =
+      String(existingBooking.status).toUpperCase();
+
+
+    if (status === "PENDING") {
+      alert(
+        "You have already sent a booking request to this worker. Please wait for the worker to respond."
+      );
       return;
     }
 
-    setSelectedWorker(worker);
-    setProblemDescription("");
-    setBookingResponse(null);
-    setShowSuccess(false);
-    setShowBookingModal(true);
-  };
+
+    if (status === "ACCEPTED") {
+      alert(
+        "This worker has already accepted your booking request."
+      );
+      return;
+    }
+
+
+    if (status === "COMPLETED") {
+      alert(
+        "This booking has already been completed."
+      );
+      return;
+    }
+  }
+
+
+  // =====================================================
+  // OPEN BOOKING MODAL
+  // =====================================================
+
+  setSelectedWorker(worker);
+  setProblemDescription("");
+  setBookingResponse(null);
+  setShowSuccess(false);
+  setShowBookingModal(true);
+};
 
   const handleCloseModal = () => {
     setShowBookingModal(false);
@@ -574,6 +630,17 @@ function CustomerDashboard() {
 
       setBookingResponse(data);
       setShowSuccess(true);
+        // =====================================================
+// ADD NEW BOOKING TO LOCAL BOOKING STATE
+// =====================================================
+
+setCustomerBookings((prev) => [
+  data,
+  ...prev.filter(
+    (booking) =>
+      booking.bookingId !== data.bookingId
+  ),
+]);
 
       // =====================================================
       // REFRESH BOOKING ACCESS FROM BACKEND
@@ -927,13 +994,59 @@ function CustomerDashboard() {
 
                     {/* ACTION */}
                     <div className="customer-worker-actions">
-                      <button
-                        type="button"
-                        className="customer-worker-view-button"
-                        onClick={() => handleViewWorker(worker)}
-                      >
-                        View Worker
-                      </button>
+                      {(() => {
+  const existingBooking =
+    getWorkerBooking(worker.workerId);
+
+  const status =
+    existingBooking?.status?.toUpperCase();
+
+  if (status === "PENDING") {
+    return (
+      <button
+        type="button"
+        className="customer-worker-view-button"
+        disabled
+      >
+        ✓ Request Sent
+      </button>
+    );
+  }
+
+  if (status === "ACCEPTED") {
+    return (
+      <button
+        type="button"
+        className="customer-worker-view-button"
+        disabled
+      >
+        ✓ Booking Accepted
+      </button>
+    );
+  }
+
+  if (status === "COMPLETED") {
+    return (
+      <button
+        type="button"
+        className="customer-worker-view-button"
+        disabled
+      >
+        ✓ Service Completed
+      </button>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      className="customer-worker-view-button"
+      onClick={() => handleViewWorker(worker)}
+    >
+      View Worker
+    </button>
+  );
+})()}
                     </div>
                   </div>
 
@@ -970,8 +1083,11 @@ function CustomerDashboard() {
             MY BOOKINGS
         ================================================= */}
         {showBookings && (
-          <CustomerBookings token={localStorage.getItem("token")} />
-        )}
+  <CustomerBookings
+    token={localStorage.getItem("token")}
+    onBookingsLoaded={setCustomerBookings}
+  />
+)}
       </main>
 
       {/* =================================================
