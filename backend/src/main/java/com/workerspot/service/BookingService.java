@@ -31,10 +31,23 @@ public class BookingService {
 
     private static final int CONNECTION_WINDOW_HOURS = 24;
 
+
+    // =====================================================
+    // REPOSITORIES
+    // =====================================================
+
     private final BookingRepository bookingRepository;
+
     private final UserRepository userRepository;
+
     private final WorkerProfileRepository workerProfileRepository;
+
     private final CustomerProfileRepository customerProfileRepository;
+
+
+    // =====================================================
+    // CONSTRUCTOR
+    // =====================================================
 
     public BookingService(
             BookingRepository bookingRepository,
@@ -42,10 +55,18 @@ public class BookingService {
             WorkerProfileRepository workerProfileRepository,
             CustomerProfileRepository customerProfileRepository
     ) {
-        this.bookingRepository = bookingRepository;
-        this.userRepository = userRepository;
-        this.workerProfileRepository = workerProfileRepository;
-        this.customerProfileRepository = customerProfileRepository;
+
+        this.bookingRepository =
+                bookingRepository;
+
+        this.userRepository =
+                userRepository;
+
+        this.workerProfileRepository =
+                workerProfileRepository;
+
+        this.customerProfileRepository =
+                customerProfileRepository;
     }
 
 
@@ -63,13 +84,14 @@ public class BookingService {
         // CUSTOMER
         // =================================================
 
-        User customer = userRepository
-                .findById(customerId)
-                .orElseThrow(() ->
-                        new RuntimeException(
-                                "Customer not found."
-                        )
-                );
+        User customer =
+                userRepository
+                        .findById(customerId)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Customer not found."
+                                )
+                        );
 
 
         // =================================================
@@ -77,7 +99,9 @@ public class BookingService {
         // =================================================
 
         if (customer.getRole() == null ||
-                !customer.getRole().name().equals("CUSTOMER")) {
+                !customer.getRole()
+                        .name()
+                        .equals("CUSTOMER")) {
 
             throw new RuntimeException(
                     "Only customers can create bookings."
@@ -109,6 +133,48 @@ public class BookingService {
                                         "Worker not found."
                                 )
                         );
+
+
+        // =================================================
+        // PREVENT DUPLICATE REQUESTS
+        // =================================================
+        //
+        // IMPORTANT:
+        //
+        // A customer can have only ONE active booking
+        // request with the same worker.
+        //
+        // PENDING    -> BLOCK
+        // ACCEPTED   -> BLOCK
+        // COMPLETED  -> BLOCK
+        // REJECTED   -> ALLOW
+        //
+        // This prevents customers from accidentally
+        // clicking Book multiple times and creating
+        // multiple requests for the same worker.
+        //
+        // =================================================
+
+        boolean existingBooking =
+                bookingRepository
+                        .findByCustomerIdOrderByCreatedAtDesc(
+                                customerId
+                        )
+                        .stream()
+                        .anyMatch(booking ->
+                                booking.getWorker() != null
+                                        && booking.getWorker().getId().equals(worker.getId())
+                                        && booking.getStatus() != BookingStatus.REJECTED
+                        );
+
+
+        if (existingBooking) {
+
+            throw new RuntimeException(
+                    "You already have an active booking request "
+                    + "with this worker."
+            );
+        }
 
 
         // =================================================
@@ -194,11 +260,17 @@ public class BookingService {
         // CREATE BOOKING
         // =================================================
 
-        Booking booking = new Booking();
+        Booking booking =
+                new Booking();
 
-        booking.setCustomer(customer);
 
-        booking.setWorker(worker);
+        booking.setCustomer(
+                customer
+        );
+
+        booking.setWorker(
+                worker
+        );
 
 
         // =================================================
@@ -282,7 +354,9 @@ public class BookingService {
         // CONNECTION WINDOW
         // =================================================
 
-        booking.setConnectionExpiresAt(null);
+        booking.setConnectionExpiresAt(
+                null
+        );
 
 
         // =================================================
@@ -299,7 +373,9 @@ public class BookingService {
         // =================================================
 
         Booking savedBooking =
-                bookingRepository.save(booking);
+                bookingRepository.save(
+                        booking
+                );
 
 
         // =================================================
@@ -327,13 +403,6 @@ public class BookingService {
 
         // =================================================
         // RETURN
-        // =================================================
-        //
-        // IMPORTANT:
-        //
-        // customerProfile has already been updated above.
-        // Therefore toBookingResponse() will now return
-        // the NEW booking-access state.
         // =================================================
 
         return toBookingResponse(
@@ -381,29 +450,6 @@ public class BookingService {
     // =====================================================
     // CUSTOMER BOOKING ACCESS
     // =====================================================
-    //
-    // This tells the frontend whether the customer can
-    // currently book workers.
-    //
-    // First 3 bookings:
-    //
-    //     freeBookingsUsed < 3
-    //
-    // After 3:
-    //
-    //     bookingCredits > 0
-    //
-    // Therefore:
-    //
-    //     canBook = true
-    //         if free bookings remain
-    //         OR paid credits remain
-    //
-    //     canBook = false
-    //         if 3 free bookings are completed
-    //         AND no paid credits remain.
-    //
-    // =====================================================
 
     public Map<String, Object> getCustomerBookingAccess(
             Long customerId
@@ -425,13 +471,15 @@ public class BookingService {
 
         int freeBookingsRemaining =
                 Math.max(
-                        FREE_BOOKING_LIMIT - freeBookingsUsed,
+                        FREE_BOOKING_LIMIT -
+                                freeBookingsUsed,
                         0
                 );
 
 
         boolean freeBookingsCompleted =
-                freeBookingsUsed >= FREE_BOOKING_LIMIT;
+                freeBookingsUsed >=
+                        FREE_BOOKING_LIMIT;
 
 
         int bookingCredits =
@@ -517,6 +565,7 @@ public class BookingService {
         WorkerProfile worker =
                 booking.getWorker();
 
+
         if (worker.getAvailability() !=
                 Availability.AVAILABLE) {
 
@@ -543,23 +592,25 @@ public class BookingService {
                 Availability.BUSY
         );
 
-        workerProfileRepository.save(worker);
+        workerProfileRepository.save(
+                worker
+        );
 
 
         // =================================================
         // CONNECTION EXPIRY
         // =================================================
 
-        booking.setConnectionExpiresAt(null);
+        booking.setConnectionExpiresAt(
+                null
+        );
 
 
         Booking savedBooking =
-                bookingRepository.save(booking);
+                bookingRepository.save(
+                        booking
+                );
 
-
-        // =================================================
-        // RETURN
-        // =================================================
 
         return toBookingResponse(
                 savedBooking
@@ -623,12 +674,31 @@ public class BookingService {
                 BookingStatus.REJECTED
         );
 
-        booking.setConnectionExpiresAt(null);
+        booking.setConnectionExpiresAt(
+                null
+        );
 
 
         Booking savedBooking =
-                bookingRepository.save(booking);
+                bookingRepository.save(
+                        booking
+                );
 
+
+        // =================================================
+        // IMPORTANT
+        // =================================================
+        //
+        // We DO NOT restore the customer's free booking
+        // or paid credit here.
+        //
+        // The booking request itself has already consumed
+        // one booking access.
+        //
+        // The customer can now create a NEW request after
+        // rejection, provided they still have booking access.
+        //
+        // =================================================
 
         return toBookingResponse(
                 savedBooking
@@ -718,6 +788,7 @@ public class BookingService {
 
         WorkerProfile worker =
                 booking.getWorker();
+
 
         worker.setAvailability(
                 Availability.AVAILABLE
@@ -976,17 +1047,6 @@ public class BookingService {
         // =================================================
         // CUSTOMER BOOKING ACCESS
         // =================================================
-        //
-        // This is the important part for the frontend.
-        //
-        // The response now tells the frontend:
-        //
-        // freeBookingsUsed
-        // freeBookingsRemaining
-        // bookingCredits
-        // canBook
-        //
-        // =================================================
 
         if (booking.getCustomer() != null) {
 
@@ -1047,17 +1107,9 @@ public class BookingService {
         // PRIVACY
         // =================================================
         //
-        // NEVER return:
+        // Customer/worker original phone numbers and
+        // emails are never returned here.
         //
-        // Customer:
-        //   email
-        //   mobile
-        //
-        // Worker:
-        //   email
-        //   mobile
-        //
-        // Communication remains inside Worker Spot.
         // =================================================
 
         return response;

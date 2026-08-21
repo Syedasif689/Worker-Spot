@@ -15,6 +15,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.persistence.OneToOne;
 
 @Entity
 @Table(name = "bookings")
@@ -133,6 +134,27 @@ public class Booking {
 
     @Column(name = "free_booking", nullable = false)
     private boolean freeBooking;
+     // =====================================================
+// PLATFORM FEE PAYMENT
+// =====================================================
+
+/*
+ * Links this booking to the Worker Spot platform-fee
+ * payment transaction.
+ *
+ * NULL for the first 3 free bookings.
+ *
+ * NOT NULL for bookings after the free-booking limit.
+ *
+ * This prevents a Razorpay payment from being reused
+ * for multiple bookings.
+ */
+@OneToOne(fetch = FetchType.LAZY)
+@JoinColumn(
+    name = "payment_transaction_id",
+    unique = true
+)
+private PaymentTransaction paymentTransaction;
 
     // =====================================================
     // BOOKING STATUS
@@ -347,6 +369,15 @@ public class Booking {
     public void setStatus(BookingStatus status) {
         this.status = status;
     }
+     public PaymentTransaction getPaymentTransaction() {
+    return paymentTransaction;
+}
+
+public void setPaymentTransaction(
+        PaymentTransaction paymentTransaction
+) {
+    this.paymentTransaction = paymentTransaction;
+}
 
     // =====================================================
     // 24-HOUR CONNECTION

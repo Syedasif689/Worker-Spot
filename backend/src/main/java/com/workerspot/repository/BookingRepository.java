@@ -9,7 +9,6 @@ import com.workerspot.entity.Booking;
 import com.workerspot.entity.BookingStatus;
 
 @Repository
-     
 public interface BookingRepository
         extends JpaRepository<Booking, Long> {
 
@@ -21,6 +20,7 @@ public interface BookingRepository
             Long customerId
     );
 
+
     // =====================================================
     // WORKER REQUESTS
     // =====================================================
@@ -28,6 +28,7 @@ public interface BookingRepository
     List<Booking> findByWorkerIdOrderByCreatedAtDesc(
             Long workerId
     );
+
 
     // =====================================================
     // WORKER REQUESTS BY STATUS
@@ -38,6 +39,7 @@ public interface BookingRepository
             BookingStatus status
     );
 
+
     // =====================================================
     // COUNT CUSTOMER FREE BOOKINGS
     // =====================================================
@@ -46,6 +48,7 @@ public interface BookingRepository
             Long customerId
     );
 
+
     // =====================================================
     // ACTIVE BOOKINGS FOR WORKER
     // =====================================================
@@ -53,5 +56,26 @@ public interface BookingRepository
     long countByWorkerIdAndStatus(
             Long workerId,
             BookingStatus status
+    );
+
+
+    // =====================================================
+    // CHECK EXISTING CUSTOMER -> WORKER BOOKING
+    // =====================================================
+    //
+    // A customer can have only ONE active request with
+    // the same worker.
+    //
+    // PENDING  -> blocks another request
+    // ACCEPTED -> blocks another request
+    // REJECTED -> allows another request
+    // COMPLETED -> allows another request
+    //
+    // =====================================================
+
+    boolean existsByCustomerIdAndWorkerIdAndStatusIn(
+            Long customerId,
+            Long workerId,
+            List<BookingStatus> statuses
     );
 }
