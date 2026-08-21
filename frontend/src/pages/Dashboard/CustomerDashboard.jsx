@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   MapPin,
@@ -29,6 +29,11 @@ import CustomerBookings from "../../components/booking/CustomerBookings";
 
 function CustomerDashboard() {
   const navigate = useNavigate();
+
+  // =====================================================
+  // REF for scrolling to bookings
+  // =====================================================
+  const bookingsRef = useRef(null);
 
   // =====================================================
   // LOCATION
@@ -105,9 +110,9 @@ function CustomerDashboard() {
           return;
         }
 
-           const response = await fetch(
-  `${import.meta.env.VITE_API_URL}/api/bookings/access`,
-  {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/bookings/access`,
+          {
             method: "GET",
             headers: {
               Authorization: `Bearer ${token}`,
@@ -138,6 +143,21 @@ function CustomerDashboard() {
 
     loadBookingAccess();
   }, []);
+
+  // =====================================================
+  // SCROLL TO BOOKINGS WHEN TOGGLED ON
+  // =====================================================
+  useEffect(() => {
+    if (showBookings && bookingsRef.current) {
+      // Small delay to ensure the bookings component has rendered
+      setTimeout(() => {
+        bookingsRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 150);
+    }
+  }, [showBookings]);
 
   // =====================================================
   // CATEGORIES
@@ -224,10 +244,10 @@ function CustomerDashboard() {
       }
 
       const url =
-  `${import.meta.env.VITE_API_URL}/api/workers/nearby` +
-  `?latitude=${encodeURIComponent(latitude)}` +
-  `&longitude=${encodeURIComponent(longitude)}` +
-  `&category=${encodeURIComponent(category)}`;
+        `${import.meta.env.VITE_API_URL}/api/workers/nearby` +
+        `?latitude=${encodeURIComponent(latitude)}` +
+        `&longitude=${encodeURIComponent(longitude)}` +
+        `&category=${encodeURIComponent(category)}`;
 
       console.log("================================");
       console.log("NEARBY WORKER SEARCH");
@@ -494,82 +514,74 @@ function CustomerDashboard() {
   const getAvailabilityText = (availability) => {
     return String(availability).toUpperCase() === "AVAILABLE" ? "Available" : "Busy";
   };
-  // =====================================================
-// CHECK WORKER BOOKING STATUS
-// =====================================================
 
-const getWorkerBooking = (workerId) => {
-  return customerBookings.find(
-    (booking) =>
-      Number(booking.workerId) === Number(workerId) &&
-      booking.status !== "REJECTED"
-  );
-};
+  // =====================================================
+  // CHECK WORKER BOOKING STATUS
+  // =====================================================
+
+  const getWorkerBooking = (workerId) => {
+    return customerBookings.find(
+      (booking) =>
+        Number(booking.workerId) === Number(workerId) &&
+        booking.status !== "REJECTED"
+    );
+  };
+
   // =====================================================
   // BOOKING MODAL HANDLERS
   // =====================================================
 
- const handleViewWorker = (worker) => {
+  const handleViewWorker = (worker) => {
+    // =====================================================
+    // BOOKING ACCESS LOCK
+    // =====================================================
 
-  // =====================================================
-  // BOOKING ACCESS LOCK
-  // =====================================================
-
-  if (!canBook) {
-    navigate("/customer/booking-credits");
-    return;
-  }
-
-
-  // =====================================================
-  // CHECK EXISTING BOOKING
-  // =====================================================
-
-  const existingBooking =
-    getWorkerBooking(worker.workerId);
-
-
-  if (existingBooking) {
-
-    const status =
-      String(existingBooking.status).toUpperCase();
-
-
-    if (status === "PENDING") {
-      alert(
-        "You have already sent a booking request to this worker. Please wait for the worker to respond."
-      );
+    if (!canBook) {
+      navigate("/customer/booking-credits");
       return;
     }
 
+    // =====================================================
+    // CHECK EXISTING BOOKING
+    // =====================================================
 
-    if (status === "ACCEPTED") {
-      alert(
-        "This worker has already accepted your booking request."
-      );
-      return;
+    const existingBooking = getWorkerBooking(worker.workerId);
+
+    if (existingBooking) {
+      const status = String(existingBooking.status).toUpperCase();
+
+      if (status === "PENDING") {
+        alert(
+          "You have already sent a booking request to this worker. Please wait for the worker to respond."
+        );
+        return;
+      }
+
+      if (status === "ACCEPTED") {
+        alert(
+          "This worker has already accepted your booking request."
+        );
+        return;
+      }
+
+      if (status === "COMPLETED") {
+        alert(
+          "This booking has already been completed."
+        );
+        return;
+      }
     }
 
+    // =====================================================
+    // OPEN BOOKING MODAL
+    // =====================================================
 
-    if (status === "COMPLETED") {
-      alert(
-        "This booking has already been completed."
-      );
-      return;
-    }
-  }
-
-
-  // =====================================================
-  // OPEN BOOKING MODAL
-  // =====================================================
-
-  setSelectedWorker(worker);
-  setProblemDescription("");
-  setBookingResponse(null);
-  setShowSuccess(false);
-  setShowBookingModal(true);
-};
+    setSelectedWorker(worker);
+    setProblemDescription("");
+    setBookingResponse(null);
+    setShowSuccess(false);
+    setShowBookingModal(true);
+  };
 
   const handleCloseModal = () => {
     setShowBookingModal(false);
@@ -630,17 +642,18 @@ const getWorkerBooking = (workerId) => {
 
       setBookingResponse(data);
       setShowSuccess(true);
-        // =====================================================
-// ADD NEW BOOKING TO LOCAL BOOKING STATE
-// =====================================================
 
-setCustomerBookings((prev) => [
-  data,
-  ...prev.filter(
-    (booking) =>
-      booking.bookingId !== data.bookingId
-  ),
-]);
+      // =====================================================
+      // ADD NEW BOOKING TO LOCAL BOOKING STATE
+      // =====================================================
+
+      setCustomerBookings((prev) => [
+        data,
+        ...prev.filter(
+          (booking) =>
+            booking.bookingId !== data.bookingId
+        ),
+      ]);
 
       // =====================================================
       // REFRESH BOOKING ACCESS FROM BACKEND
@@ -648,8 +661,8 @@ setCustomerBookings((prev) => [
 
       try {
         const accessResponse = await fetch(
-  `${import.meta.env.VITE_API_URL}/api/bookings/access`,
-  {
+          `${import.meta.env.VITE_API_URL}/api/bookings/access`,
+          {
             method: "GET",
             headers: {
               Authorization: `Bearer ${token}`,
@@ -716,7 +729,11 @@ setCustomerBookings((prev) => [
             <IndianRupee size={18} />
             <span>Booking Credits</span>
           </button>
-          <button type="button" className="customer-dashboard-my-bookings" onClick={toggleBookings}>
+          <button
+            type="button"
+            className="customer-dashboard-my-bookings"
+            onClick={toggleBookings}
+          >
             <Calendar size={18} />
             <span>My Bookings</span>
           </button>
@@ -725,15 +742,14 @@ setCustomerBookings((prev) => [
             <Menu size={22} />
           </button>
 
-            <button
-  type="button"
-  className="customer-dashboard-profile"
-  onClick={() => navigate("/customer-profile")}
->
-  <UserRound size={19} />
-  <span>Profile</span>
-</button>
-            
+          <button
+            type="button"
+            className="customer-dashboard-profile"
+            onClick={() => navigate("/customer-profile")}
+          >
+            <UserRound size={19} />
+            <span>Profile</span>
+          </button>
         </div>
       </header>
 
@@ -995,58 +1011,55 @@ setCustomerBookings((prev) => [
                     {/* ACTION */}
                     <div className="customer-worker-actions">
                       {(() => {
-  const existingBooking =
-    getWorkerBooking(worker.workerId);
+                        const existingBooking = getWorkerBooking(worker.workerId);
+                        const status = existingBooking?.status?.toUpperCase();
 
-  const status =
-    existingBooking?.status?.toUpperCase();
+                        if (status === "PENDING") {
+                          return (
+                            <button
+                              type="button"
+                              className="customer-worker-view-button"
+                              disabled
+                            >
+                              ✓ Request Sent
+                            </button>
+                          );
+                        }
 
-  if (status === "PENDING") {
-    return (
-      <button
-        type="button"
-        className="customer-worker-view-button"
-        disabled
-      >
-        ✓ Request Sent
-      </button>
-    );
-  }
+                        if (status === "ACCEPTED") {
+                          return (
+                            <button
+                              type="button"
+                              className="customer-worker-view-button"
+                              disabled
+                            >
+                              ✓ Booking Accepted
+                            </button>
+                          );
+                        }
 
-  if (status === "ACCEPTED") {
-    return (
-      <button
-        type="button"
-        className="customer-worker-view-button"
-        disabled
-      >
-        ✓ Booking Accepted
-      </button>
-    );
-  }
+                        if (status === "COMPLETED") {
+                          return (
+                            <button
+                              type="button"
+                              className="customer-worker-view-button"
+                              disabled
+                            >
+                              ✓ Service Completed
+                            </button>
+                          );
+                        }
 
-  if (status === "COMPLETED") {
-    return (
-      <button
-        type="button"
-        className="customer-worker-view-button"
-        disabled
-      >
-        ✓ Service Completed
-      </button>
-    );
-  }
-
-  return (
-    <button
-      type="button"
-      className="customer-worker-view-button"
-      onClick={() => handleViewWorker(worker)}
-    >
-      View Worker
-    </button>
-  );
-})()}
+                        return (
+                          <button
+                            type="button"
+                            className="customer-worker-view-button"
+                            onClick={() => handleViewWorker(worker)}
+                          >
+                            View Worker
+                          </button>
+                        );
+                      })()}
                     </div>
                   </div>
 
@@ -1080,14 +1093,16 @@ setCustomerBookings((prev) => [
         </section>
 
         {/* =================================================
-            MY BOOKINGS
+            MY BOOKINGS - with ref for scrolling
         ================================================= */}
-        {showBookings && (
-  <CustomerBookings
-    token={localStorage.getItem("token")}
-    onBookingsLoaded={setCustomerBookings}
-  />
-)}
+        <div ref={bookingsRef} className="customer-bookings-wrapper">
+          {showBookings && (
+            <CustomerBookings
+              token={localStorage.getItem("token")}
+              onBookingsLoaded={setCustomerBookings}
+            />
+          )}
+        </div>
       </main>
 
       {/* =================================================
