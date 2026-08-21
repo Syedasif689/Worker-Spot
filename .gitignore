@@ -1,7 +1,15 @@
 node_modules/
+
 dist/
+
 .env
+
 .env.local
+
 .env.*.local
+
 .vscode/
+
 .DS_Store
+
+src/main/resources/application-local.properties
