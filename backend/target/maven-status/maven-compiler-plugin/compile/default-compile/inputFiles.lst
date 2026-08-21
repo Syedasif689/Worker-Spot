@@ -6,6 +6,7 @@ D:\Worker Spot\backend\src\main\java\com\workerspot\control\BookingController.ja
 D:\Worker Spot\backend\src\main\java\com\workerspot\control\BookingCreditController.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\control\CustomerController.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\control\HealthController.java
+D:\Worker Spot\backend\src\main\java\com\workerspot\control\PaymentController.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\control\WorkerProfileController.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\dto\BookingCreditPurchaseRequest.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\dto\BookingCreditPurchaseResponse.java
@@ -16,6 +17,8 @@ D:\Worker Spot\backend\src\main\java\com\workerspot\dto\CustomerProfileUpdateReq
 D:\Worker Spot\backend\src\main\java\com\workerspot\dto\LoginRequest.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\dto\LoginResponse.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\dto\NearbyWorkerResponse.java
+D:\Worker Spot\backend\src\main\java\com\workerspot\dto\PaymentOrderRequest.java
+D:\Worker Spot\backend\src\main\java\com\workerspot\dto\PaymentVerificationRequest.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\dto\RegisterRequest.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\dto\WorkerProfileUpdateRequest.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\dto\WorkerRegisterRequest.java
@@ -27,6 +30,8 @@ D:\Worker Spot\backend\src\main\java\com\workerspot\entity\BookingStatus.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\entity\CreditTransactionStatus.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\entity\CustomerProfile.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\entity\MSG91VerificationService.java
+D:\Worker Spot\backend\src\main\java\com\workerspot\entity\PaymentStatus.java
+D:\Worker Spot\backend\src\main\java\com\workerspot\entity\PaymentTransaction.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\entity\Role.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\entity\User.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\entity\WorkerProfile.java
@@ -34,6 +39,7 @@ D:\Worker Spot\backend\src\main\java\com\workerspot\exception\GlobalExceptionHan
 D:\Worker Spot\backend\src\main\java\com\workerspot\repository\BookingCreditTransactionRepository.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\repository\BookingRepository.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\repository\CustomerProfileRepository.java
+D:\Worker Spot\backend\src\main\java\com\workerspot\repository\PaymentTransactionRepository.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\repository\UserRepository.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\repository\WorkerProfileRepository.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\security\JwtAuthenticationFilter.java
@@ -42,5 +48,6 @@ D:\Worker Spot\backend\src\main\java\com\workerspot\service\AuthService.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\service\BookingCreditService.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\service\BookingService.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\service\CustomerProfileService.java
+D:\Worker Spot\backend\src\main\java\com\workerspot\service\PaymentService.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\service\WorkerProfileService.java
 D:\Worker Spot\backend\src\main\java\com\workerspot\WorkerSpotApplication.java
