@@ -31,8 +31,9 @@ function CustomerDashboard() {
   const navigate = useNavigate();
 
   // =====================================================
-  // REF for scrolling to bookings
+  // REF FOR SCROLLING TO BOOKINGS
   // =====================================================
+
   const bookingsRef = useRef(null);
 
   // =====================================================
@@ -88,12 +89,17 @@ function CustomerDashboard() {
   const FREE_BOOKING_LIMIT = 3;
 
   const [freeBookingsUsed, setFreeBookingsUsed] = useState(0);
+
   const [freeBookingsRemaining, setFreeBookingsRemaining] = useState(
     FREE_BOOKING_LIMIT
   );
+
   const [freeBookingsCompleted, setFreeBookingsCompleted] = useState(false);
+
   const [bookingCredits, setBookingCredits] = useState(0);
+
   const [canBook, setCanBook] = useState(true);
+
   const [loadingBookingAccess, setLoadingBookingAccess] = useState(true);
 
   // =====================================================
@@ -124,16 +130,30 @@ function CustomerDashboard() {
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data?.message || "Unable to load booking access.");
+          throw new Error(
+            data?.message || "Unable to load booking access."
+          );
         }
 
         console.log("Booking access from backend:", data);
 
         setFreeBookingsUsed(Number(data.freeBookingsUsed ?? 0));
-        setFreeBookingsRemaining(Number(data.freeBookingsRemaining ?? 0));
-        setFreeBookingsCompleted(Boolean(data.freeBookingsCompleted));
-        setBookingCredits(Number(data.bookingCredits ?? 0));
-        setCanBook(Boolean(data.canBook));
+
+        setFreeBookingsRemaining(
+          Number(data.freeBookingsRemaining ?? 0)
+        );
+
+        setFreeBookingsCompleted(
+          Boolean(data.freeBookingsCompleted)
+        );
+
+        setBookingCredits(
+          Number(data.bookingCredits ?? 0)
+        );
+
+        setCanBook(
+          Boolean(data.canBook)
+        );
       } catch (error) {
         console.error("Booking access error:", error);
       } finally {
@@ -145,11 +165,11 @@ function CustomerDashboard() {
   }, []);
 
   // =====================================================
-  // SCROLL TO BOOKINGS WHEN TOGGLED ON
+  // SCROLL TO BOOKINGS
   // =====================================================
+
   useEffect(() => {
     if (showBookings && bookingsRef.current) {
-      // Small delay to ensure the bookings component has rendered
       setTimeout(() => {
         bookingsRef.current.scrollIntoView({
           behavior: "smooth",
@@ -164,24 +184,52 @@ function CustomerDashboard() {
   // =====================================================
 
   const categories = [
-    { name: "Mechanic", icon: CarFront },
-    { name: "Plumber", icon: Droplets },
-    { name: "Electrician", icon: Zap },
-    { name: "Carpenter", icon: Hammer },
-    { name: "Painter", icon: Paintbrush },
-    { name: "AC Technician", icon: Snowflake },
-    { name: "Welder", icon: Wrench },
+    {
+      name: "Mechanic",
+      icon: CarFront,
+    },
+    {
+      name: "Plumber",
+      icon: Droplets,
+    },
+    {
+      name: "Electrician",
+      icon: Zap,
+    },
+    {
+      name: "Carpenter",
+      icon: Hammer,
+    },
+    {
+      name: "Painter",
+      icon: Paintbrush,
+    },
+    {
+      name: "AC Technician",
+      icon: Snowflake,
+    },
+    {
+      name: "Welder",
+      icon: Wrench,
+    },
   ];
 
   // =====================================================
   // REVERSE GEOCODING
   // =====================================================
 
-  const getAddressFromCoordinates = async (latitude, longitude) => {
+  const getAddressFromCoordinates = async (
+    latitude,
+    longitude
+  ) => {
     try {
       const response = await fetch(
         `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`,
-        { headers: { Accept: "application/json" } }
+        {
+          headers: {
+            Accept: "application/json",
+          },
+        }
       );
 
       if (!response.ok) {
@@ -189,15 +237,36 @@ function CustomerDashboard() {
       }
 
       const data = await response.json();
+
       const address = data.address || {};
 
       const state = address.state || "";
-      const district = address.state_district || address.district || address.county || "";
-      const city = address.city || address.town || address.village || address.municipality || "";
-      const area = address.suburb || address.neighbourhood || address.residential || address.hamlet || "";
+
+      const district =
+        address.state_district ||
+        address.district ||
+        address.county ||
+        "";
+
+      const city =
+        address.city ||
+        address.town ||
+        address.village ||
+        address.municipality ||
+        "";
+
+      const area =
+        address.suburb ||
+        address.neighbourhood ||
+        address.residential ||
+        address.hamlet ||
+        "";
 
       const displayAddress =
-        data.display_name || [area, city, district, state].filter(Boolean).join(", ");
+        data.display_name ||
+        [area, city, district, state]
+          .filter(Boolean)
+          .join(", ");
 
       return {
         address: displayAddress,
@@ -207,9 +276,15 @@ function CustomerDashboard() {
         area,
       };
     } catch (error) {
-      console.error("Reverse geocoding error:", error);
+      console.error(
+        "Reverse geocoding error:",
+        error
+      );
+
       return {
-        address: `${Number(latitude).toFixed(6)}, ${Number(longitude).toFixed(6)}`,
+        address: `${Number(latitude).toFixed(
+          6
+        )}, ${Number(longitude).toFixed(6)}`,
         state: "",
         district: "",
         city: "",
@@ -222,10 +297,23 @@ function CustomerDashboard() {
   // FIND NEARBY WORKERS
   // =====================================================
 
-  const findNearbyWorkers = async (category, latitude = location.latitude, longitude = location.longitude) => {
-    if (latitude === null || longitude === null || latitude === undefined || longitude === undefined) {
-      setWorkerError("Please select a valid service location first.");
+  const findNearbyWorkers = async (
+    category,
+    latitude = location.latitude,
+    longitude = location.longitude
+  ) => {
+    if (
+      latitude === null ||
+      longitude === null ||
+      latitude === undefined ||
+      longitude === undefined
+    ) {
+      setWorkerError(
+        "Please select a valid service location first."
+      );
+
       setWorkers([]);
+
       return;
     }
 
@@ -239,8 +327,11 @@ function CustomerDashboard() {
       setWorkerError("");
 
       const token = localStorage.getItem("token");
+
       if (!token) {
-        throw new Error("Your session has expired. Please login again.");
+        throw new Error(
+          "Your session has expired. Please login again."
+        );
       }
 
       const url =
@@ -266,36 +357,71 @@ function CustomerDashboard() {
       });
 
       const text = await response.text();
-      console.log("Raw nearby-worker response:", text);
+
+      console.log(
+        "Raw nearby-worker response:",
+        text
+      );
 
       let result;
+
       try {
         result = text ? JSON.parse(text) : [];
       } catch (error) {
-        console.error("Worker JSON parsing error:", error);
-        throw new Error("Invalid response received from server.");
+        console.error(
+          "Worker JSON parsing error:",
+          error
+        );
+
+        throw new Error(
+          "Invalid response received from server."
+        );
       }
 
-      console.log("Actual nearby workers response:", result);
-      console.log("Number of workers:", Array.isArray(result) ? result.length : "NOT ARRAY");
+      console.log(
+        "Actual nearby workers response:",
+        result
+      );
+
+      console.log(
+        "Number of workers:",
+        Array.isArray(result)
+          ? result.length
+          : "NOT ARRAY"
+      );
 
       if (!response.ok) {
-        throw new Error(result?.message || "Unable to find nearby workers.");
+        throw new Error(
+          result?.message ||
+            "Unable to find nearby workers."
+        );
       }
 
       if (!Array.isArray(result)) {
-        throw new Error("Server returned an invalid worker list.");
+        throw new Error(
+          "Server returned an invalid worker list."
+        );
       }
 
       setWorkers(result);
 
       if (result.length === 0) {
-        setWorkerError(`No ${category} workers found near your location.`);
+        setWorkerError(
+          `No ${category} workers found near your location.`
+        );
       }
     } catch (error) {
-      console.error("Nearby workers error:", error);
+      console.error(
+        "Nearby workers error:",
+        error
+      );
+
       setWorkers([]);
-      setWorkerError(error.message || "Unable to load nearby workers.");
+
+      setWorkerError(
+        error.message ||
+          "Unable to load nearby workers."
+      );
     } finally {
       setLoadingWorkers(false);
     }
@@ -307,21 +433,35 @@ function CustomerDashboard() {
 
   const handleCurrentLocation = () => {
     if (!navigator.geolocation) {
-      setLocationStatus("Location services are not supported by this browser.");
+      setLocationStatus(
+        "Location services are not supported by this browser."
+      );
+
       return;
     }
 
     setGettingLocation(true);
-    setLocationStatus("Detecting your current location...");
+
+    setLocationStatus(
+      "Detecting your current location..."
+    );
+
     setWorkerError("");
     setWorkers([]);
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
-        const { latitude, longitude } = position.coords;
+        const {
+          latitude,
+          longitude,
+        } = position.coords;
 
         try {
-          const addressData = await getAddressFromCoordinates(latitude, longitude);
+          const addressData =
+            await getAddressFromCoordinates(
+              latitude,
+              longitude
+            );
 
           const newLocation = {
             ...addressData,
@@ -330,18 +470,36 @@ function CustomerDashboard() {
           };
 
           setLocation(newLocation);
-          setLocationMode("current");
-          setLocationStatus("Current location detected successfully.");
 
-          console.log("Customer coordinates:", latitude, longitude);
+          setLocationMode("current");
+
+          setLocationStatus(
+            "Current location detected successfully."
+          );
+
+          console.log(
+            "Customer coordinates:",
+            latitude,
+            longitude
+          );
 
           if (selectedCategory) {
-            await findNearbyWorkers(selectedCategory, latitude, longitude);
+            await findNearbyWorkers(
+              selectedCategory,
+              latitude,
+              longitude
+            );
           }
         } catch (error) {
-          console.error("Current location error:", error);
+          console.error(
+            "Current location error:",
+            error
+          );
+
           setLocation({
-            address: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`,
+            address: `${latitude.toFixed(
+              6
+            )}, ${longitude.toFixed(6)}`,
             state: "",
             district: "",
             city: "",
@@ -349,11 +507,19 @@ function CustomerDashboard() {
             latitude,
             longitude,
           });
+
           setLocationMode("current");
-          setLocationStatus("Location detected successfully.");
+
+          setLocationStatus(
+            "Location detected successfully."
+          );
 
           if (selectedCategory) {
-            await findNearbyWorkers(selectedCategory, latitude, longitude);
+            await findNearbyWorkers(
+              selectedCategory,
+              latitude,
+              longitude
+            );
           }
         } finally {
           setGettingLocation(false);
@@ -361,18 +527,30 @@ function CustomerDashboard() {
       },
       (error) => {
         setGettingLocation(false);
+
         switch (error.code) {
           case error.PERMISSION_DENIED:
-            setLocationStatus("Location permission was denied. Please allow location access.");
+            setLocationStatus(
+              "Location permission was denied. Please allow location access."
+            );
             break;
+
           case error.POSITION_UNAVAILABLE:
-            setLocationStatus("Your current location is unavailable.");
+            setLocationStatus(
+              "Your current location is unavailable."
+            );
             break;
+
           case error.TIMEOUT:
-            setLocationStatus("Location request timed out. Please try again.");
+            setLocationStatus(
+              "Location request timed out. Please try again."
+            );
             break;
+
           default:
-            setLocationStatus("Unable to detect your current location.");
+            setLocationStatus(
+              "Unable to detect your current location."
+            );
         }
       },
       {
@@ -384,7 +562,7 @@ function CustomerDashboard() {
   };
 
   // =====================================================
-  // MANUAL LOCATION SEARCH
+  // MANUAL LOCATION INPUT
   // =====================================================
 
   const handleManualLocation = (e) => {
@@ -393,12 +571,20 @@ function CustomerDashboard() {
     setWorkerError("");
   };
 
+  // =====================================================
+  // MANUAL LOCATION SEARCH
+  // =====================================================
+
   const handleManualLocationSubmit = async (e) => {
     e.preventDefault();
 
     const value = manualLocation.trim();
+
     if (!value) {
-      setLocationStatus("Please enter a location.");
+      setLocationStatus(
+        "Please enter a location."
+      );
+
       return;
     }
 
@@ -411,32 +597,70 @@ function CustomerDashboard() {
         `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&addressdetails=1&q=${encodeURIComponent(
           value
         )}`,
-        { headers: { Accept: "application/json" } }
+        {
+          headers: {
+            Accept: "application/json",
+          },
+        }
       );
 
       if (!response.ok) {
-        throw new Error("Unable to search this location.");
+        throw new Error(
+          "Unable to search this location."
+        );
       }
 
       const results = await response.json();
-      if (!Array.isArray(results) || results.length === 0) {
-        throw new Error("Location could not be found.");
+
+      if (
+        !Array.isArray(results) ||
+        results.length === 0
+      ) {
+        throw new Error(
+          "Location could not be found."
+        );
       }
 
       const data = results[0];
+
       const latitude = Number(data.lat);
       const longitude = Number(data.lon);
 
-      if (Number.isNaN(latitude) || Number.isNaN(longitude)) {
-        throw new Error("Location coordinates are invalid.");
+      if (
+        Number.isNaN(latitude) ||
+        Number.isNaN(longitude)
+      ) {
+        throw new Error(
+          "Location coordinates are invalid."
+        );
       }
 
       const address = data.address || {};
+
       const state = address.state || "";
-      const district = address.state_district || address.district || address.county || "";
-      const city = address.city || address.town || address.village || address.municipality || "";
-      const area = address.suburb || address.neighbourhood || address.residential || address.hamlet || "";
-      const displayAddress = data.display_name || value;
+
+      const district =
+        address.state_district ||
+        address.district ||
+        address.county ||
+        "";
+
+      const city =
+        address.city ||
+        address.town ||
+        address.village ||
+        address.municipality ||
+        "";
+
+      const area =
+        address.suburb ||
+        address.neighbourhood ||
+        address.residential ||
+        address.hamlet ||
+        "";
+
+      const displayAddress =
+        data.display_name || value;
 
       const newLocation = {
         address: displayAddress,
@@ -449,17 +673,37 @@ function CustomerDashboard() {
       };
 
       setLocation(newLocation);
-      setLocationMode("manual");
-      setLocationStatus("Location selected successfully.");
 
-      console.log("Manual location coordinates:", latitude, longitude);
+      setLocationMode("manual");
+
+      setLocationStatus(
+        "Location selected successfully."
+      );
+
+      console.log(
+        "Manual location coordinates:",
+        latitude,
+        longitude
+      );
 
       if (selectedCategory) {
-        await findNearbyWorkers(selectedCategory, latitude, longitude);
+        await findNearbyWorkers(
+          selectedCategory,
+          latitude,
+          longitude
+        );
       }
     } catch (error) {
-      console.error("Manual location error:", error);
-      setLocationStatus(error.message || "Unable to find this location.");
+      console.error(
+        "Manual location error:",
+        error
+      );
+
+      setLocationStatus(
+        error.message ||
+          "Unable to find this location."
+      );
+
       setWorkers([]);
     } finally {
       setGettingLocation(false);
@@ -470,17 +714,31 @@ function CustomerDashboard() {
   // CATEGORY CLICK
   // =====================================================
 
-  const handleCategoryClick = async (category) => {
+  const handleCategoryClick = async (
+    category
+  ) => {
     setSelectedCategory(category);
+
     setWorkerError("");
+
     setWorkers([]);
 
-    if (location.latitude === null || location.longitude === null) {
-      setWorkerError("Please select your service location first.");
+    if (
+      location.latitude === null ||
+      location.longitude === null
+    ) {
+      setWorkerError(
+        "Please select your service location first."
+      );
+
       return;
     }
 
-    await findNearbyWorkers(category, location.latitude, location.longitude);
+    await findNearbyWorkers(
+      category,
+      location.latitude,
+      location.longitude
+    );
   };
 
   // =====================================================
@@ -488,8 +746,15 @@ function CustomerDashboard() {
   // =====================================================
 
   const handleRefreshWorkers = () => {
-    if (!selectedCategory) return;
-    findNearbyWorkers(selectedCategory, location.latitude, location.longitude);
+    if (!selectedCategory) {
+      return;
+    }
+
+    findNearbyWorkers(
+      selectedCategory,
+      location.latitude,
+      location.longitude
+    );
   };
 
   // =====================================================
@@ -497,13 +762,22 @@ function CustomerDashboard() {
   // =====================================================
 
   const formatDistance = (distance) => {
-    if (distance === null || distance === undefined || Number.isNaN(Number(distance))) {
+    if (
+      distance === null ||
+      distance === undefined ||
+      Number.isNaN(Number(distance))
+    ) {
       return "Distance unavailable";
     }
+
     const value = Number(distance);
+
     if (value < 1) {
-      return `${Math.round(value * 1000)} m away`;
+      return `${Math.round(
+        value * 1000
+      )} m away`;
     }
+
     return `${value.toFixed(2)} km away`;
   };
 
@@ -511,24 +785,46 @@ function CustomerDashboard() {
   // AVAILABILITY
   // =====================================================
 
-  const getAvailabilityText = (availability) => {
-    return String(availability).toUpperCase() === "AVAILABLE" ? "Available" : "Busy";
+  const getAvailabilityText = (
+    availability
+  ) => {
+    return String(availability).toUpperCase() ===
+      "AVAILABLE"
+      ? "Available"
+      : "Busy";
   };
 
   // =====================================================
-  // CHECK WORKER BOOKING STATUS
+  // GET ACTIVE BOOKING FOR WORKER
   // =====================================================
 
   const getWorkerBooking = (workerId) => {
     return customerBookings.find(
-      (booking) =>
-        Number(booking.workerId) === Number(workerId) &&
-        booking.status !== "REJECTED"
+      (booking) => {
+        if (
+          Number(booking.workerId) !==
+          Number(workerId)
+        ) {
+          return false;
+        }
+
+        const status = String(
+          booking.status
+        ).toUpperCase();
+
+        // Only active bookings block
+        // another booking.
+
+        return (
+          status === "PENDING" ||
+          status === "ACCEPTED"
+        );
+      }
     );
   };
 
   // =====================================================
-  // BOOKING MODAL HANDLERS
+  // OPEN WORKER / BOOKING MODAL
   // =====================================================
 
   const handleViewWorker = (worker) => {
@@ -537,154 +833,303 @@ function CustomerDashboard() {
     // =====================================================
 
     if (!canBook) {
-      navigate("/customer/booking-credits");
+      navigate(
+        "/customer/booking-credits"
+      );
+
       return;
     }
 
     // =====================================================
-    // CHECK EXISTING BOOKING
+    // CHECK ACTIVE BOOKING
     // =====================================================
 
-    const existingBooking = getWorkerBooking(worker.workerId);
+    const existingBooking =
+      getWorkerBooking(
+        worker.workerId
+      );
 
     if (existingBooking) {
-      const status = String(existingBooking.status).toUpperCase();
+      const status = String(
+        existingBooking.status
+      ).toUpperCase();
+
+      // ================================================
+      // PENDING
+      // ================================================
 
       if (status === "PENDING") {
         alert(
           "You have already sent a booking request to this worker. Please wait for the worker to respond."
         );
+
         return;
       }
+
+      // ================================================
+      // ACCEPTED
+      // ================================================
 
       if (status === "ACCEPTED") {
         alert(
-          "This worker has already accepted your booking request."
+          "This worker is currently working on your booking."
         );
-        return;
-      }
 
-      if (status === "COMPLETED") {
-        alert(
-          "This booking has already been completed."
-        );
         return;
       }
     }
 
     // =====================================================
-    // OPEN BOOKING MODAL
+    // COMPLETED / REJECTED / CANCELLED / NO BOOKING
+    // =====================================================
+    //
+    // Customer is allowed to create a new booking.
+    //
     // =====================================================
 
     setSelectedWorker(worker);
+
     setProblemDescription("");
+
     setBookingResponse(null);
+
     setShowSuccess(false);
+
     setShowBookingModal(true);
   };
 
+  // =====================================================
+  // CLOSE BOOKING MODAL
+  // =====================================================
+
   const handleCloseModal = () => {
     setShowBookingModal(false);
+
     setSelectedWorker(null);
+
     setProblemDescription("");
+
     setBookingResponse(null);
+
     setShowSuccess(false);
+
     setIsCreatingBooking(false);
   };
 
-  const handleSendBooking = async (description) => {
-    const token = localStorage.getItem("token");
+  // =====================================================
+  // SEND BOOKING
+  // =====================================================
+
+  const handleSendBooking = async (
+    description
+  ) => {
+    const token =
+      localStorage.getItem("token");
+
     if (!token) {
-      alert("Your session has expired. Please login again.");
+      alert(
+        "Your session has expired. Please login again."
+      );
+
       return;
     }
 
-    // Validation
+    // =====================================================
+    // VALIDATION
+    // =====================================================
+
     if (!selectedWorker) {
       alert("No worker selected.");
+
       return;
     }
 
-    if (location.latitude === null || location.longitude === null || !location.address) {
-      alert("Service location is not set. Please select a location first.");
+    if (
+      location.latitude === null ||
+      location.longitude === null ||
+      !location.address
+    ) {
+      alert(
+        "Service location is not set. Please select a location first."
+      );
+
       return;
     }
+
+    // =====================================================
+    // BOOKING PAYLOAD
+    // =====================================================
 
     const payload = {
-      workerId: selectedWorker.workerId,
-      category: selectedWorker.category || selectedCategory,
-      serviceLocation: location.address,
-      serviceState: location.state || "",
-      serviceDistrict: location.district || "",
-      serviceCity: location.city || "",
-      serviceArea: location.area || "",
-      customerLatitude: location.latitude,
-      customerLongitude: location.longitude,
-      problemDescription: description,
+      workerId:
+        selectedWorker.workerId,
+
+      category:
+        selectedWorker.category ||
+        selectedCategory,
+
+      serviceLocation:
+        location.address,
+
+      serviceState:
+        location.state || "",
+
+      serviceDistrict:
+        location.district || "",
+
+      serviceCity:
+        location.city || "",
+
+      serviceArea:
+        location.area || "",
+
+      customerLatitude:
+        location.latitude,
+
+      customerLongitude:
+        location.longitude,
+
+      problemDescription:
+        description,
     };
 
     try {
       setIsCreatingBooking(true);
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/bookings`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
 
-      const data = await response.json();
+      // =====================================================
+      // CREATE BOOKING
+      // =====================================================
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/bookings`,
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json",
+
+            Authorization:
+              `Bearer ${token}`,
+          },
+
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const data =
+        await response.json();
 
       if (!response.ok) {
-        throw new Error(data?.message || "Failed to create booking.");
+        throw new Error(
+          data?.message ||
+            "Failed to create booking."
+        );
       }
 
+      console.log(
+        "Booking created:",
+        data
+      );
+
+      // =====================================================
+      // SHOW SUCCESS
+      // =====================================================
+
       setBookingResponse(data);
+
       setShowSuccess(true);
 
       // =====================================================
-      // ADD NEW BOOKING TO LOCAL BOOKING STATE
+      // ADD NEW BOOKING TO LOCAL STATE
       // =====================================================
 
-      setCustomerBookings((prev) => [
-        data,
-        ...prev.filter(
-          (booking) =>
-            booking.bookingId !== data.bookingId
-        ),
-      ]);
+      setCustomerBookings(
+        (prev) => [
+          data,
+
+          ...prev.filter(
+            (booking) =>
+              booking.bookingId !==
+              data.bookingId
+          ),
+        ]
+      );
 
       // =====================================================
-      // REFRESH BOOKING ACCESS FROM BACKEND
+      // REFRESH BOOKING ACCESS
       // =====================================================
 
       try {
-        const accessResponse = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/bookings/access`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              Accept: "application/json",
-            },
-          }
-        );
+        const accessResponse =
+          await fetch(
+            `${import.meta.env.VITE_API_URL}/api/bookings/access`,
+            {
+              method: "GET",
 
-        const accessData = await accessResponse.json();
+              headers: {
+                Authorization:
+                  `Bearer ${token}`,
+
+                Accept:
+                  "application/json",
+              },
+            }
+          );
+
+        const accessData =
+          await accessResponse.json();
 
         if (accessResponse.ok) {
-          setFreeBookingsUsed(Number(accessData.freeBookingsUsed ?? 0));
-          setFreeBookingsRemaining(Number(accessData.freeBookingsRemaining ?? 0));
-          setFreeBookingsCompleted(Boolean(accessData.freeBookingsCompleted));
-          setBookingCredits(Number(accessData.bookingCredits ?? 0));
-          setCanBook(Boolean(accessData.canBook));
+          setFreeBookingsUsed(
+            Number(
+              accessData.freeBookingsUsed ??
+                0
+            )
+          );
+
+          setFreeBookingsRemaining(
+            Number(
+              accessData.freeBookingsRemaining ??
+                0
+            )
+          );
+
+          setFreeBookingsCompleted(
+            Boolean(
+              accessData.freeBookingsCompleted
+            )
+          );
+
+          setBookingCredits(
+            Number(
+              accessData.bookingCredits ??
+                0
+            )
+          );
+
+          setCanBook(
+            Boolean(
+              accessData.canBook
+            )
+          );
         }
       } catch (accessError) {
-        console.error("Unable to refresh booking access:", accessError);
+        console.error(
+          "Unable to refresh booking access:",
+          accessError
+        );
       }
     } catch (error) {
-      alert(error.message || "Unable to send booking request. Please try again.");
+      console.error(
+        "Booking creation error:",
+        error
+      );
+
+      alert(
+        error.message ||
+          "Unable to send booking request. Please try again."
+      );
     } finally {
       setIsCreatingBooking(false);
     }
@@ -695,7 +1140,9 @@ function CustomerDashboard() {
   // =====================================================
 
   const toggleBookings = () => {
-    setShowBookings((prev) => !prev);
+    setShowBookings(
+      (prev) => !prev
+    );
   };
 
   // =====================================================
@@ -704,423 +1151,908 @@ function CustomerDashboard() {
 
   return (
     <div className="customer-dashboard">
+
       {/* =================================================
           TOPBAR
       ================================================= */}
+
       <header className="customer-dashboard-topbar">
+
         <div className="customer-dashboard-brand">
+
           <div className="customer-dashboard-brand-icon">
             <Wrench size={23} />
           </div>
+
           <div>
             <h2>
               Worker<span> Spot</span>
             </h2>
-            <p>Find skilled workers near you</p>
+
+            <p>
+              Find skilled workers near you
+            </p>
           </div>
+
         </div>
 
         <div className="customer-dashboard-topbar-actions">
+
+          {/* BOOKING CREDITS */}
+
           <button
             type="button"
             className="customer-dashboard-credit-button"
-            onClick={() => navigate("/customer/booking-credits")}
+            onClick={() =>
+              navigate(
+                "/customer/booking-credits"
+              )
+            }
           >
             <IndianRupee size={18} />
-            <span>Booking Credits</span>
+
+            <span>
+              Booking Credits
+            </span>
           </button>
+
+          {/* MY BOOKINGS */}
+
           <button
             type="button"
             className="customer-dashboard-my-bookings"
             onClick={toggleBookings}
           >
             <Calendar size={18} />
-            <span>My Bookings</span>
+
+            <span>
+              My Bookings
+            </span>
           </button>
 
-          <button type="button" className="customer-dashboard-menu">
+          {/* MENU */}
+
+          <button
+            type="button"
+            className="customer-dashboard-menu"
+          >
             <Menu size={22} />
           </button>
+
+          {/* PROFILE */}
 
           <button
             type="button"
             className="customer-dashboard-profile"
-            onClick={() => navigate("/customer-profile")}
+            onClick={() =>
+              navigate(
+                "/customer-profile"
+              )
+            }
           >
             <UserRound size={19} />
-            <span>Profile</span>
+
+            <span>
+              Profile
+            </span>
           </button>
+
         </div>
       </header>
 
       {/* =================================================
           MAIN
       ================================================= */}
+
       <main className="customer-dashboard-content">
+
         {/* =================================================
             WELCOME
         ================================================= */}
+
         <section className="customer-dashboard-welcome">
+
           <div>
+
             <span className="customer-dashboard-badge">
+
               <Navigation size={14} />
+
               Service Finder
+
             </span>
-            <h1>What service do you need?</h1>
-            <p>Find skilled workers near your service location.</p>
+
+            <h1>
+              What service do you need?
+            </h1>
+
+            <p>
+              Find skilled workers near your service location.
+            </p>
+
           </div>
+
         </section>
 
         {/* =================================================
             LOCATION
         ================================================= */}
+
         <section className="customer-location-card">
+
           <div className="customer-location-header">
+
             <div className="customer-location-title">
+
               <div className="customer-location-icon">
                 <MapPin size={21} />
               </div>
+
               <div>
-                <h2>Service Location</h2>
-                <p>Where do you need the worker?</p>
+
+                <h2>
+                  Service Location
+                </h2>
+
+                <p>
+                  Where do you need the worker?
+                </p>
+
               </div>
+
             </div>
+
             <ChevronDown size={20} />
+
           </div>
 
+          {/* SELECTED LOCATION */}
+
           {location.address && (
+
             <div className="customer-selected-location">
+
               <div className="customer-selected-location-icon">
                 <CheckCircle size={19} />
               </div>
+
               <div className="customer-selected-location-text">
-                <strong>{locationMode === "current" ? "Current location" : "Selected location"}</strong>
-                <span>{location.address}</span>
+
+                <strong>
+                  {locationMode ===
+                  "current"
+                    ? "Current location"
+                    : "Selected location"}
+                </strong>
+
+                <span>
+                  {location.address}
+                </span>
+
               </div>
+
             </div>
+
           )}
+
+          {/* CURRENT LOCATION */}
 
           <button
             type="button"
             className="customer-current-location-button"
-            onClick={handleCurrentLocation}
-            disabled={gettingLocation}
+            onClick={
+              handleCurrentLocation
+            }
+            disabled={
+              gettingLocation
+            }
           >
+
             <LocateFixed size={19} />
-            {gettingLocation ? "Detecting Location..." : "Use Current Location"}
+
+            {gettingLocation
+              ? "Detecting Location..."
+              : "Use Current Location"}
+
           </button>
 
           <div className="customer-location-divider">
-            <span>OR</span>
+            <span>
+              OR
+            </span>
           </div>
 
-          <form className="customer-manual-location" onSubmit={handleManualLocationSubmit}>
+          {/* MANUAL LOCATION */}
+
+          <form
+            className="customer-manual-location"
+            onSubmit={
+              handleManualLocationSubmit
+            }
+          >
+
             <div className="customer-search-box">
+
               <Search size={19} />
+
               <input
                 type="text"
                 placeholder="Search for area, city, landmark..."
-                value={manualLocation}
-                onChange={handleManualLocation}
+                value={
+                  manualLocation
+                }
+                onChange={
+                  handleManualLocation
+                }
               />
+
             </div>
-            <button type="submit" className="customer-location-search-button" disabled={gettingLocation}>
-              {gettingLocation ? "Searching..." : "Select"}
+
+            <button
+              type="submit"
+              className="customer-location-search-button"
+              disabled={
+                gettingLocation
+              }
+            >
+              {gettingLocation
+                ? "Searching..."
+                : "Select"}
             </button>
+
           </form>
 
-          {locationStatus && <p className="customer-location-status">{locationStatus}</p>}
+          {locationStatus && (
+
+            <p className="customer-location-status">
+              {locationStatus}
+            </p>
+
+          )}
+
         </section>
 
         {/* =================================================
             CATEGORIES
         ================================================= */}
+
         <section className="customer-categories-section">
+
           <div className="customer-section-heading">
+
             <div>
-              <h2>Browse Services</h2>
-              <p>Choose the type of worker you need.</p>
+
+              <h2>
+                Browse Services
+              </h2>
+
+              <p>
+                Choose the type of worker you need.
+              </p>
+
             </div>
+
           </div>
 
           <div className="customer-category-grid">
-            {categories.map((category) => {
-              const Icon = category.icon;
-              const isSelected = selectedCategory === category.name;
-              return (
-                <button
-                  type="button"
-                  key={category.name}
-                  className={`customer-category-card ${isSelected ? "selected" : ""}`}
-                  onClick={() => handleCategoryClick(category.name)}
-                  disabled={loadingWorkers}
-                >
-                  <div className="customer-category-icon">
-                    <Icon size={25} />
-                  </div>
-                  <span>{category.name}</span>
-                  <small>{isSelected ? "Selected" : "Find nearby"}</small>
-                </button>
-              );
-            })}
+
+            {categories.map(
+              (category) => {
+
+                const Icon =
+                  category.icon;
+
+                const isSelected =
+                  selectedCategory ===
+                  category.name;
+
+                return (
+
+                  <button
+                    type="button"
+                    key={
+                      category.name
+                    }
+                    className={`customer-category-card ${
+                      isSelected
+                        ? "selected"
+                        : ""
+                    }`}
+                    onClick={() =>
+                      handleCategoryClick(
+                        category.name
+                      )
+                    }
+                    disabled={
+                      loadingWorkers
+                    }
+                  >
+
+                    <div className="customer-category-icon">
+
+                      <Icon size={25} />
+
+                    </div>
+
+                    <span>
+                      {category.name}
+                    </span>
+
+                    <small>
+                      {isSelected
+                        ? "Selected"
+                        : "Find nearby"}
+                    </small>
+
+                  </button>
+
+                );
+              }
+            )}
+
           </div>
+
         </section>
 
         {/* =================================================
             NEARBY WORKERS
         ================================================= */}
+
         <section className="customer-nearby-section">
+
           <div className="customer-section-heading">
+
             <div>
-              <h2>Nearby Workers</h2>
+
+              <h2>
+                Nearby Workers
+              </h2>
+
               <p>
                 {selectedCategory
                   ? `${selectedCategory} workers near your service location.`
                   : "Workers available near your service location."}
               </p>
+
             </div>
 
-            {selectedCategory && workers.length > 0 && (
-              <button
-                type="button"
-                className="customer-refresh-workers"
-                onClick={handleRefreshWorkers}
-                disabled={loadingWorkers}
-              >
-                <RefreshCw size={17} />
-                Refresh
-              </button>
-            )}
+            {selectedCategory &&
+              workers.length > 0 && (
+
+                <button
+                  type="button"
+                  className="customer-refresh-workers"
+                  onClick={
+                    handleRefreshWorkers
+                  }
+                  disabled={
+                    loadingWorkers
+                  }
+                >
+
+                  <RefreshCw size={17} />
+
+                  Refresh
+
+                </button>
+
+              )}
+
           </div>
 
+          {/* LOADING */}
+
           {loadingWorkers && (
+
             <div className="customer-nearby-empty">
+
               <div className="customer-nearby-empty-icon">
-                <RefreshCw size={27} className="customer-loading-icon" />
+
+                <RefreshCw
+                  size={27}
+                  className="customer-loading-icon"
+                />
+
               </div>
-              <h3>Finding nearby workers...</h3>
-              <p>Searching for available {selectedCategory} workers near your location.</p>
+
+              <h3>
+                Finding nearby workers...
+              </h3>
+
+              <p>
+                Searching for available{" "}
+                {selectedCategory} workers near your location.
+              </p>
+
             </div>
+
           )}
 
-          {!loadingWorkers && workerError && (
-            <div className="customer-nearby-empty">
-              <div className="customer-nearby-empty-icon">
-                <MapPin size={27} />
-              </div>
-              <h3>{selectedCategory ? "No workers found" : "Select a service location"}</h3>
-              <p>{workerError}</p>
-            </div>
-          )}
+          {/* ERROR */}
 
-          {!loadingWorkers && !workerError && !selectedCategory && (
-            <div className="customer-nearby-empty">
-              <div className="customer-nearby-empty-icon">
-                <MapPin size={27} />
-              </div>
-              <h3>Select a service</h3>
-              <p>Select your location and then choose the type of worker you need.</p>
-            </div>
-          )}
+          {!loadingWorkers &&
+            workerError && (
 
-          {!loadingWorkers && workers.length > 0 && (
-            <div className="customer-worker-list">
-              {workers.map((worker, index) => (
-                <article
-                  className={`customer-worker-card ${!canBook ? "free-tier-locked" : ""}`}
-                  key={worker.workerId ?? `worker-${index}`}
-                  style={{ position: "relative" }}
-                >
-                  {/* =================================================
-                      WORKER CARD CONTENT (BLURRED WHEN LOCKED)
-                  ================================================= */}
-                  <div
-                    className="customer-worker-card-content"
-                    style={{
-                      filter: !canBook ? "blur(4px)" : "none",
-                      pointerEvents: !canBook ? "none" : "auto",
-                      transition: "filter 0.3s ease",
-                    }}
-                  >
-                    {/* HEADER */}
-                    <div className="customer-worker-header">
-                      <div className="customer-worker-avatar">
-                        <UserRound size={25} />
-                      </div>
-                      <div className="customer-worker-main">
-                        <h3>{worker.fullName || "Worker"}</h3>
-                        <span className="customer-worker-category">
-                          <Wrench size={14} />
-                          {worker.category || selectedCategory}
-                        </span>
-                      </div>
+              <div className="customer-nearby-empty">
+
+                <div className="customer-nearby-empty-icon">
+                  <MapPin size={27} />
+                </div>
+
+                <h3>
+                  {selectedCategory
+                    ? "No workers found"
+                    : "Select a service location"}
+                </h3>
+
+                <p>
+                  {workerError}
+                </p>
+
+              </div>
+
+            )}
+
+          {/* NO CATEGORY */}
+
+          {!loadingWorkers &&
+            !workerError &&
+            !selectedCategory && (
+
+              <div className="customer-nearby-empty">
+
+                <div className="customer-nearby-empty-icon">
+                  <MapPin size={27} />
+                </div>
+
+                <h3>
+                  Select a service
+                </h3>
+
+                <p>
+                  Select your location and then choose the type of worker you need.
+                </p>
+
+              </div>
+
+            )}
+
+          {/* WORKER LIST */}
+
+          {!loadingWorkers &&
+            workers.length > 0 && (
+
+              <div className="customer-worker-list">
+
+                {workers.map(
+                  (worker, index) => (
+
+                    <article
+                      className={`customer-worker-card ${
+                        !canBook
+                          ? "free-tier-locked"
+                          : ""
+                      }`}
+                      key={
+                        worker.workerId ??
+                        `worker-${index}`
+                      }
+                      style={{
+                        position:
+                          "relative",
+                      }}
+                    >
+
+                      {/* =================================================
+                          WORKER CARD CONTENT
+                      ================================================= */}
+
                       <div
-                        className={`customer-worker-availability ${
-                          String(worker.availability).toUpperCase() === "AVAILABLE"
-                            ? "available"
-                            : "busy"
-                        }`}
+                        className="customer-worker-card-content"
+                        style={{
+                          filter:
+                            !canBook
+                              ? "blur(4px)"
+                              : "none",
+
+                          pointerEvents:
+                            !canBook
+                              ? "none"
+                              : "auto",
+
+                          transition:
+                            "filter 0.3s ease",
+                        }}
                       >
-                        <span></span>
-                        {getAvailabilityText(worker.availability)}
-                      </div>
-                    </div>
 
-                    {/* DETAILS */}
-                    <div className="customer-worker-details">
-                      <div className="customer-worker-detail">
-                        <BriefcaseBusiness size={17} />
-                        <div>
-                          <small>Experience</small>
-                          <strong>{worker.experienceYears ?? 0} years</strong>
-                        </div>
-                      </div>
-                      <div className="customer-worker-detail">
-                        <IndianRupee size={17} />
-                        <div>
-                          <small>Charges</small>
-                          <strong>₹{Number(worker.charges ?? 0).toFixed(2)}/hour</strong>
-                        </div>
-                      </div>
-                      <div className="customer-worker-detail">
-                        <Navigation size={17} />
-                        <div>
-                          <small>Distance</small>
-                          <strong>{formatDistance(worker.distanceKm)}</strong>
-                        </div>
-                      </div>
-                    </div>
+                        {/* HEADER */}
 
-                    {/* LOCATION */}
-                    <div className="customer-worker-location">
-                      <MapPin size={17} />
-                      <span>
-                        {[worker.area, worker.city, worker.district, worker.state]
-                          .filter(Boolean)
-                          .join(", ") || "Location unavailable"}
-                      </span>
-                    </div>
+                        <div className="customer-worker-header">
 
-                    {/* ABOUT */}
-                    {worker.about && (
-                      <div className="customer-worker-about">
-                        <p>{worker.about}</p>
-                      </div>
-                    )}
+                          <div className="customer-worker-avatar">
 
-                    {/* ACTION */}
-                    <div className="customer-worker-actions">
-                      {(() => {
-                        const existingBooking = getWorkerBooking(worker.workerId);
-                        const status = existingBooking?.status?.toUpperCase();
+                            <UserRound size={25} />
 
-                        if (status === "PENDING") {
-                          return (
-                            <button
-                              type="button"
-                              className="customer-worker-view-button"
-                              disabled
-                            >
-                              ✓ Request Sent
-                            </button>
-                          );
-                        }
+                          </div>
 
-                        if (status === "ACCEPTED") {
-                          return (
-                            <button
-                              type="button"
-                              className="customer-worker-view-button"
-                              disabled
-                            >
-                              ✓ Booking Accepted
-                            </button>
-                          );
-                        }
+                          <div className="customer-worker-main">
 
-                        if (status === "COMPLETED") {
-                          return (
-                            <button
-                              type="button"
-                              className="customer-worker-view-button"
-                              disabled
-                            >
-                              ✓ Service Completed
-                            </button>
-                          );
-                        }
+                            <h3>
+                              {worker.fullName ||
+                                "Worker"}
+                            </h3>
 
-                        return (
-                          <button
-                            type="button"
-                            className="customer-worker-view-button"
-                            onClick={() => handleViewWorker(worker)}
+                            <span className="customer-worker-category">
+
+                              <Wrench size={14} />
+
+                              {worker.category ||
+                                selectedCategory}
+
+                            </span>
+
+                          </div>
+
+                          <div
+                            className={`customer-worker-availability ${
+                              String(
+                                worker.availability
+                              ).toUpperCase() ===
+                              "AVAILABLE"
+                                ? "available"
+                                : "busy"
+                            }`}
                           >
-                            View Worker
-                          </button>
-                        );
-                      })()}
-                    </div>
-                  </div>
 
-                  {/* =================================================
-                      FREE TIER LOCK OVERLAY (CLEAR, NOT BLURRED)
-                  ================================================= */}
-                  {!loadingBookingAccess && !canBook && (
-                    <div className="customer-worker-lock-overlay">
-                      <div className="customer-worker-lock-content">
-                        <div className="customer-worker-lock-icon">
-                          <Lock size={28} />
+                            <span></span>
+
+                            {getAvailabilityText(
+                              worker.availability
+                            )}
+
+                          </div>
+
                         </div>
-                        <h3>Booking Access Required</h3>
-                        <p>Your 3 free bookings have been completed.</p>
-                        <span>Purchase Booking Credits to continue booking workers.</span>
-                        <button
-                          type="button"
-                          className="customer-worker-unlock-button"
-                          onClick={() => navigate("/customer/booking-credits")}
-                        >
-                          <IndianRupee size={17} />
-                          Buy Booking Credits
-                        </button>
+
+                        {/* DETAILS */}
+
+                        <div className="customer-worker-details">
+
+                          <div className="customer-worker-detail">
+
+                            <BriefcaseBusiness
+                              size={17}
+                            />
+
+                            <div>
+
+                              <small>
+                                Experience
+                              </small>
+
+                              <strong>
+                                {worker.experienceYears ??
+                                  0}{" "}
+                                years
+                              </strong>
+
+                            </div>
+
+                          </div>
+
+                          <div className="customer-worker-detail">
+
+                            <IndianRupee
+                              size={17}
+                            />
+
+                            <div>
+
+                              <small>
+                                Charges
+                              </small>
+
+                              <strong>
+                                ₹
+                                {Number(
+                                  worker.charges ??
+                                    0
+                                ).toFixed(2)}
+                                /hour
+                              </strong>
+
+                            </div>
+
+                          </div>
+
+                          <div className="customer-worker-detail">
+
+                            <Navigation
+                              size={17}
+                            />
+
+                            <div>
+
+                              <small>
+                                Distance
+                              </small>
+
+                              <strong>
+                                {formatDistance(
+                                  worker.distanceKm
+                                )}
+                              </strong>
+
+                            </div>
+
+                          </div>
+
+                        </div>
+
+                        {/* LOCATION */}
+
+                        <div className="customer-worker-location">
+
+                          <MapPin size={17} />
+
+                          <span>
+                            {[
+                              worker.area,
+                              worker.city,
+                              worker.district,
+                              worker.state,
+                            ]
+                              .filter(
+                                Boolean
+                              )
+                              .join(
+                                ", "
+                              ) ||
+                              "Location unavailable"}
+                          </span>
+
+                        </div>
+
+                        {/* ABOUT */}
+
+                        {worker.about && (
+
+                          <div className="customer-worker-about">
+
+                            <p>
+                              {worker.about}
+                            </p>
+
+                          </div>
+
+                        )}
+
+                        {/* =================================================
+                            ACTION
+                        ================================================= */}
+
+                        <div className="customer-worker-actions">
+
+                          {(() => {
+
+                            const existingBooking =
+                              getWorkerBooking(
+                                worker.workerId
+                              );
+
+                            const status =
+                              existingBooking?.status?.toUpperCase();
+
+                            // ================================================
+                            // PENDING
+                            // ================================================
+
+                            if (
+                              status ===
+                              "PENDING"
+                            ) {
+
+                              return (
+
+                                <button
+                                  type="button"
+                                  className="customer-worker-view-button"
+                                  disabled
+                                >
+                                  ✓ Request Sent
+                                </button>
+
+                              );
+
+                            }
+
+                            // ================================================
+                            // ACCEPTED
+                            // ================================================
+
+                            if (
+                              status ===
+                              "ACCEPTED"
+                            ) {
+
+                              return (
+
+                                <button
+                                  type="button"
+                                  className="customer-worker-view-button"
+                                  disabled
+                                >
+                                  ✓ Worker Currently Working
+                                </button>
+
+                              );
+
+                            }
+
+                            // ================================================
+                            // COMPLETED
+                            // REJECTED
+                            // CANCELLED
+                            // NO BOOKING
+                            // ================================================
+                            //
+                            // Customer can book again.
+                            //
+
+                            return (
+
+                              <button
+                                type="button"
+                                className="customer-worker-view-button"
+                                onClick={() =>
+                                  handleViewWorker(
+                                    worker
+                                  )
+                                }
+                              >
+                                View Worker
+                              </button>
+
+                            );
+
+                          })()}
+
+                        </div>
+
                       </div>
-                    </div>
-                  )}
-                </article>
-              ))}
-            </div>
-          )}
+
+                      {/* =================================================
+                          FREE TIER LOCK OVERLAY
+                      ================================================= */}
+
+                      {!loadingBookingAccess &&
+                        !canBook && (
+
+                          <div className="customer-worker-lock-overlay">
+
+                            <div className="customer-worker-lock-content">
+
+                              <div className="customer-worker-lock-icon">
+
+                                <Lock size={28} />
+
+                              </div>
+
+                              <h3>
+                                Booking Access Required
+                              </h3>
+
+                              <p>
+                                Your 3 free bookings have been completed.
+                              </p>
+
+                              <span>
+                                Purchase Booking Credits to continue booking workers.
+                              </span>
+
+                              <button
+                                type="button"
+                                className="customer-worker-unlock-button"
+                                onClick={() =>
+                                  navigate(
+                                    "/customer/booking-credits"
+                                  )
+                                }
+                              >
+
+                                <IndianRupee
+                                  size={17}
+                                />
+
+                                Buy Booking Credits
+
+                              </button>
+
+                            </div>
+
+                          </div>
+
+                        )}
+
+                    </article>
+
+                  )
+                )}
+
+              </div>
+
+            )}
+
         </section>
 
         {/* =================================================
-            MY BOOKINGS - with ref for scrolling
+            MY BOOKINGS
         ================================================= */}
-        <div ref={bookingsRef} className="customer-bookings-wrapper">
+
+        <div
+          ref={bookingsRef}
+          className="customer-bookings-wrapper"
+        >
+
           {showBookings && (
+
             <CustomerBookings
-              token={localStorage.getItem("token")}
-              onBookingsLoaded={setCustomerBookings}
+              token={
+                localStorage.getItem(
+                  "token"
+                )
+              }
+              onBookingsLoaded={
+                setCustomerBookings
+              }
             />
+
           )}
+
         </div>
+
       </main>
 
       {/* =================================================
           BOOKING MODAL
       ================================================= */}
+
       <BookingModal
-        isOpen={showBookingModal}
-        onClose={handleCloseModal}
-        worker={selectedWorker}
-        location={location}
-        category={selectedCategory}
-        onSendBooking={handleSendBooking}
-        isCreating={isCreatingBooking}
-        bookingResponse={bookingResponse}
-        showSuccess={showSuccess}
-        problemDescription={problemDescription}
-        setProblemDescription={setProblemDescription}
+        isOpen={
+          showBookingModal
+        }
+        onClose={
+          handleCloseModal
+        }
+        worker={
+          selectedWorker
+        }
+        location={
+          location
+        }
+        category={
+          selectedCategory
+        }
+        onSendBooking={
+          handleSendBooking
+        }
+        isCreating={
+          isCreatingBooking
+        }
+        bookingResponse={
+          bookingResponse
+        }
+        showSuccess={
+          showSuccess
+        }
+        problemDescription={
+          problemDescription
+        }
+        setProblemDescription={
+          setProblemDescription
+        }
       />
+
     </div>
   );
 }
