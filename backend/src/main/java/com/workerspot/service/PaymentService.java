@@ -1,5 +1,7 @@
 package com.workerspot.service;
 
+import java.util.List;
+
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -8,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
 import com.razorpay.Utils;
+import com.workerspot.dto.BookingCreditPurchaseResponse;
 import com.workerspot.dto.PaymentOrderRequest;
 import com.workerspot.dto.PaymentVerificationRequest;
 import com.workerspot.entity.BookingCreditTransaction;
@@ -19,6 +22,7 @@ import com.workerspot.entity.User;
 import com.workerspot.repository.BookingCreditTransactionRepository;
 import com.workerspot.repository.CustomerProfileRepository;
 import com.workerspot.repository.PaymentTransactionRepository;
+
 
 @Service
 public class PaymentService {
@@ -35,11 +39,9 @@ public class PaymentService {
      * PRO     -> ₹80  -> 5 credits
      * PREMIUM -> ₹100 -> 8 credits
      *
-     * IMPORTANT:
+     * Frontend sends ONLY packageName.
      *
-     * The frontend sends ONLY packageName.
-     *
-     * The backend decides the amount and credits.
+     * Backend decides amount and credits.
      */
 
     private static final String STARTER = "STARTER";
@@ -146,9 +148,9 @@ public class PaymentService {
 
         try {
 
-            // =============================================
+            // =================================================
             // RAZORPAY CLIENT
-            // =============================================
+            // =================================================
 
             RazorpayClient razorpayClient =
                     new RazorpayClient(
@@ -157,9 +159,9 @@ public class PaymentService {
                     );
 
 
-            // =============================================
+            // =================================================
             // AMOUNT IN PAISE
-            // =============================================
+            // =================================================
 
             int amountInPaise =
                     (int) Math.round(
@@ -167,9 +169,9 @@ public class PaymentService {
                     );
 
 
-            // =============================================
+            // =================================================
             // RAZORPAY ORDER REQUEST
-            // =============================================
+            // =================================================
 
             JSONObject orderRequest =
                     new JSONObject();
@@ -190,9 +192,9 @@ public class PaymentService {
             );
 
 
-            // =============================================
+            // =================================================
             // CREATE RAZORPAY ORDER
-            // =============================================
+            // =================================================
 
             Order razorpayOrder =
                     razorpayClient.orders.create(
@@ -204,9 +206,9 @@ public class PaymentService {
                     razorpayOrder.get("id");
 
 
-            // =============================================
+            // =================================================
             // SAVE PAYMENT TRANSACTION
-            // =============================================
+            // =================================================
 
             PaymentTransaction transaction =
                     new PaymentTransaction();
@@ -238,24 +240,22 @@ public class PaymentService {
                     );
 
 
-            // =============================================
+            // =================================================
             // SAVE BOOKING CREDIT TRANSACTION
-            // =============================================
-            //
-            // This creates the record in:
-            //
-            // booking_credit_transactions
-            //
-            // At this point payment has NOT yet been
-            // verified.
-            //
-            // Therefore status = CREATED.
-            //
-            // Credits are NOT added here.
-            //
-            // Credits are added only after successful
-            // Razorpay verification.
-            // =============================================
+            // =================================================
+
+            /*
+             * This transaction is used for customer
+             * payment history.
+             *
+             * Payment is not verified yet.
+             *
+             * Therefore:
+             *
+             * status = CREATED
+             *
+             * Credits are NOT added here.
+             */
 
             BookingCreditTransaction creditTransaction =
                     new BookingCreditTransaction();
@@ -294,9 +294,9 @@ public class PaymentService {
             );
 
 
-            // =============================================
+            // =================================================
             // RETURN PAYMENT TRANSACTION
-            // =============================================
+            // =================================================
 
             return savedPaymentTransaction;
 
@@ -469,13 +469,12 @@ public class PaymentService {
             // =================================================
             // UPDATE BOOKING CREDIT TRANSACTION
             // =================================================
-            //
-            // Find the credit transaction using the
-            // Razorpay order ID.
-            //
-            // Then attach the actual payment ID and mark
-            // the transaction as PAID.
-            // =================================================
+
+            /*
+             * The booking credit transaction is the record
+             * that will be displayed in the customer's
+             * payment history.
+             */
 
             BookingCreditTransaction creditTransaction =
                     bookingCreditTransactionRepository
@@ -489,18 +488,18 @@ public class PaymentService {
                             );
 
 
-            // =============================================
+            // =================================================
             // PAYMENT ID
-            // =============================================
+            // =================================================
 
             creditTransaction.setPaymentId(
                     request.getPaymentId()
             );
 
 
-            // =============================================
+            // =================================================
             // MARK CREDIT TRANSACTION AS PAID
-            // =============================================
+            // =================================================
 
             creditTransaction.setStatus(
                     CreditTransactionStatus.PAID
@@ -536,6 +535,29 @@ public class PaymentService {
                 paymentTransactionRepository.save(
                         transaction
                 );
+
+
+                // =============================================
+                // ALSO UPDATE CREDIT TRANSACTION
+                // =============================================
+
+                bookingCreditTransactionRepository
+                        .findByPaymentOrderId(
+                                transaction.getOrderId()
+                        )
+                        .ifPresent(
+                                creditTransaction -> {
+
+                                    creditTransaction.setStatus(
+                                            CreditTransactionStatus.FAILED
+                                    );
+
+                                    bookingCreditTransactionRepository
+                                            .save(
+                                                    creditTransaction
+                                            );
+                                }
+                        );
             }
 
 
@@ -544,6 +566,97 @@ public class PaymentService {
                     e
             );
         }
+    }
+
+
+    // =====================================================
+    // GET CUSTOMER PAYMENT HISTORY
+    // =====================================================
+
+    @Transactional(readOnly = true)
+    public List<BookingCreditPurchaseResponse>
+    getCustomerPaymentHistory(
+            User customer
+    ) {
+
+        /*
+         * Get ONLY this customer's transactions.
+         *
+         * Latest payment comes first.
+         */
+
+        List<BookingCreditTransaction> transactions =
+                bookingCreditTransactionRepository
+                        .findByCustomerIdOrderByCreatedAtDesc(
+                                customer.getId()
+                        );
+
+
+        return transactions.stream()
+                .map(transaction -> {
+
+                    BookingCreditPurchaseResponse response =
+                            new BookingCreditPurchaseResponse();
+
+
+                    // =============================================
+                    // TRANSACTION ID
+                    // =============================================
+
+                    response.setTransactionId(
+                            transaction.getId()
+                    );
+
+
+                    // =============================================
+                    // PLAN
+                    // =============================================
+
+                    response.setPlan(
+                            transaction.getPlanName()
+                    );
+
+
+                    // =============================================
+                    // CREDITS
+                    // =============================================
+
+                    response.setCredits(
+                            transaction.getCredits()
+                    );
+
+
+                    // =============================================
+                    // AMOUNT
+                    // =============================================
+
+                    response.setAmount(
+                            transaction.getAmount()
+                    );
+
+
+                    // =============================================
+                    // STATUS
+                    // =============================================
+
+                    response.setStatus(
+                            transaction.getStatus().name()
+                    );
+
+
+                    // =============================================
+                    // RAZORPAY ORDER ID
+                    // =============================================
+
+                    response.setPaymentOrderId(
+                            transaction.getPaymentOrderId()
+                    );
+
+
+                    return response;
+
+                })
+                .toList();
     }
 
 
@@ -629,7 +742,8 @@ public class PaymentService {
     /*
      * Safe to send to React.
      *
-     * NEVER send razorpay.key.secret to frontend.
+     * NEVER send razorpay.key.secret
+     * to the frontend.
      */
 
     public String getRazorpayKeyId() {

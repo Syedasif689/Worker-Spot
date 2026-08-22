@@ -440,6 +440,13 @@ public class BookingCreditService {
         response.setPaymentOrderId(
                 transaction.getPaymentOrderId()
         );
+        response.setPaymentId(
+        transaction.getPaymentId()
+);
+
+response.setCreatedAt(
+        transaction.getCreatedAt()
+);
 
 
         return response;

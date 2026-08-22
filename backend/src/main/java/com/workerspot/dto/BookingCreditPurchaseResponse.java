@@ -1,5 +1,7 @@
 package com.workerspot.dto;
 
+import java.time.LocalDateTime;
+
 public class BookingCreditPurchaseResponse {
 
     private Long transactionId;
@@ -13,6 +15,10 @@ public class BookingCreditPurchaseResponse {
     private String status;
 
     private String paymentOrderId;
+
+    private String paymentId;
+
+    private LocalDateTime createdAt;
 
 
     // =====================================================
@@ -43,6 +49,14 @@ public class BookingCreditPurchaseResponse {
         return paymentOrderId;
     }
 
+    public String getPaymentId() {
+        return paymentId;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
 
     // =====================================================
     // SETTERS
@@ -70,5 +84,13 @@ public class BookingCreditPurchaseResponse {
 
     public void setPaymentOrderId(String paymentOrderId) {
         this.paymentOrderId = paymentOrderId;
+    }
+
+    public void setPaymentId(String paymentId) {
+        this.paymentId = paymentId;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }
