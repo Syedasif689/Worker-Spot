@@ -13,7 +13,6 @@ import {
   Snowflake,
   CarFront,
   UserRound,
-  Menu,
   Navigation,
   CheckCircle,
   BriefcaseBusiness,
@@ -21,6 +20,8 @@ import {
   RefreshCw,
   Calendar,
   Lock,
+  History,
+  Home,
 } from "lucide-react";
 
 import "./CustomerDashboard.css";
@@ -90,9 +91,8 @@ function CustomerDashboard() {
 
   const [freeBookingsUsed, setFreeBookingsUsed] = useState(0);
 
-  const [freeBookingsRemaining, setFreeBookingsRemaining] = useState(
-    FREE_BOOKING_LIMIT
-  );
+  const [freeBookingsRemaining, setFreeBookingsRemaining] =
+    useState(FREE_BOOKING_LIMIT);
 
   const [freeBookingsCompleted, setFreeBookingsCompleted] = useState(false);
 
@@ -143,17 +143,11 @@ function CustomerDashboard() {
           Number(data.freeBookingsRemaining ?? 0)
         );
 
-        setFreeBookingsCompleted(
-          Boolean(data.freeBookingsCompleted)
-        );
+        setFreeBookingsCompleted(Boolean(data.freeBookingsCompleted));
 
-        setBookingCredits(
-          Number(data.bookingCredits ?? 0)
-        );
+        setBookingCredits(Number(data.bookingCredits ?? 0));
 
-        setCanBook(
-          Boolean(data.canBook)
-        );
+        setCanBook(Boolean(data.canBook));
       } catch (error) {
         console.error("Booking access error:", error);
       } finally {
@@ -218,10 +212,7 @@ function CustomerDashboard() {
   // REVERSE GEOCODING
   // =====================================================
 
-  const getAddressFromCoordinates = async (
-    latitude,
-    longitude
-  ) => {
+  const getAddressFromCoordinates = async (latitude, longitude) => {
     try {
       const response = await fetch(
         `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`,
@@ -264,9 +255,7 @@ function CustomerDashboard() {
 
       const displayAddress =
         data.display_name ||
-        [area, city, district, state]
-          .filter(Boolean)
-          .join(", ");
+        [area, city, district, state].filter(Boolean).join(", ");
 
       return {
         address: displayAddress,
@@ -276,15 +265,12 @@ function CustomerDashboard() {
         area,
       };
     } catch (error) {
-      console.error(
-        "Reverse geocoding error:",
-        error
-      );
+      console.error("Reverse geocoding error:", error);
 
       return {
-        address: `${Number(latitude).toFixed(
-          6
-        )}, ${Number(longitude).toFixed(6)}`,
+        address: `${Number(latitude).toFixed(6)}, ${Number(
+          longitude
+        ).toFixed(6)}`,
         state: "",
         district: "",
         city: "",
@@ -308,12 +294,8 @@ function CustomerDashboard() {
       latitude === undefined ||
       longitude === undefined
     ) {
-      setWorkerError(
-        "Please select a valid service location first."
-      );
-
+      setWorkerError("Please select a valid service location first.");
       setWorkers([]);
-
       return;
     }
 
@@ -329,9 +311,7 @@ function CustomerDashboard() {
       const token = localStorage.getItem("token");
 
       if (!token) {
-        throw new Error(
-          "Your session has expired. Please login again."
-        );
+        throw new Error("Your session has expired. Please login again.");
       }
 
       const url =
@@ -358,49 +338,33 @@ function CustomerDashboard() {
 
       const text = await response.text();
 
-      console.log(
-        "Raw nearby-worker response:",
-        text
-      );
+      console.log("Raw nearby-worker response:", text);
 
       let result;
 
       try {
         result = text ? JSON.parse(text) : [];
       } catch (error) {
-        console.error(
-          "Worker JSON parsing error:",
-          error
-        );
+        console.error("Worker JSON parsing error:", error);
 
-        throw new Error(
-          "Invalid response received from server."
-        );
+        throw new Error("Invalid response received from server.");
       }
 
-      console.log(
-        "Actual nearby workers response:",
-        result
-      );
+      console.log("Actual nearby workers response:", result);
 
       console.log(
         "Number of workers:",
-        Array.isArray(result)
-          ? result.length
-          : "NOT ARRAY"
+        Array.isArray(result) ? result.length : "NOT ARRAY"
       );
 
       if (!response.ok) {
         throw new Error(
-          result?.message ||
-            "Unable to find nearby workers."
+          result?.message || "Unable to find nearby workers."
         );
       }
 
       if (!Array.isArray(result)) {
-        throw new Error(
-          "Server returned an invalid worker list."
-        );
+        throw new Error("Server returned an invalid worker list.");
       }
 
       setWorkers(result);
@@ -411,16 +375,12 @@ function CustomerDashboard() {
         );
       }
     } catch (error) {
-      console.error(
-        "Nearby workers error:",
-        error
-      );
+      console.error("Nearby workers error:", error);
 
       setWorkers([]);
 
       setWorkerError(
-        error.message ||
-          "Unable to load nearby workers."
+        error.message || "Unable to load nearby workers."
       );
     } finally {
       setLoadingWorkers(false);
@@ -442,26 +402,20 @@ function CustomerDashboard() {
 
     setGettingLocation(true);
 
-    setLocationStatus(
-      "Detecting your current location..."
-    );
+    setLocationStatus("Detecting your current location...");
 
     setWorkerError("");
     setWorkers([]);
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
-        const {
-          latitude,
-          longitude,
-        } = position.coords;
+        const { latitude, longitude } = position.coords;
 
         try {
-          const addressData =
-            await getAddressFromCoordinates(
-              latitude,
-              longitude
-            );
+          const addressData = await getAddressFromCoordinates(
+            latitude,
+            longitude
+          );
 
           const newLocation = {
             ...addressData,
@@ -491,15 +445,10 @@ function CustomerDashboard() {
             );
           }
         } catch (error) {
-          console.error(
-            "Current location error:",
-            error
-          );
+          console.error("Current location error:", error);
 
           setLocation({
-            address: `${latitude.toFixed(
-              6
-            )}, ${longitude.toFixed(6)}`,
+            address: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`,
             state: "",
             district: "",
             city: "",
@@ -510,9 +459,7 @@ function CustomerDashboard() {
 
           setLocationMode("current");
 
-          setLocationStatus(
-            "Location detected successfully."
-          );
+          setLocationStatus("Location detected successfully.");
 
           if (selectedCategory) {
             await findNearbyWorkers(
@@ -548,9 +495,7 @@ function CustomerDashboard() {
             break;
 
           default:
-            setLocationStatus(
-              "Unable to detect your current location."
-            );
+            setLocationStatus("Unable to detect your current location.");
         }
       },
       {
@@ -581,10 +526,7 @@ function CustomerDashboard() {
     const value = manualLocation.trim();
 
     if (!value) {
-      setLocationStatus(
-        "Please enter a location."
-      );
-
+      setLocationStatus("Please enter a location.");
       return;
     }
 
@@ -605,20 +547,13 @@ function CustomerDashboard() {
       );
 
       if (!response.ok) {
-        throw new Error(
-          "Unable to search this location."
-        );
+        throw new Error("Unable to search this location.");
       }
 
       const results = await response.json();
 
-      if (
-        !Array.isArray(results) ||
-        results.length === 0
-      ) {
-        throw new Error(
-          "Location could not be found."
-        );
+      if (!Array.isArray(results) || results.length === 0) {
+        throw new Error("Location could not be found.");
       }
 
       const data = results[0];
@@ -626,13 +561,8 @@ function CustomerDashboard() {
       const latitude = Number(data.lat);
       const longitude = Number(data.lon);
 
-      if (
-        Number.isNaN(latitude) ||
-        Number.isNaN(longitude)
-      ) {
-        throw new Error(
-          "Location coordinates are invalid."
-        );
+      if (Number.isNaN(latitude) || Number.isNaN(longitude)) {
+        throw new Error("Location coordinates are invalid.");
       }
 
       const address = data.address || {};
@@ -659,8 +589,7 @@ function CustomerDashboard() {
         address.hamlet ||
         "";
 
-      const displayAddress =
-        data.display_name || value;
+      const displayAddress = data.display_name || value;
 
       const newLocation = {
         address: displayAddress,
@@ -676,9 +605,7 @@ function CustomerDashboard() {
 
       setLocationMode("manual");
 
-      setLocationStatus(
-        "Location selected successfully."
-      );
+      setLocationStatus("Location selected successfully.");
 
       console.log(
         "Manual location coordinates:",
@@ -694,14 +621,10 @@ function CustomerDashboard() {
         );
       }
     } catch (error) {
-      console.error(
-        "Manual location error:",
-        error
-      );
+      console.error("Manual location error:", error);
 
       setLocationStatus(
-        error.message ||
-          "Unable to find this location."
+        error.message || "Unable to find this location."
       );
 
       setWorkers([]);
@@ -714,9 +637,7 @@ function CustomerDashboard() {
   // CATEGORY CLICK
   // =====================================================
 
-  const handleCategoryClick = async (
-    category
-  ) => {
+  const handleCategoryClick = async (category) => {
     setSelectedCategory(category);
 
     setWorkerError("");
@@ -773,9 +694,7 @@ function CustomerDashboard() {
     const value = Number(distance);
 
     if (value < 1) {
-      return `${Math.round(
-        value * 1000
-      )} m away`;
+      return `${Math.round(value * 1000)} m away`;
     }
 
     return `${value.toFixed(2)} km away`;
@@ -785,11 +704,8 @@ function CustomerDashboard() {
   // AVAILABILITY
   // =====================================================
 
-  const getAvailabilityText = (
-    availability
-  ) => {
-    return String(availability).toUpperCase() ===
-      "AVAILABLE"
+  const getAvailabilityText = (availability) => {
+    return String(availability).toUpperCase() === "AVAILABLE"
       ? "Available"
       : "Busy";
   };
@@ -799,28 +715,15 @@ function CustomerDashboard() {
   // =====================================================
 
   const getWorkerBooking = (workerId) => {
-    return customerBookings.find(
-      (booking) => {
-        if (
-          Number(booking.workerId) !==
-          Number(workerId)
-        ) {
-          return false;
-        }
-
-        const status = String(
-          booking.status
-        ).toUpperCase();
-
-        // Only active bookings block
-        // another booking.
-
-        return (
-          status === "PENDING" ||
-          status === "ACCEPTED"
-        );
+    return customerBookings.find((booking) => {
+      if (Number(booking.workerId) !== Number(workerId)) {
+        return false;
       }
-    );
+
+      const status = String(booking.status).toUpperCase();
+
+      return status === "PENDING" || status === "ACCEPTED";
+    });
   };
 
   // =====================================================
@@ -828,35 +731,15 @@ function CustomerDashboard() {
   // =====================================================
 
   const handleViewWorker = (worker) => {
-    // =====================================================
-    // BOOKING ACCESS LOCK
-    // =====================================================
-
     if (!canBook) {
-      navigate(
-        "/customer/booking-credits"
-      );
-
+      navigate("/customer/booking-credits");
       return;
     }
 
-    // =====================================================
-    // CHECK ACTIVE BOOKING
-    // =====================================================
-
-    const existingBooking =
-      getWorkerBooking(
-        worker.workerId
-      );
+    const existingBooking = getWorkerBooking(worker.workerId);
 
     if (existingBooking) {
-      const status = String(
-        existingBooking.status
-      ).toUpperCase();
-
-      // ================================================
-      // PENDING
-      // ================================================
+      const status = String(existingBooking.status).toUpperCase();
 
       if (status === "PENDING") {
         alert(
@@ -866,10 +749,6 @@ function CustomerDashboard() {
         return;
       }
 
-      // ================================================
-      // ACCEPTED
-      // ================================================
-
       if (status === "ACCEPTED") {
         alert(
           "This worker is currently working on your booking."
@@ -878,14 +757,6 @@ function CustomerDashboard() {
         return;
       }
     }
-
-    // =====================================================
-    // COMPLETED / REJECTED / CANCELLED / NO BOOKING
-    // =====================================================
-    //
-    // Customer is allowed to create a new booking.
-    //
-    // =====================================================
 
     setSelectedWorker(worker);
 
@@ -920,11 +791,8 @@ function CustomerDashboard() {
   // SEND BOOKING
   // =====================================================
 
-  const handleSendBooking = async (
-    description
-  ) => {
-    const token =
-      localStorage.getItem("token");
+  const handleSendBooking = async (description) => {
+    const token = localStorage.getItem("token");
 
     if (!token) {
       alert(
@@ -934,13 +802,8 @@ function CustomerDashboard() {
       return;
     }
 
-    // =====================================================
-    // VALIDATION
-    // =====================================================
-
     if (!selectedWorker) {
       alert("No worker selected.");
-
       return;
     }
 
@@ -956,49 +819,31 @@ function CustomerDashboard() {
       return;
     }
 
-    // =====================================================
-    // BOOKING PAYLOAD
-    // =====================================================
-
     const payload = {
-      workerId:
-        selectedWorker.workerId,
+      workerId: selectedWorker.workerId,
 
       category:
-        selectedWorker.category ||
-        selectedCategory,
+        selectedWorker.category || selectedCategory,
 
-      serviceLocation:
-        location.address,
+      serviceLocation: location.address,
 
-      serviceState:
-        location.state || "",
+      serviceState: location.state || "",
 
-      serviceDistrict:
-        location.district || "",
+      serviceDistrict: location.district || "",
 
-      serviceCity:
-        location.city || "",
+      serviceCity: location.city || "",
 
-      serviceArea:
-        location.area || "",
+      serviceArea: location.area || "",
 
-      customerLatitude:
-        location.latitude,
+      customerLatitude: location.latitude,
 
-      customerLongitude:
-        location.longitude,
+      customerLongitude: location.longitude,
 
-      problemDescription:
-        description,
+      problemDescription: description,
     };
 
     try {
       setIsCreatingBooking(true);
-
-      // =====================================================
-      // CREATE BOOKING
-      // =====================================================
 
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/bookings`,
@@ -1006,113 +851,75 @@ function CustomerDashboard() {
           method: "POST",
 
           headers: {
-            "Content-Type":
-              "application/json",
+            "Content-Type": "application/json",
 
-            Authorization:
-              `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
 
           body: JSON.stringify(payload),
         }
       );
 
-      const data =
-        await response.json();
+      const data = await response.json();
 
       if (!response.ok) {
         throw new Error(
-          data?.message ||
-            "Failed to create booking."
+          data?.message || "Failed to create booking."
         );
       }
 
-      console.log(
-        "Booking created:",
-        data
-      );
-
-      // =====================================================
-      // SHOW SUCCESS
-      // =====================================================
+      console.log("Booking created:", data);
 
       setBookingResponse(data);
 
       setShowSuccess(true);
 
-      // =====================================================
-      // ADD NEW BOOKING TO LOCAL STATE
-      // =====================================================
-
-      setCustomerBookings(
-        (prev) => [
-          data,
-
-          ...prev.filter(
-            (booking) =>
-              booking.bookingId !==
-              data.bookingId
-          ),
-        ]
-      );
+      setCustomerBookings((prev) => [
+        data,
+        ...prev.filter(
+          (booking) =>
+            booking.bookingId !== data.bookingId
+        ),
+      ]);
 
       // =====================================================
       // REFRESH BOOKING ACCESS
       // =====================================================
 
       try {
-        const accessResponse =
-          await fetch(
-            `${import.meta.env.VITE_API_URL}/api/bookings/access`,
-            {
-              method: "GET",
+        const accessResponse = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/bookings/access`,
+          {
+            method: "GET",
 
-              headers: {
-                Authorization:
-                  `Bearer ${token}`,
+            headers: {
+              Authorization: `Bearer ${token}`,
 
-                Accept:
-                  "application/json",
-              },
-            }
-          );
+              Accept: "application/json",
+            },
+          }
+        );
 
-        const accessData =
-          await accessResponse.json();
+        const accessData = await accessResponse.json();
 
         if (accessResponse.ok) {
           setFreeBookingsUsed(
-            Number(
-              accessData.freeBookingsUsed ??
-                0
-            )
+            Number(accessData.freeBookingsUsed ?? 0)
           );
 
           setFreeBookingsRemaining(
-            Number(
-              accessData.freeBookingsRemaining ??
-                0
-            )
+            Number(accessData.freeBookingsRemaining ?? 0)
           );
 
           setFreeBookingsCompleted(
-            Boolean(
-              accessData.freeBookingsCompleted
-            )
+            Boolean(accessData.freeBookingsCompleted)
           );
 
           setBookingCredits(
-            Number(
-              accessData.bookingCredits ??
-                0
-            )
+            Number(accessData.bookingCredits ?? 0)
           );
 
-          setCanBook(
-            Boolean(
-              accessData.canBook
-            )
-          );
+          setCanBook(Boolean(accessData.canBook));
         }
       } catch (accessError) {
         console.error(
@@ -1121,10 +928,7 @@ function CustomerDashboard() {
         );
       }
     } catch (error) {
-      console.error(
-        "Booking creation error:",
-        error
-      );
+      console.error("Booking creation error:", error);
 
       alert(
         error.message ||
@@ -1140,9 +944,24 @@ function CustomerDashboard() {
   // =====================================================
 
   const toggleBookings = () => {
-    setShowBookings(
-      (prev) => !prev
-    );
+    setShowBookings((prev) => !prev);
+  };
+
+  // =====================================================
+  // MOBILE NAVIGATION
+  // =====================================================
+
+  const handleMobileHome = () => {
+    setShowBookings(false);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+  const handleMobileBookings = () => {
+    setShowBookings(true);
   };
 
   // =====================================================
@@ -1176,17 +995,19 @@ function CustomerDashboard() {
 
         </div>
 
+        {/* =================================================
+            DESKTOP TOPBAR ACTIONS
+        ================================================= */}
+
         <div className="customer-dashboard-topbar-actions">
 
-          {/* BOOKING CREDITS */}
+          {/* Booking Credits */}
 
           <button
             type="button"
             className="customer-dashboard-credit-button"
             onClick={() =>
-              navigate(
-                "/customer/booking-credits"
-              )
+              navigate("/customer/booking-credits")
             }
           >
             <IndianRupee size={18} />
@@ -1194,9 +1015,13 @@ function CustomerDashboard() {
             <span>
               Booking Credits
             </span>
+
+            <span className="customer-dashboard-credit-count">
+              {bookingCredits}
+            </span>
           </button>
 
-          {/* MY BOOKINGS */}
+          {/* My Bookings */}
 
           <button
             type="button"
@@ -1210,24 +1035,29 @@ function CustomerDashboard() {
             </span>
           </button>
 
-          {/* MENU */}
+          {/* Payment History */}
 
           <button
             type="button"
-            className="customer-dashboard-menu"
+            className="customer-dashboard-payment-history"
+            onClick={() =>
+              navigate("/payment-history")
+            }
           >
-            <Menu size={22} />
+            <History size={18} />
+
+            <span>
+              Payment History
+            </span>
           </button>
 
-          {/* PROFILE */}
+          {/* Profile */}
 
           <button
             type="button"
             className="customer-dashboard-profile"
             onClick={() =>
-              navigate(
-                "/customer-profile"
-              )
+              navigate("/customer-profile")
             }
           >
             <UserRound size={19} />
@@ -1238,6 +1068,7 @@ function CustomerDashboard() {
           </button>
 
         </div>
+
       </header>
 
       {/* =================================================
@@ -1319,8 +1150,7 @@ function CustomerDashboard() {
               <div className="customer-selected-location-text">
 
                 <strong>
-                  {locationMode ===
-                  "current"
+                  {locationMode === "current"
                     ? "Current location"
                     : "Selected location"}
                 </strong>
@@ -1340,12 +1170,8 @@ function CustomerDashboard() {
           <button
             type="button"
             className="customer-current-location-button"
-            onClick={
-              handleCurrentLocation
-            }
-            disabled={
-              gettingLocation
-            }
+            onClick={handleCurrentLocation}
+            disabled={gettingLocation}
           >
 
             <LocateFixed size={19} />
@@ -1357,18 +1183,18 @@ function CustomerDashboard() {
           </button>
 
           <div className="customer-location-divider">
+
             <span>
               OR
             </span>
+
           </div>
 
           {/* MANUAL LOCATION */}
 
           <form
             className="customer-manual-location"
-            onSubmit={
-              handleManualLocationSubmit
-            }
+            onSubmit={handleManualLocationSubmit}
           >
 
             <div className="customer-search-box">
@@ -1378,12 +1204,8 @@ function CustomerDashboard() {
               <input
                 type="text"
                 placeholder="Search for area, city, landmark..."
-                value={
-                  manualLocation
-                }
-                onChange={
-                  handleManualLocation
-                }
+                value={manualLocation}
+                onChange={handleManualLocation}
               />
 
             </div>
@@ -1391,9 +1213,7 @@ function CustomerDashboard() {
             <button
               type="submit"
               className="customer-location-search-button"
-              disabled={
-                gettingLocation
-              }
+              disabled={gettingLocation}
             >
               {gettingLocation
                 ? "Searching..."
@@ -1436,59 +1256,48 @@ function CustomerDashboard() {
 
           <div className="customer-category-grid">
 
-            {categories.map(
-              (category) => {
+            {categories.map((category) => {
 
-                const Icon =
-                  category.icon;
+              const Icon = category.icon;
 
-                const isSelected =
-                  selectedCategory ===
-                  category.name;
+              const isSelected =
+                selectedCategory === category.name;
 
-                return (
+              return (
 
-                  <button
-                    type="button"
-                    key={
-                      category.name
-                    }
-                    className={`customer-category-card ${
-                      isSelected
-                        ? "selected"
-                        : ""
-                    }`}
-                    onClick={() =>
-                      handleCategoryClick(
-                        category.name
-                      )
-                    }
-                    disabled={
-                      loadingWorkers
-                    }
-                  >
+                <button
+                  type="button"
+                  key={category.name}
+                  className={`customer-category-card ${
+                    isSelected ? "selected" : ""
+                  }`}
+                  onClick={() =>
+                    handleCategoryClick(category.name)
+                  }
+                  disabled={loadingWorkers}
+                >
 
-                    <div className="customer-category-icon">
+                  <div className="customer-category-icon">
 
-                      <Icon size={25} />
+                    <Icon size={25} />
 
-                    </div>
+                  </div>
 
-                    <span>
-                      {category.name}
-                    </span>
+                  <span>
+                    {category.name}
+                  </span>
 
-                    <small>
-                      {isSelected
-                        ? "Selected"
-                        : "Find nearby"}
-                    </small>
+                  <small>
+                    {isSelected
+                      ? "Selected"
+                      : "Find nearby"}
+                  </small>
 
-                  </button>
+                </button>
 
-                );
-              }
-            )}
+              );
+
+            })}
 
           </div>
 
@@ -1522,12 +1331,8 @@ function CustomerDashboard() {
                 <button
                   type="button"
                   className="customer-refresh-workers"
-                  onClick={
-                    handleRefreshWorkers
-                  }
-                  disabled={
-                    loadingWorkers
-                  }
+                  onClick={handleRefreshWorkers}
+                  disabled={loadingWorkers}
                 >
 
                   <RefreshCw size={17} />
@@ -1610,7 +1415,8 @@ function CustomerDashboard() {
                 </h3>
 
                 <p>
-                  Select your location and then choose the type of worker you need.
+                  Select your location and then choose the type
+                  of worker you need.
                 </p>
 
               </div>
@@ -1624,360 +1430,316 @@ function CustomerDashboard() {
 
               <div className="customer-worker-list">
 
-                {workers.map(
-                  (worker, index) => (
+                {workers.map((worker, index) => (
 
-                    <article
-                      className={`customer-worker-card ${
-                        !canBook
-                          ? "free-tier-locked"
-                          : ""
-                      }`}
-                      key={
-                        worker.workerId ??
-                        `worker-${index}`
-                      }
+                  <article
+                    className={`customer-worker-card ${
+                      !canBook ? "free-tier-locked" : ""
+                    }`}
+                    key={
+                      worker.workerId ??
+                      `worker-${index}`
+                    }
+                    style={{
+                      position: "relative",
+                    }}
+                  >
+
+                    {/* WORKER CARD CONTENT */}
+
+                    <div
+                      className="customer-worker-card-content"
                       style={{
-                        position:
-                          "relative",
+                        filter: !canBook
+                          ? "blur(4px)"
+                          : "none",
+
+                        pointerEvents: !canBook
+                          ? "none"
+                          : "auto",
+
+                        transition:
+                          "filter 0.3s ease",
                       }}
                     >
 
-                      {/* =================================================
-                          WORKER CARD CONTENT
-                      ================================================= */}
+                      {/* HEADER */}
 
-                      <div
-                        className="customer-worker-card-content"
-                        style={{
-                          filter:
-                            !canBook
-                              ? "blur(4px)"
-                              : "none",
+                      <div className="customer-worker-header">
 
-                          pointerEvents:
-                            !canBook
-                              ? "none"
-                              : "auto",
-
-                          transition:
-                            "filter 0.3s ease",
-                        }}
-                      >
-
-                        {/* HEADER */}
-
-                        <div className="customer-worker-header">
-
-                          <div className="customer-worker-avatar">
-
-                            <UserRound size={25} />
-
-                          </div>
-
-                          <div className="customer-worker-main">
-
-                            <h3>
-                              {worker.fullName ||
-                                "Worker"}
-                            </h3>
-
-                            <span className="customer-worker-category">
-
-                              <Wrench size={14} />
-
-                              {worker.category ||
-                                selectedCategory}
-
-                            </span>
-
-                          </div>
-
-                          <div
-                            className={`customer-worker-availability ${
-                              String(
-                                worker.availability
-                              ).toUpperCase() ===
-                              "AVAILABLE"
-                                ? "available"
-                                : "busy"
-                            }`}
-                          >
-
-                            <span></span>
-
-                            {getAvailabilityText(
-                              worker.availability
-                            )}
-
-                          </div>
-
+                        <div className="customer-worker-avatar">
+                          <UserRound size={25} />
                         </div>
 
-                        {/* DETAILS */}
+                        <div className="customer-worker-main">
 
-                        <div className="customer-worker-details">
+                          <h3>
+                            {worker.fullName ||
+                              "Worker"}
+                          </h3>
 
-                          <div className="customer-worker-detail">
+                          <span className="customer-worker-category">
 
-                            <BriefcaseBusiness
-                              size={17}
-                            />
+                            <Wrench size={14} />
 
-                            <div>
+                            {worker.category ||
+                              selectedCategory}
 
-                              <small>
-                                Experience
-                              </small>
-
-                              <strong>
-                                {worker.experienceYears ??
-                                  0}{" "}
-                                years
-                              </strong>
-
-                            </div>
-
-                          </div>
-
-                          <div className="customer-worker-detail">
-
-                            <IndianRupee
-                              size={17}
-                            />
-
-                            <div>
-
-                              <small>
-                                Charges
-                              </small>
-
-                              <strong>
-                                ₹
-                                {Number(
-                                  worker.charges ??
-                                    0
-                                ).toFixed(2)}
-                                /hour
-                              </strong>
-
-                            </div>
-
-                          </div>
-
-                          <div className="customer-worker-detail">
-
-                            <Navigation
-                              size={17}
-                            />
-
-                            <div>
-
-                              <small>
-                                Distance
-                              </small>
-
-                              <strong>
-                                {formatDistance(
-                                  worker.distanceKm
-                                )}
-                              </strong>
-
-                            </div>
-
-                          </div>
-
-                        </div>
-
-                        {/* LOCATION */}
-
-                        <div className="customer-worker-location">
-
-                          <MapPin size={17} />
-
-                          <span>
-                            {[
-                              worker.area,
-                              worker.city,
-                              worker.district,
-                              worker.state,
-                            ]
-                              .filter(
-                                Boolean
-                              )
-                              .join(
-                                ", "
-                              ) ||
-                              "Location unavailable"}
                           </span>
 
                         </div>
 
-                        {/* ABOUT */}
+                        <div
+                          className={`customer-worker-availability ${
+                            String(
+                              worker.availability
+                            ).toUpperCase() ===
+                            "AVAILABLE"
+                              ? "available"
+                              : "busy"
+                          }`}
+                        >
 
-                        {worker.about && (
+                          <span></span>
 
-                          <div className="customer-worker-about">
+                          {getAvailabilityText(
+                            worker.availability
+                          )}
 
-                            <p>
-                              {worker.about}
-                            </p>
+                        </div>
+
+                      </div>
+
+                      {/* DETAILS */}
+
+                      <div className="customer-worker-details">
+
+                        <div className="customer-worker-detail">
+
+                          <BriefcaseBusiness size={17} />
+
+                          <div>
+
+                            <small>
+                              Experience
+                            </small>
+
+                            <strong>
+                              {worker.experienceYears ??
+                                0}{" "}
+                              years
+                            </strong>
 
                           </div>
 
-                        )}
+                        </div>
 
-                        {/* =================================================
-                            ACTION
-                        ================================================= */}
+                        <div className="customer-worker-detail">
 
-                        <div className="customer-worker-actions">
+                          <IndianRupee size={17} />
 
-                          {(() => {
+                          <div>
 
-                            const existingBooking =
-                              getWorkerBooking(
-                                worker.workerId
-                              );
+                            <small>
+                              Charges
+                            </small>
 
-                            const status =
-                              existingBooking?.status?.toUpperCase();
+                            <strong>
+                              ₹
+                              {Number(
+                                worker.charges ?? 0
+                              ).toFixed(2)}
+                              /hour
+                            </strong>
 
-                            // ================================================
-                            // PENDING
-                            // ================================================
+                          </div>
 
-                            if (
-                              status ===
-                              "PENDING"
-                            ) {
+                        </div>
 
-                              return (
+                        <div className="customer-worker-detail">
 
-                                <button
-                                  type="button"
-                                  className="customer-worker-view-button"
-                                  disabled
-                                >
-                                  ✓ Request Sent
-                                </button>
+                          <Navigation size={17} />
 
-                              );
+                          <div>
 
-                            }
+                            <small>
+                              Distance
+                            </small>
 
-                            // ================================================
-                            // ACCEPTED
-                            // ================================================
+                            <strong>
+                              {formatDistance(
+                                worker.distanceKm
+                              )}
+                            </strong>
 
-                            if (
-                              status ===
-                              "ACCEPTED"
-                            ) {
+                          </div>
 
-                              return (
+                        </div>
 
-                                <button
-                                  type="button"
-                                  className="customer-worker-view-button"
-                                  disabled
-                                >
-                                  ✓ Worker Currently Working
-                                </button>
+                      </div>
 
-                              );
+                      {/* LOCATION */}
 
-                            }
+                      <div className="customer-worker-location">
 
-                            // ================================================
-                            // COMPLETED
-                            // REJECTED
-                            // CANCELLED
-                            // NO BOOKING
-                            // ================================================
-                            //
-                            // Customer can book again.
-                            //
+                        <MapPin size={17} />
+
+                        <span>
+                          {[
+                            worker.area,
+                            worker.city,
+                            worker.district,
+                            worker.state,
+                          ]
+                            .filter(Boolean)
+                            .join(", ") ||
+                            "Location unavailable"}
+                        </span>
+
+                      </div>
+
+                      {/* ABOUT */}
+
+                      {worker.about && (
+
+                        <div className="customer-worker-about">
+
+                          <p>
+                            {worker.about}
+                          </p>
+
+                        </div>
+
+                      )}
+
+                      {/* ACTION */}
+
+                      <div className="customer-worker-actions">
+
+                        {(() => {
+
+                          const existingBooking =
+                            getWorkerBooking(
+                              worker.workerId
+                            );
+
+                          const status =
+                            existingBooking?.status?.toUpperCase();
+
+                          if (
+                            status ===
+                            "PENDING"
+                          ) {
 
                             return (
 
                               <button
                                 type="button"
                                 className="customer-worker-view-button"
-                                onClick={() =>
-                                  handleViewWorker(
-                                    worker
-                                  )
-                                }
+                                disabled
                               >
-                                View Worker
+                                ✓ Request Sent
                               </button>
 
                             );
 
-                          })()}
+                          }
 
-                        </div>
+                          if (
+                            status ===
+                            "ACCEPTED"
+                          ) {
 
-                      </div>
-
-                      {/* =================================================
-                          FREE TIER LOCK OVERLAY
-                      ================================================= */}
-
-                      {!loadingBookingAccess &&
-                        !canBook && (
-
-                          <div className="customer-worker-lock-overlay">
-
-                            <div className="customer-worker-lock-content">
-
-                              <div className="customer-worker-lock-icon">
-
-                                <Lock size={28} />
-
-                              </div>
-
-                              <h3>
-                                Booking Access Required
-                              </h3>
-
-                              <p>
-                                Your 3 free bookings have been completed.
-                              </p>
-
-                              <span>
-                                Purchase Booking Credits to continue booking workers.
-                              </span>
+                            return (
 
                               <button
                                 type="button"
-                                className="customer-worker-unlock-button"
-                                onClick={() =>
-                                  navigate(
-                                    "/customer/booking-credits"
-                                  )
-                                }
+                                className="customer-worker-view-button"
+                                disabled
                               >
-
-                                <IndianRupee
-                                  size={17}
-                                />
-
-                                Buy Booking Credits
-
+                                ✓ Worker Currently Working
                               </button>
+
+                            );
+
+                          }
+
+                          return (
+
+                            <button
+                              type="button"
+                              className="customer-worker-view-button"
+                              onClick={() =>
+                                handleViewWorker(
+                                  worker
+                                )
+                              }
+                            >
+                              View Worker
+                            </button>
+
+                          );
+
+                        })()}
+
+                      </div>
+
+                    </div>
+
+                    {/* FREE TIER LOCK OVERLAY */}
+
+                    {!loadingBookingAccess &&
+                      !canBook && (
+
+                        <div className="customer-worker-lock-overlay">
+
+                          <div className="customer-worker-lock-content">
+
+                            <div className="customer-worker-lock-icon">
+
+                              <Lock size={28} />
 
                             </div>
 
+                            <h3>
+                              Booking Access Required
+                            </h3>
+
+                            <p>
+                              Your 3 free bookings have
+                              been completed.
+                            </p>
+
+                            <span>
+                              Purchase Booking Credits to
+                              continue booking workers.
+                            </span>
+
+                            <button
+                              type="button"
+                              className="customer-worker-unlock-button"
+                              onClick={() =>
+                                navigate(
+                                  "/customer/booking-credits"
+                                )
+                              }
+                            >
+
+                              <IndianRupee size={17} />
+
+                              Buy Booking Credits
+
+                            </button>
+
                           </div>
 
-                        )}
+                        </div>
 
-                    </article>
+                      )}
 
-                  )
-                )}
+                  </article>
+
+                ))}
 
               </div>
 
@@ -1997,11 +1759,7 @@ function CustomerDashboard() {
           {showBookings && (
 
             <CustomerBookings
-              token={
-                localStorage.getItem(
-                  "token"
-                )
-              }
+              token={localStorage.getItem("token")}
               onBookingsLoaded={
                 setCustomerBookings
               }
@@ -2018,40 +1776,95 @@ function CustomerDashboard() {
       ================================================= */}
 
       <BookingModal
-        isOpen={
-          showBookingModal
-        }
-        onClose={
-          handleCloseModal
-        }
-        worker={
-          selectedWorker
-        }
-        location={
-          location
-        }
-        category={
-          selectedCategory
-        }
-        onSendBooking={
-          handleSendBooking
-        }
-        isCreating={
-          isCreatingBooking
-        }
-        bookingResponse={
-          bookingResponse
-        }
-        showSuccess={
-          showSuccess
-        }
-        problemDescription={
-          problemDescription
-        }
-        setProblemDescription={
-          setProblemDescription
-        }
+        isOpen={showBookingModal}
+        onClose={handleCloseModal}
+        worker={selectedWorker}
+        location={location}
+        category={selectedCategory}
+        onSendBooking={handleSendBooking}
+        isCreating={isCreatingBooking}
+        bookingResponse={bookingResponse}
+        showSuccess={showSuccess}
+        problemDescription={problemDescription}
+        setProblemDescription={setProblemDescription}
       />
+
+      {/* =================================================
+          MOBILE BOTTOM NAVIGATION
+      ================================================= */}
+
+      <nav className="customer-mobile-bottom-nav">
+
+        {/* HOME */}
+
+        <button
+          type="button"
+          className="customer-mobile-nav-item active"
+          onClick={handleMobileHome}
+        >
+          <Home size={20} />
+          <span>Home</span>
+        </button>
+
+        {/* BOOKING CREDITS */}
+
+        <button
+          type="button"
+          className="customer-mobile-nav-item"
+          onClick={() =>
+            navigate("/customer/booking-credits")
+          }
+        >
+          <IndianRupee size={20} />
+
+          <span>Credits</span>
+
+          
+        </button>
+
+        {/* MY BOOKINGS */}
+
+        <button
+          type="button"
+          className={`customer-mobile-nav-item ${
+            showBookings ? "active" : ""
+          }`}
+          onClick={handleMobileBookings}
+        >
+          <Calendar size={20} />
+
+          <span>Bookings</span>
+        </button>
+
+        {/* PAYMENT HISTORY */}
+
+        <button
+          type="button"
+          className="customer-mobile-nav-item"
+          onClick={() =>
+            navigate("/payment-history")
+          }
+        >
+          <History size={20} />
+
+          <span>History</span>
+        </button>
+
+        {/* PROFILE */}
+
+        <button
+          type="button"
+          className="customer-mobile-nav-item"
+          onClick={() =>
+            navigate("/customer-profile")
+          }
+        >
+          <UserRound size={20} />
+
+          <span>Profile</span>
+        </button>
+
+      </nav>
 
     </div>
   );

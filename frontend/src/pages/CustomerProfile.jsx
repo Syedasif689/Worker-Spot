@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import {
   User,
   Mail,
@@ -13,11 +15,14 @@ import {
   Loader2,
   CheckCircle,
   AlertCircle,
+  ArrowLeft,
 } from "lucide-react";
 
 import "./CustomerProfile.css";
 
 function CustomerProfile() {
+  const navigate = useNavigate();
+
   const [profile, setProfile] = useState(null);
 
   const [loading, setLoading] = useState(true);
@@ -28,6 +33,14 @@ function CustomerProfile() {
 
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+
+  // =====================================================
+  // BACK TO CUSTOMER DASHBOARD
+  // =====================================================
+
+  const handleBackToDashboard = () => {
+    navigate("/customer-dashboard");
+  };
 
   // =====================================================
   // LOAD CUSTOMER PROFILE
@@ -50,7 +63,7 @@ function CustomerProfile() {
       }
 
       const response = await fetch(
-  `${import.meta.env.VITE_API_URL}/api/customers/me`,
+        `${import.meta.env.VITE_API_URL}/api/customers/me`,
         {
           method: "GET",
           headers: {
@@ -70,7 +83,6 @@ function CustomerProfile() {
 
       setProfile(data);
       setFullName(data.fullName || "");
-
     } catch (err) {
       console.error("Customer profile error:", err);
 
@@ -105,8 +117,8 @@ function CustomerProfile() {
       }
 
       const response = await fetch(
-  `${import.meta.env.VITE_API_URL}/api/customers/me`,
-  {
+        `${import.meta.env.VITE_API_URL}/api/customers/me`,
+        {
           method: "PUT",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -135,9 +147,11 @@ function CustomerProfile() {
       setTimeout(() => {
         setMessage("");
       }, 3000);
-
     } catch (err) {
-      console.error("Update customer profile error:", err);
+      console.error(
+        "Update customer profile error:",
+        err
+      );
 
       setError(
         err.message || "Unable to update your profile."
@@ -164,7 +178,10 @@ function CustomerProfile() {
   if (loading) {
     return (
       <div className="customer-profile-loading">
-        <Loader2 className="profile-spinner" size={32} />
+        <Loader2
+          className="profile-spinner"
+          size={32}
+        />
 
         <p>Loading your profile...</p>
       </div>
@@ -182,11 +199,30 @@ function CustomerProfile() {
 
         <h3>Unable to load profile</h3>
 
-        <p>{error || "Something went wrong."}</p>
+        <p>
+          {error || "Something went wrong."}
+        </p>
 
-        <button onClick={loadProfile}>
-          Try Again
-        </button>
+        <div className="profile-error-actions">
+
+          <button
+            type="button"
+            onClick={loadProfile}
+            className="profile-retry-btn"
+          >
+            Try Again
+          </button>
+
+          <button
+            type="button"
+            onClick={handleBackToDashboard}
+            className="profile-back-btn"
+          >
+            <ArrowLeft size={18} />
+            Back to Dashboard
+          </button>
+
+        </div>
       </div>
     );
   }
@@ -214,6 +250,27 @@ function CustomerProfile() {
     <div className="customer-profile-page">
 
       {/* =================================================
+          TOP NAVIGATION
+      ================================================= */}
+
+      <div className="customer-profile-top-navigation">
+
+        <button
+          type="button"
+          className="profile-back-dashboard-btn"
+          onClick={handleBackToDashboard}
+        >
+          <ArrowLeft size={19} />
+
+          <span>
+            Back to Dashboard
+          </span>
+        </button>
+
+      </div>
+
+
+      {/* =================================================
           HEADER
       ================================================= */}
 
@@ -228,7 +285,9 @@ function CustomerProfile() {
         </div>
 
         {!editing ? (
+
           <button
+            type="button"
             className="profile-edit-btn"
             onClick={() => {
               setEditing(true);
@@ -240,10 +299,13 @@ function CustomerProfile() {
 
             Edit Profile
           </button>
+
         ) : (
+
           <div className="profile-action-buttons">
 
             <button
+              type="button"
               className="profile-cancel-btn"
               onClick={handleCancel}
               disabled={saving}
@@ -254,6 +316,7 @@ function CustomerProfile() {
             </button>
 
             <button
+              type="button"
               className="profile-save-btn"
               onClick={handleSave}
               disabled={saving}
@@ -277,6 +340,7 @@ function CustomerProfile() {
             </button>
 
           </div>
+
         )}
 
       </div>
@@ -288,17 +352,21 @@ function CustomerProfile() {
 
       {message && (
         <div className="profile-success-message">
+
           <CheckCircle size={18} />
 
           {message}
+
         </div>
       )}
 
       {error && (
         <div className="profile-error-message">
+
           <AlertCircle size={18} />
 
           {error}
+
         </div>
       )}
 
@@ -309,16 +377,21 @@ function CustomerProfile() {
 
       <div className="customer-profile-card">
 
-        {/* PROFILE HERO */}
+
+        {/* =================================================
+            PROFILE HERO
+        ================================================= */}
 
         <div className="customer-profile-hero">
 
           <div className="customer-avatar">
+
             {profile.fullName
               ? profile.fullName
                   .charAt(0)
                   .toUpperCase()
               : "C"}
+
           </div>
 
           <div className="customer-profile-name">
@@ -328,9 +401,11 @@ function CustomerProfile() {
             </h2>
 
             <span>
+
               <ShieldCheck size={15} />
 
               Customer Account
+
             </span>
 
           </div>
@@ -339,25 +414,32 @@ function CustomerProfile() {
 
 
         {/* =================================================
-            ACCOUNT INFORMATION
+            PERSONAL INFORMATION
         ================================================= */}
 
         <div className="profile-section">
 
           <div className="profile-section-title">
+
             <User size={20} />
 
             <div>
-              <h3>Personal Information</h3>
+
+              <h3>
+                Personal Information
+              </h3>
 
               <p>
                 Your basic account information
               </p>
+
             </div>
+
           </div>
 
 
           <div className="profile-fields">
+
 
             {/* FULL NAME */}
 
@@ -368,6 +450,7 @@ function CustomerProfile() {
               </label>
 
               {editing ? (
+
                 <input
                   type="text"
                   value={fullName}
@@ -377,12 +460,17 @@ function CustomerProfile() {
                   maxLength={100}
                   placeholder="Enter your full name"
                 />
+
               ) : (
+
                 <div className="profile-value">
+
                   <User size={18} />
 
                   {profile.fullName}
+
                 </div>
+
               )}
 
             </div>
@@ -397,6 +485,7 @@ function CustomerProfile() {
               </label>
 
               <div className="profile-value readonly">
+
                 <Mail size={18} />
 
                 {profile.email}
@@ -404,6 +493,7 @@ function CustomerProfile() {
                 <span className="readonly-label">
                   Account
                 </span>
+
               </div>
 
             </div>
@@ -418,6 +508,7 @@ function CustomerProfile() {
               </label>
 
               <div className="profile-value readonly">
+
                 <Phone size={18} />
 
                 {profile.mobile}
@@ -425,6 +516,7 @@ function CustomerProfile() {
                 <span className="readonly-label">
                   Account
                 </span>
+
               </div>
 
             </div>
@@ -439,9 +531,11 @@ function CustomerProfile() {
               </label>
 
               <div className="profile-value readonly">
+
                 <ShieldCheck size={18} />
 
                 #{profile.userId}
+
               </div>
 
             </div>
@@ -462,17 +556,22 @@ function CustomerProfile() {
             <Ticket size={20} />
 
             <div>
-              <h3>Booking Access</h3>
+
+              <h3>
+                Booking Access
+              </h3>
 
               <p>
                 Your Worker Spot booking usage
               </p>
+
             </div>
 
           </div>
 
 
           <div className="booking-stats">
+
 
             {/* USED */}
 
@@ -483,6 +582,7 @@ function CustomerProfile() {
               </div>
 
               <div>
+
                 <span>
                   Free Bookings Used
                 </span>
@@ -490,6 +590,7 @@ function CustomerProfile() {
                 <strong>
                   {profile.freeBookingsUsed}
                 </strong>
+
               </div>
 
             </div>
@@ -504,6 +605,7 @@ function CustomerProfile() {
               </div>
 
               <div>
+
                 <span>
                   Free Bookings Remaining
                 </span>
@@ -511,6 +613,7 @@ function CustomerProfile() {
                 <strong>
                   {profile.remainingFreeBookings}
                 </strong>
+
               </div>
 
             </div>
@@ -525,6 +628,7 @@ function CustomerProfile() {
               </div>
 
               <div>
+
                 <span>
                   Booking Credits
                 </span>
@@ -532,6 +636,7 @@ function CustomerProfile() {
                 <strong>
                   {profile.bookingCredits}
                 </strong>
+
               </div>
 
             </div>
@@ -552,17 +657,24 @@ function CustomerProfile() {
             <ShieldCheck size={20} />
 
             <div>
-              <h3>Account Information</h3>
+
+              <h3>
+                Account Information
+              </h3>
 
               <p>
                 Worker Spot account details
               </p>
+
             </div>
 
           </div>
 
 
           <div className="account-info-grid">
+
+
+            {/* STATUS */}
 
             <div className="account-info-item">
 
@@ -585,6 +697,8 @@ function CustomerProfile() {
             </div>
 
 
+            {/* ACCOUNT TYPE */}
+
             <div className="account-info-item">
 
               <span>
@@ -598,6 +712,8 @@ function CustomerProfile() {
             </div>
 
 
+            {/* MEMBER SINCE */}
+
             <div className="account-info-item">
 
               <span>
@@ -605,9 +721,11 @@ function CustomerProfile() {
               </span>
 
               <strong>
+
                 <CalendarDays size={16} />
 
                 {memberSince}
+
               </strong>
 
             </div>

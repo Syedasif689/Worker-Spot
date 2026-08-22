@@ -20,6 +20,9 @@ import CustomerDashboard from "../pages/Dashboard/CustomerDashboard";
 
 import BookingCredits from "../pages/customer/BookingCredits";
 import CustomerProfile from "../pages/CustomerProfile";
+import CustomerPayments from "../pages/customer/CustomerPayments";
+
+
 
 function AppRoutes() {
   return (
@@ -53,8 +56,9 @@ function AppRoutes() {
           path="/customer-profile"
           element={<CustomerProfile />}
         />
-      </Routes>
       
+      <Route path="/payment-history" element={<CustomerPayments/>}/>
+      </Routes>
     </BrowserRouter>
   );
 }
