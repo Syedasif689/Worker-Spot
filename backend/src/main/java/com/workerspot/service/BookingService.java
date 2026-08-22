@@ -155,26 +155,38 @@ public class BookingService {
         //
         // =================================================
 
-        boolean existingBooking =
-                bookingRepository
-                        .findByCustomerIdOrderByCreatedAtDesc(
-                                customerId
-                        )
-                        .stream()
-                        .anyMatch(booking ->
-                                booking.getWorker() != null
-                                        && booking.getWorker().getId().equals(worker.getId())
-                                        && booking.getStatus() != BookingStatus.REJECTED
-                        );
+               boolean existingBooking =
+        bookingRepository
+                .findByCustomerIdOrderByCreatedAtDesc(
+                        customerId
+                )
+                .stream()
+                .anyMatch(booking -> {
+
+                    if (booking.getWorker() == null) {
+                        return false;
+                    }
+
+                    if (!booking.getWorker()
+                            .getId()
+                            .equals(worker.getId())) {
+                        return false;
+                    }
+
+                    BookingStatus status =
+                            booking.getStatus();
+
+                    return status == BookingStatus.PENDING
+                            || status == BookingStatus.ACCEPTED;
+                });
 
 
-        if (existingBooking) {
+if (existingBooking) {
 
-            throw new RuntimeException(
-                    "You already have an active booking request "
-                    + "with this worker."
-            );
-        }
+    throw new RuntimeException(
+            "You already have an active booking with this worker."
+    );
+}
 
 
         // =================================================
