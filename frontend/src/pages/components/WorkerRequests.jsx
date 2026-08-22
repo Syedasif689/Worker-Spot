@@ -11,6 +11,7 @@ import {
   Wrench,
   RefreshCw,
   AlertCircle,
+  CircleCheck,
 } from "lucide-react";
 
 import "./WorkerRequests.css";
@@ -37,7 +38,8 @@ function WorkerRequests() {
   // =====================================================
 
   const API_BASE_URL =
-    import.meta.env.VITE_API_URL || "https://your-worker-spot-backend.onrender.com";
+    import.meta.env.VITE_API_URL ||
+    "https://your-worker-spot-backend.onrender.com";
 
 
   // =====================================================
@@ -79,20 +81,21 @@ function WorkerRequests() {
       // API
       // -------------------------------------------------
 
-      const response = await fetch(
-        `${API_BASE_URL}/api/bookings/worker`,
-        {
-          method: "GET",
+      const response =
+        await fetch(
+          `${API_BASE_URL}/api/bookings/worker`,
+          {
+            method: "GET",
 
-          headers: {
-            Authorization:
-              `Bearer ${token}`,
+            headers: {
+              Authorization:
+                `Bearer ${token}`,
 
-            Accept:
-              "application/json",
-          },
-        }
-      );
+              Accept:
+                "application/json",
+            },
+          }
+        );
 
 
       // -------------------------------------------------
@@ -302,31 +305,31 @@ function WorkerRequests() {
 
       if (result) {
 
-        setRequests((currentRequests) =>
-          currentRequests.map(
-            (request) =>
-              request.bookingId ===
-              bookingId
-                ? result
-                : request
-          )
+        setRequests(
+          (currentRequests) =>
+            currentRequests.map(
+              (request) =>
+                request.bookingId ===
+                bookingId
+                  ? result
+                  : request
+            )
         );
 
       } else {
 
-        // Fallback if backend returns empty response
-
-        setRequests((currentRequests) =>
-          currentRequests.map(
-            (request) =>
-              request.bookingId ===
-              bookingId
-                ? {
-                    ...request,
-                    status: "ACCEPTED",
-                  }
-                : request
-          )
+        setRequests(
+          (currentRequests) =>
+            currentRequests.map(
+              (request) =>
+                request.bookingId ===
+                bookingId
+                  ? {
+                      ...request,
+                      status: "ACCEPTED",
+                    }
+                  : request
+            )
         );
       }
 
@@ -463,29 +466,31 @@ function WorkerRequests() {
 
       if (result) {
 
-        setRequests((currentRequests) =>
-          currentRequests.map(
-            (request) =>
-              request.bookingId ===
-              bookingId
-                ? result
-                : request
-          )
+        setRequests(
+          (currentRequests) =>
+            currentRequests.map(
+              (request) =>
+                request.bookingId ===
+                bookingId
+                  ? result
+                  : request
+            )
         );
 
       } else {
 
-        setRequests((currentRequests) =>
-          currentRequests.map(
-            (request) =>
-              request.bookingId ===
-              bookingId
-                ? {
-                    ...request,
-                    status: "REJECTED",
-                  }
-                : request
-          )
+        setRequests(
+          (currentRequests) =>
+            currentRequests.map(
+              (request) =>
+                request.bookingId ===
+                bookingId
+                  ? {
+                      ...request,
+                      status: "REJECTED",
+                    }
+                  : request
+            )
         );
       }
 
@@ -505,6 +510,167 @@ function WorkerRequests() {
       setError(
         error.message ||
         "Unable to reject this booking."
+      );
+
+    } finally {
+
+      setActionLoading(null);
+    }
+  };
+
+
+  // =====================================================
+  // COMPLETE BOOKING
+  // =====================================================
+
+  const handleComplete = async (
+    bookingId
+  ) => {
+
+    if (!bookingId) {
+      return;
+    }
+
+
+    try {
+
+      setActionLoading(
+        bookingId
+      );
+
+      setError("");
+
+
+      // -------------------------------------------------
+      // JWT
+      // -------------------------------------------------
+
+      const token =
+        localStorage.getItem("token");
+
+
+      if (!token) {
+
+        throw new Error(
+          "Your session has expired. Please login again."
+        );
+      }
+
+
+      // -------------------------------------------------
+      // API
+      // -------------------------------------------------
+
+      const response =
+        await fetch(
+          `${API_BASE_URL}/api/bookings/${bookingId}/complete`,
+          {
+            method: "PUT",
+
+            headers: {
+              Authorization:
+                `Bearer ${token}`,
+
+              Accept:
+                "application/json",
+            },
+          }
+        );
+
+
+      // -------------------------------------------------
+      // SAFE RESPONSE
+      // -------------------------------------------------
+
+      const text =
+        await response.text();
+
+      let result = null;
+
+
+      try {
+
+        result =
+          text
+            ? JSON.parse(text)
+            : null;
+
+      } catch (parseError) {
+
+        console.error(
+          "Complete booking JSON parsing error:",
+          parseError
+        );
+
+        throw new Error(
+          "Invalid response received from server."
+        );
+      }
+
+
+      // -------------------------------------------------
+      // ERROR
+      // -------------------------------------------------
+
+      if (!response.ok) {
+
+        throw new Error(
+          result?.message ||
+          "Unable to complete this booking."
+        );
+      }
+
+
+      // -------------------------------------------------
+      // UPDATE LOCAL BOOKING
+      // -------------------------------------------------
+
+      if (result) {
+
+        setRequests(
+          (currentRequests) =>
+            currentRequests.map(
+              (request) =>
+                request.bookingId ===
+                bookingId
+                  ? result
+                  : request
+            )
+        );
+
+      } else {
+
+        setRequests(
+          (currentRequests) =>
+            currentRequests.map(
+              (request) =>
+                request.bookingId ===
+                bookingId
+                  ? {
+                      ...request,
+                      status: "COMPLETED",
+                    }
+                  : request
+            )
+        );
+      }
+
+
+      console.log(
+        "Booking completed:",
+        result
+      );
+
+    } catch (error) {
+
+      console.error(
+        "Complete booking error:",
+        error
+      );
+
+      setError(
+        error.message ||
+        "Unable to complete this booking."
       );
 
     } finally {
@@ -572,8 +738,14 @@ function WorkerRequests() {
       case "ACCEPTED":
         return "accepted";
 
+      case "COMPLETED":
+        return "completed";
+
       case "REJECTED":
         return "rejected";
+
+      case "CANCELLED":
+        return "cancelled";
 
       case "PENDING":
       default:
@@ -583,7 +755,7 @@ function WorkerRequests() {
 
 
   // =====================================================
-  // PENDING REQUESTS
+  // FILTER BOOKINGS
   // =====================================================
 
   const pendingRequests =
@@ -596,17 +768,41 @@ function WorkerRequests() {
     );
 
 
-  // =====================================================
-  // OTHER BOOKINGS
-  // =====================================================
-
-  const otherBookings =
+  const acceptedBookings =
     requests.filter(
       (request) =>
         String(
           request.status
-        ).toUpperCase() !==
-        "PENDING"
+        ).toUpperCase() ===
+        "ACCEPTED"
+    );
+
+
+  const completedBookings =
+    requests.filter(
+      (request) =>
+        String(
+          request.status
+        ).toUpperCase() ===
+        "COMPLETED"
+    );
+
+
+  const otherBookings =
+    requests.filter(
+      (request) => {
+
+        const status =
+          String(
+            request.status
+          ).toUpperCase();
+
+        return (
+          status !== "PENDING" &&
+          status !== "ACCEPTED" &&
+          status !== "COMPLETED"
+        );
+      }
     );
 
 
@@ -806,9 +1002,7 @@ function WorkerRequests() {
                   >
 
 
-                    {/* =================================================
-                        CUSTOMER
-                    ================================================= */}
+                    {/* CUSTOMER */}
 
                     <div className="worker-request-customer">
 
@@ -845,9 +1039,7 @@ function WorkerRequests() {
                     </div>
 
 
-                    {/* =================================================
-                        PROBLEM
-                    ================================================= */}
+                    {/* PROBLEM */}
 
                     {request.problemDescription && (
 
@@ -866,9 +1058,7 @@ function WorkerRequests() {
                     )}
 
 
-                    {/* =================================================
-                        LOCATION
-                    ================================================= */}
+                    {/* LOCATION */}
 
                     <div className="worker-request-location">
 
@@ -894,12 +1084,9 @@ function WorkerRequests() {
                     </div>
 
 
-                    {/* =================================================
-                        DETAILS
-                    ================================================= */}
+                    {/* DETAILS */}
 
                     <div className="worker-request-details">
-
 
                       <div className="worker-request-detail">
 
@@ -976,9 +1163,7 @@ function WorkerRequests() {
                     </div>
 
 
-                    {/* =================================================
-                        STATUS
-                    ================================================= */}
+                    {/* STATUS */}
 
                     <div className="worker-request-status-row">
 
@@ -998,9 +1183,7 @@ function WorkerRequests() {
                     </div>
 
 
-                    {/* =================================================
-                        ACTIONS
-                    ================================================= */}
+                    {/* ACTIONS */}
 
                     <div className="worker-request-actions">
 
@@ -1097,10 +1280,280 @@ function WorkerRequests() {
 
 
       {/* =================================================
-          OTHER BOOKINGS
+          ACTIVE WORK
       ================================================= */}
 
-      {otherBookings.length > 0 && (
+      {acceptedBookings.length > 0 && (
+
+        <div className="worker-request-group">
+
+          <div className="worker-request-group-title">
+
+            <div>
+
+              <h3>
+                Active Work
+              </h3>
+
+              <p>
+                Services currently in progress
+              </p>
+
+            </div>
+
+            <span>
+              {acceptedBookings.length}
+            </span>
+
+          </div>
+
+
+          <div className="worker-request-list">
+
+            {acceptedBookings.map(
+              (request) => {
+
+                const isProcessing =
+                  actionLoading ===
+                  request.bookingId;
+
+
+                return (
+
+                  <div
+                    className="worker-request-card"
+                    key={
+                      request.bookingId
+                    }
+                  >
+
+                    {/* CUSTOMER */}
+
+                    <div className="worker-request-customer">
+
+                      <div className="worker-request-avatar">
+
+                        <User
+                          size={20}
+                        />
+
+                      </div>
+
+                      <div>
+
+                        <h3>
+                          {request.customerName ||
+                            "Customer"}
+                        </h3>
+
+                        <p>
+
+                          <Wrench
+                            size={14}
+                          />
+
+                          {request.category ||
+                            "Service"}
+
+                        </p>
+
+                      </div>
+
+                    </div>
+
+
+                    {/* PROBLEM */}
+
+                    {request.problemDescription && (
+
+                      <div className="worker-request-problem">
+
+                        <strong>
+                          Problem
+                        </strong>
+
+                        <p>
+                          {request.problemDescription}
+                        </p>
+
+                      </div>
+
+                    )}
+
+
+                    {/* LOCATION */}
+
+                    <div className="worker-request-location">
+
+                      <MapPin
+                        size={17}
+                      />
+
+                      <span>
+
+                        {request.serviceLocation ||
+                          [
+                            request.serviceArea,
+                            request.serviceCity,
+                            request.serviceDistrict,
+                            request.serviceState,
+                          ]
+                            .filter(Boolean)
+                            .join(", ") ||
+                          "Location unavailable"}
+
+                      </span>
+
+                    </div>
+
+
+                    {/* DETAILS */}
+
+                    <div className="worker-request-details">
+
+                      <div className="worker-request-detail">
+
+                        <IndianRupee
+                          size={17}
+                        />
+
+                        <div>
+
+                          <small>
+                            Worker charges
+                          </small>
+
+                          <strong>
+                            ₹
+                            {Number(
+                              request.workerCharges ||
+                              0
+                            ).toFixed(2)}
+                          </strong>
+
+                        </div>
+
+                      </div>
+
+
+                      <div className="worker-request-detail">
+
+                        <IndianRupee
+                          size={17}
+                        />
+
+                        <div>
+
+                          <small>
+                            Total
+                          </small>
+
+                          <strong>
+                            ₹
+                            {Number(
+                              request.totalAmount ||
+                              0
+                            ).toFixed(2)}
+                          </strong>
+
+                        </div>
+
+                      </div>
+
+
+                      <div className="worker-request-detail">
+
+                        <Clock
+                          size={17}
+                        />
+
+                        <div>
+
+                          <small>
+                            Accepted
+                          </small>
+
+                          <strong>
+                            {formatDateTime(
+                              request.createdAt
+                            )}
+                          </strong>
+
+                        </div>
+
+                      </div>
+
+                    </div>
+
+
+                    {/* STATUS */}
+
+                    <div className="worker-request-status-row">
+
+                      <span
+                        className={`worker-request-status ${getStatusClass(
+                          request.status
+                        )}`}
+                      >
+
+                        <span></span>
+
+                        {request.status ||
+                          "ACCEPTED"}
+
+                      </span>
+
+                    </div>
+
+
+                    {/* COMPLETE ACTION */}
+
+                    <div className="worker-request-actions">
+
+                      <button
+                        type="button"
+                        className="worker-request-accept"
+                        onClick={() =>
+                          handleComplete(
+                            request.bookingId
+                          )
+                        }
+                        disabled={
+                          isProcessing
+                        }
+                      >
+
+                        <CircleCheck
+                          size={17}
+                        />
+
+                        {isProcessing
+                          ? "Completing..."
+                          : "Mark Work Completed"}
+
+                      </button>
+
+                    </div>
+
+                  </div>
+
+                );
+              }
+            )}
+
+          </div>
+
+        </div>
+
+      )}
+
+
+      {/* =================================================
+          BOOKING HISTORY
+      ================================================= */}
+
+      {(completedBookings.length > 0 ||
+        otherBookings.length > 0) && (
 
         <div className="worker-request-group worker-request-history">
 
@@ -1119,7 +1572,8 @@ function WorkerRequests() {
             </div>
 
             <span>
-              {otherBookings.length}
+              {completedBookings.length +
+                otherBookings.length}
             </span>
 
           </div>
@@ -1127,7 +1581,10 @@ function WorkerRequests() {
 
           <div className="worker-request-list">
 
-            {otherBookings.map(
+
+            {/* COMPLETED BOOKINGS */}
+
+            {completedBookings.map(
               (request) => (
 
                 <div
@@ -1137,7 +1594,7 @@ function WorkerRequests() {
                   }
                 >
 
-                  {/* Customer */}
+                  {/* CUSTOMER */}
 
                   <div className="worker-request-customer">
 
@@ -1172,7 +1629,7 @@ function WorkerRequests() {
                   </div>
 
 
-                  {/* Location */}
+                  {/* LOCATION */}
 
                   <div className="worker-request-location">
 
@@ -1198,7 +1655,7 @@ function WorkerRequests() {
                   </div>
 
 
-                  {/* Amount */}
+                  {/* AMOUNT */}
 
                   <div className="worker-request-history-info">
 
@@ -1215,7 +1672,121 @@ function WorkerRequests() {
                   </div>
 
 
-                  {/* Status */}
+                  {/* STATUS */}
+
+                  <div className="worker-request-status-row">
+
+                    <span
+                      className={`worker-request-status ${getStatusClass(
+                        request.status
+                      )}`}
+                    >
+
+                      <span></span>
+
+                      {request.status}
+
+                    </span>
+
+                  </div>
+
+                </div>
+
+              )
+            )}
+
+
+            {/* REJECTED / CANCELLED BOOKINGS */}
+
+            {otherBookings.map(
+              (request) => (
+
+                <div
+                  className="worker-request-card worker-request-history-card"
+                  key={
+                    request.bookingId
+                  }
+                >
+
+                  {/* CUSTOMER */}
+
+                  <div className="worker-request-customer">
+
+                    <div className="worker-request-avatar">
+
+                      <User
+                        size={20}
+                      />
+
+                    </div>
+
+                    <div>
+
+                      <h3>
+                        {request.customerName ||
+                          "Customer"}
+                      </h3>
+
+                      <p>
+
+                        <Wrench
+                          size={14}
+                        />
+
+                        {request.category ||
+                          "Service"}
+
+                      </p>
+
+                    </div>
+
+                  </div>
+
+
+                  {/* LOCATION */}
+
+                  <div className="worker-request-location">
+
+                    <MapPin
+                      size={17}
+                    />
+
+                    <span>
+
+                      {request.serviceLocation ||
+                        [
+                          request.serviceArea,
+                          request.serviceCity,
+                          request.serviceDistrict,
+                          request.serviceState,
+                        ]
+                          .filter(Boolean)
+                          .join(", ") ||
+                        "Location unavailable"}
+
+                    </span>
+
+                  </div>
+
+
+                  {/* AMOUNT */}
+
+                  <div className="worker-request-history-info">
+
+                    <span>
+
+                      ₹
+                      {Number(
+                        request.totalAmount ||
+                        0
+                      ).toFixed(2)}
+
+                    </span>
+
+                  </div>
+
+
+                  {/* STATUS */}
 
                   <div className="worker-request-status-row">
 
