@@ -407,103 +407,112 @@ function CustomerDashboard() {
     setWorkerError("");
     setWorkers([]);
 
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
+   navigator.geolocation.getCurrentPosition(
+  async (position) => {
+    const { latitude, longitude } = position.coords;
 
-        try {
-          const addressData = await getAddressFromCoordinates(
-            latitude,
-            longitude
-          );
+    try {
+      const addressData = await getAddressFromCoordinates(
+        latitude,
+        longitude
+      );
 
-          const newLocation = {
-            ...addressData,
-            latitude,
-            longitude,
-          };
+      const newLocation = {
+        ...addressData,
+        latitude,
+        longitude,
+      };
 
-          setLocation(newLocation);
+      setLocation(newLocation);
+      setLocationMode("current");
 
-          setLocationMode("current");
+      setLocationStatus(
+        "Current location detected successfully."
+      );
 
-          setLocationStatus(
-            "Current location detected successfully."
-          );
+      console.log(
+        "Customer coordinates:",
+        latitude,
+        longitude
+      );
 
-          console.log(
-            "Customer coordinates:",
-            latitude,
-            longitude
-          );
-
-          if (selectedCategory) {
-            await findNearbyWorkers(
-              selectedCategory,
-              latitude,
-              longitude
-            );
-          }
-        } catch (error) {
-          console.error("Current location error:", error);
-
-          setLocation({
-            address: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`,
-            state: "",
-            district: "",
-            city: "",
-            area: "",
-            latitude,
-            longitude,
-          });
-
-          setLocationMode("current");
-
-          setLocationStatus("Location detected successfully.");
-
-          if (selectedCategory) {
-            await findNearbyWorkers(
-              selectedCategory,
-              latitude,
-              longitude
-            );
-          }
-        } finally {
-          setGettingLocation(false);
-        }
-      },
-      (error) => {
-        setGettingLocation(false);
-
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            setLocationStatus(
-              "Location permission was denied. Please allow location access."
-            );
-            break;
-
-          case error.POSITION_UNAVAILABLE:
-            setLocationStatus(
-              "Your current location is unavailable."
-            );
-            break;
-
-          case error.TIMEOUT:
-            setLocationStatus(
-              "Location request timed out. Please try again."
-            );
-            break;
-
-          default:
-            setLocationStatus("Unable to detect your current location.");
-        }
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 15000,
-        maximumAge: 0,
+      if (selectedCategory) {
+        await findNearbyWorkers(
+          selectedCategory,
+          latitude,
+          longitude
+        );
       }
+    } catch (error) {
+      console.error("Current location error:", error);
+
+      setLocation({
+        address: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`,
+        state: "",
+        district: "",
+        city: "",
+        area: "",
+        latitude,
+        longitude,
+      });
+
+      setLocationMode("current");
+
+      setLocationStatus(
+        "Location detected successfully."
+      );
+
+      if (selectedCategory) {
+        await findNearbyWorkers(
+          selectedCategory,
+          latitude,
+          longitude
+        );
+      }
+    } finally {
+      setGettingLocation(false);
+    }
+  },
+  (error) => {
+    setGettingLocation(false);
+
+    console.error(
+      "Geolocation error:",
+      error.code,
+      error.message
     );
+
+    switch (error.code) {
+      case error.PERMISSION_DENIED:
+        setLocationStatus(
+          "Location permission was denied. Please allow location access."
+        );
+        break;
+
+      case error.POSITION_UNAVAILABLE:
+        setLocationStatus(
+          "Your current location is unavailable."
+        );
+        break;
+
+      case error.TIMEOUT:
+        setLocationStatus(
+          "Location request timed out. Please try again."
+        );
+        break;
+
+      default:
+        setLocationStatus(
+          "Unable to detect your current location."
+        );
+    }
+  },
+  {
+    enableHighAccuracy: false,
+    timeout: 30000,
+    maximumAge: 60000,
+  }
+);
   };
 
   // =====================================================
