@@ -646,6 +646,81 @@
 
   font-size: 10px;
 }
+.customer-category-card {
+  overflow: hidden;
+  padding: 0;
+  text-align: left;
+}
+
+.customer-category-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 145px;
+  overflow: hidden;
+}
+
+.customer-category-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s ease;
+}
+
+.customer-category-card:hover .customer-category-image {
+  transform: scale(1.06);
+}
+
+.customer-category-image-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  padding: 14px;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.65),
+    rgba(0, 0, 0, 0.05)
+  );
+}
+
+.customer-category-icon {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+
+  background: rgba(255, 138, 0, 0.92);
+  color: white;
+}
+
+.customer-category-card-content {
+  padding: 14px 15px 16px;
+}
+
+.customer-category-card-content span {
+  display: block;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.customer-category-card-content small {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  opacity: 0.65;
+}
+
+.customer-category-card.selected {
+  border-color: #ff8a00;
+}
+
+.customer-category-card.selected
+  .customer-category-image {
+  transform: scale(1.04);
+}
 
 /* =========================================================
    NEARBY WORKERS

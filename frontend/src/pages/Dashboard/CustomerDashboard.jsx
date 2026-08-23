@@ -180,35 +180,42 @@ function CustomerDashboard() {
   // =====================================================
 
   const categories = [
-    {
-      name: "Mechanic",
-      icon: CarFront,
-    },
-    {
-      name: "Plumber",
-      icon: Droplets,
-    },
-    {
-      name: "Electrician",
-      icon: Zap,
-    },
-    {
-      name: "Carpenter",
-      icon: Hammer,
-    },
-    {
-      name: "Painter",
-      icon: Paintbrush,
-    },
-    {
-      name: "AC Technician",
-      icon: Snowflake,
-    },
-    {
-      name: "Welder",
-      icon: Wrench,
-    },
-  ];
+  {
+    name: "Mechanic",
+    icon: CarFront,
+    image: "/categories/mechanic.jpg",
+  },
+  {
+    name: "Plumber",
+    icon: Droplets,
+    image: "/categories/plumber.jpg",
+  },
+  {
+    name: "Electrician",
+    icon: Zap,
+    image: "/categories/electrician.jpg",
+  },
+  {
+    name: "Carpenter",
+    icon: Hammer,
+    image: "/categories/carpenter.jpg",
+  },
+  {
+    name: "Painter",
+    icon: Paintbrush,
+    image: "/categories/painter.jpg",
+  },
+  {
+    name: "AC Technician",
+    icon: Snowflake,
+    image: "/categories/ac-technician.jpg",
+  },
+  {
+    name: "Welder",
+    icon: Wrench,
+    image: "/categories/welder.jpg",
+  },
+];
 
   // =====================================================
   // REVERSE GEOCODING
@@ -1318,21 +1325,28 @@ const handleCurrentLocation = async () => {
                   disabled={loadingWorkers}
                 >
 
-                  <div className="customer-category-icon">
+                 <div className="customer-category-image-wrapper">
+  <img
+    src={category.image}
+    alt={category.name}
+    className="customer-category-image"
+    loading="lazy"
+  />
 
-                    <Icon size={25} />
+  <div className="customer-category-image-overlay">
+    <div className="customer-category-icon">
+      <Icon size={22} />
+    </div>
+  </div>
+</div>
 
-                  </div>
+<div className="customer-category-card-content">
+  <span>{category.name}</span>
 
-                  <span>
-                    {category.name}
-                  </span>
-
-                  <small>
-                    {isSelected
-                      ? "Selected"
-                      : "Find nearby"}
-                  </small>
+  <small>
+    {isSelected ? "Selected" : "Find nearby"}
+  </small>
+</div>
 
                 </button>
 
