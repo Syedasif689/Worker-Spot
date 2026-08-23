@@ -18,70 +18,154 @@ public class JwtService {
 
     private final SecretKey secretKey;
 
-    // Token validity: 24 hours
-    private final long jwtExpiration = 24 * 60 * 60 * 1000L;
+    // =====================================================
+    // TOKEN VALIDITY
+    // =====================================================
+
+    private final long jwtExpiration =
+            24 * 60 * 60 * 1000L;
+
+    // =====================================================
+    // CONSTRUCTOR
+    // =====================================================
 
     public JwtService(
             @Value("${jwt.secret}") String secret
     ) {
-        this.secretKey = Keys.hmacShaKeyFor(
-                secret.getBytes()
-        );
+
+        this.secretKey =
+                Keys.hmacShaKeyFor(
+                        secret.getBytes()
+                );
     }
+
+    // =====================================================
+    // GENERATE TOKEN
+    // =====================================================
 
     public String generateToken(User user) {
 
-        Date now = new Date();
+        Date now =
+                new Date();
 
-        Date expiration = new Date(
-                now.getTime() + jwtExpiration
-        );
+        Date expiration =
+                new Date(
+                        now.getTime()
+                                + jwtExpiration
+                );
 
         return Jwts.builder()
-                .subject(user.getEmail())
-                .claim("userId", user.getId())
-                .claim("role", user.getRole().name())
-                .claim("fullName", user.getFullName())
+
+                .subject(
+                        user.getEmail()
+                )
+
+                .claim(
+                        "userId",
+                        user.getId()
+                )
+
+                .claim(
+                        "role",
+                        user.getRole().name()
+                )
+
+                .claim(
+                        "fullName",
+                        user.getFullName()
+                )
+
                 .issuedAt(now)
+
                 .expiration(expiration)
+
                 .signWith(secretKey)
+
                 .compact();
     }
 
-    public String extractEmail(String token) {
+    // =====================================================
+    // EXTRACT EMAIL
+    // =====================================================
+
+    public String extractEmail(
+            String token
+    ) {
 
         return extractAllClaims(token)
                 .getSubject();
     }
 
-    public String extractRole(String token) {
+    // =====================================================
+    // EXTRACT ROLE
+    // =====================================================
+
+    public String extractRole(
+            String token
+    ) {
 
         return extractAllClaims(token)
-                .get("role", String.class);
+                .get(
+                        "role",
+                        String.class
+                );
     }
 
-    public Long extractUserId(String token) {
+    // =====================================================
+    // EXTRACT USER ID
+    // =====================================================
+
+    public Long extractUserId(
+            String token
+    ) {
 
         return extractAllClaims(token)
-                .get("userId", Long.class);
+                .get(
+                        "userId",
+                        Long.class
+                );
     }
 
-    public boolean isTokenValid(String token) {
+    // =====================================================
+    // VALIDATE TOKEN
+    // =====================================================
+
+    public boolean isTokenValid(
+            String token
+    ) {
 
         try {
+
             extractAllClaims(token);
+
             return true;
+
         } catch (Exception e) {
+
             return false;
         }
     }
 
-    private Claims extractAllClaims(String token) {
+    // =====================================================
+    // PARSE CLAIMS
+    // =====================================================
+
+    private Claims extractAllClaims(
+            String token
+    ) {
 
         return Jwts.parser()
-                .verifyWith(secretKey)
+
+                .verifyWith(
+                        secretKey
+                )
+
                 .build()
-                .parseSignedClaims(token)
+
+                .parseSignedClaims(
+                        token
+                )
+
                 .getPayload();
     }
 }

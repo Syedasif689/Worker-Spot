@@ -23,8 +23,7 @@ public class SecurityConfig {
     public SecurityConfig(
             JwtAuthenticationFilter jwtAuthenticationFilter
     ) {
-        this.jwtAuthenticationFilter =
-                jwtAuthenticationFilter;
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
     @Bean
@@ -35,63 +34,68 @@ public class SecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable)
 
-            .cors(cors -> cors.configurationSource(
-                corsConfigurationSource()
-            ))
+            .cors(cors ->
+                cors.configurationSource(
+                    corsConfigurationSource()
+                )
+            )
 
             .authorizeHttpRequests(auth -> auth
 
-    // =========================================
-    // PUBLIC AUTH APIs
-    // =========================================
+                // =========================================
+                // PUBLIC AUTH APIs
+                // =========================================
 
-    .requestMatchers(
-        "/api/health",
-        "/api/auth/register/customer",
-        "/api/auth/register/worker",
-        "/api/auth/login"
-    ).permitAll()
+                .requestMatchers(
+                    "/api/health",
+                    "/api/auth/register/customer",
+                    "/api/auth/register/worker",
+                    "/api/auth/login"
+                ).permitAll()
 
-    // =========================================
-    // CORS PREFLIGHT
-    // =========================================
+                // =========================================
+                // CORS PREFLIGHT
+                // =========================================
 
-    .requestMatchers(
-        HttpMethod.OPTIONS,
-        "/**"
-    ).permitAll()
+                .requestMatchers(
+                    HttpMethod.OPTIONS,
+                    "/**"
+                ).permitAll()
 
-    // =========================================
-    // CUSTOMER APIs
-    // =========================================
+                // =========================================
+                // CUSTOMER APIs
+                // =========================================
 
-    .requestMatchers(
-        "/api/customers/**"
-    ).hasRole("CUSTOMER")
+                .requestMatchers(
+                    "/api/customers/**"
+                ).hasRole("CUSTOMER")
 
-    // =========================================
-    // NEARBY WORKER SEARCH
-    // CUSTOMER + WORKER CAN SEARCH
-    // =========================================
+                // =========================================
+                // NEARBY WORKER SEARCH
+                // CUSTOMER + WORKER
+                // =========================================
 
-    .requestMatchers(
-        "/api/workers/nearby"
-    ).hasAnyRole("CUSTOMER", "WORKER")
+                .requestMatchers(
+                    "/api/workers/nearby"
+                ).hasAnyRole(
+                    "CUSTOMER",
+                    "WORKER"
+                )
 
-    // =========================================
-    // WORKER APIs
-    // =========================================
+                // =========================================
+                // WORKER APIs
+                // =========================================
 
-    .requestMatchers(
-        "/api/workers/**"
-    ).hasRole("WORKER")
+                .requestMatchers(
+                    "/api/workers/**"
+                ).hasRole("WORKER")
 
-    // =========================================
-    // EVERYTHING ELSE
-    // =========================================
+                // =========================================
+                // EVERYTHING ELSE
+                // =========================================
 
-    .anyRequest().authenticated()
-)
+                .anyRequest().authenticated()
+            )
 
             // =============================================
             // JWT FILTER
@@ -105,6 +109,9 @@ public class SecurityConfig {
         return http.build();
     }
 
+    // =====================================================
+    // CORS
+    // =====================================================
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

@@ -16,11 +16,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Component
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
+public class JwtAuthenticationFilter
+        extends OncePerRequestFilter {
 
     private final JwtService jwtService;
 
-    public JwtAuthenticationFilter(JwtService jwtService) {
+    public JwtAuthenticationFilter(
+            JwtService jwtService
+    ) {
         this.jwtService = jwtService;
     }
 
@@ -46,9 +49,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String authHeader =
                 request.getHeader("Authorization");
 
-        // =============================================
+        // =================================================
         // DEBUG
-        // =============================================
+        // =================================================
+
+        System.out.println(
+                "========================================"
+        );
 
         System.out.println(
                 "JWT REQUEST: "
@@ -62,21 +69,33 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         + (authHeader != null)
         );
 
-        // =============================================
+        // =================================================
         // NO TOKEN
-        // =============================================
+        // =================================================
 
         if (authHeader == null
                 || !authHeader.startsWith("Bearer ")) {
 
-            filterChain.doFilter(request, response);
+            System.out.println(
+                    "NO JWT TOKEN FOUND"
+            );
+
+            filterChain.doFilter(
+                    request,
+                    response
+            );
+
             return;
         }
 
         String token =
-                authHeader.substring(7);
+                authHeader.substring(7).trim();
 
         try {
+
+            // =================================================
+            // EXTRACT JWT DATA
+            // =================================================
 
             String email =
                     jwtService.extractEmail(token);
@@ -92,9 +111,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     "JWT ROLE: " + role
             );
 
-            // =========================================
+            // =================================================
             // VALIDATE TOKEN
-            // =========================================
+            // =================================================
 
             if (email != null
                     && role != null
@@ -103,9 +122,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             .getContext()
                             .getAuthentication() == null) {
 
+                String normalizedRole =
+                        role.trim().toUpperCase();
+
+                // Prevent ROLE_ROLE_WORKER
+                if (normalizedRole.startsWith("ROLE_")) {
+
+                    normalizedRole =
+                            normalizedRole.substring(5);
+                }
+
                 SimpleGrantedAuthority authority =
                         new SimpleGrantedAuthority(
-                                "ROLE_" + role
+                                "ROLE_" + normalizedRole
                         );
 
                 UsernamePasswordAuthenticationToken authentication =
@@ -131,23 +160,34 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 );
 
                 System.out.println(
-                        "AUTHORITY: ROLE_" + role
+                        "AUTHORITY: ROLE_"
+                                + normalizedRole
+                );
+
+            } else {
+
+                System.out.println(
+                        "JWT VALIDATION FAILED"
                 );
             }
 
         } catch (Exception e) {
 
             System.out.println(
-                    "JWT authentication failed: "
+                    "JWT AUTHENTICATION FAILED: "
                             + e.getMessage()
             );
 
-            e.printStackTrace();
+            SecurityContextHolder.clearContext();
         }
 
         filterChain.doFilter(
                 request,
                 response
+        );
+
+        System.out.println(
+                "========================================"
         );
     }
 }
