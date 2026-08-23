@@ -1004,22 +1004,18 @@ function CustomerDashboard() {
           {/* Booking Credits */}
 
           <button
-            type="button"
-            className="customer-dashboard-credit-button"
-            onClick={() =>
-              navigate("/customer/booking-credits")
-            }
-          >
-            <IndianRupee size={18} />
+  type="button"
+  className="customer-dashboard-credit-button"
+  onClick={() =>
+    navigate("/customer/booking-credits")
+  }
+>
+  <IndianRupee size={18} />
 
-            <span>
-              Booking Credits
-            </span>
-
-            <span className="customer-dashboard-credit-count">
-              {bookingCredits}
-            </span>
-          </button>
+  <span>
+    Booking Credits
+  </span>
+</button>
 
           {/* My Bookings */}
 

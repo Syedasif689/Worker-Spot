@@ -1,53 +1,110 @@
+/* =====================================================
+   BOOKING CREDITS PAGE
+===================================================== */
+
 .booking-credits-page {
   min-height: 100vh;
   background: #0b0f14;
   color: #ffffff;
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
 }
+
 
 /* =====================================================
    TOPBAR
 ===================================================== */
 
 .booking-credits-topbar {
-  min-height: 76px;
-  padding: 0 40px;
+  width: 100%;
+  min-height: 86px;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
 
+  gap: 24px;
+
+  padding: 16px clamp(20px, 5vw, 80px);
+
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  background: #0b0f14;
+
+  background: rgba(11, 15, 20, 0.96);
+
+  position: sticky;
+  top: 0;
+  z-index: 50;
+
+  backdrop-filter: blur(14px);
 }
 
-.booking-credits-back {
-  border: none;
-  background: transparent;
-  color: #b8c0cc;
 
-  display: flex;
+/* =====================================================
+   BACK BUTTON
+===================================================== */
+
+.booking-credits-back {
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  background: rgba(255, 255, 255, 0.04);
+
+  color: #ffffff;
+
+  padding: 11px 16px;
+
+  border-radius: 10px;
 
   font-size: 14px;
   font-weight: 600;
 
   cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
 }
 
-.booking-credits-back:hover {
-  color: #ff8a00;
+.booking-credits-back:hover:not(:disabled) {
+  background: rgba(255, 138, 0, 0.1);
+
+  border-color: rgba(255, 138, 0, 0.45);
+
+  transform: translateX(-2px);
 }
+
+.booking-credits-back:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+/* =====================================================
+   PAGE TITLE
+===================================================== */
 
 .booking-credits-title {
   display: flex;
   align-items: center;
   gap: 12px;
+
+  flex: 1;
 }
 
 .booking-credits-title-icon {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
+
+  flex-shrink: 0;
 
   display: flex;
   align-items: center;
@@ -55,40 +112,93 @@
 
   border-radius: 12px;
 
-  background: rgba(255, 138, 0, 0.12);
   color: #ff8a00;
+
+  background: rgba(255, 138, 0, 0.12);
+
+  border: 1px solid rgba(255, 138, 0, 0.2);
 }
 
 .booking-credits-title h1 {
   margin: 0;
-  font-size: 20px;
+
+  font-size: clamp(20px, 2vw, 26px);
+  font-weight: 700;
+
+  line-height: 1.2;
 }
 
 .booking-credits-title p {
-  margin: 3px 0 0;
+  margin: 4px 0 0;
 
-  color: #8d96a3;
-  font-size: 12px;
+  font-size: 13px;
+
+  color: #9ca3af;
 }
 
+
 /* =====================================================
-   CONTENT
+   MAIN CONTENT
 ===================================================== */
 
 .booking-credits-content {
   width: min(1180px, calc(100% - 40px));
+
   margin: 0 auto;
 
-  padding: 55px 0 70px;
+  padding: clamp(35px, 6vw, 75px) 0 50px;
 }
+
+
+/* =====================================================
+   PAYMENT MESSAGE
+===================================================== */
+
+.booking-payment-message {
+  width: 100%;
+
+  margin-bottom: 28px;
+
+  padding: 15px 18px;
+
+  border-radius: 12px;
+
+  background: rgba(255, 138, 0, 0.1);
+
+  border: 1px solid rgba(255, 138, 0, 0.35);
+
+  color: #ffd09b;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  text-align: center;
+
+  animation: messageAppear 0.3s ease;
+}
+
+@keyframes messageAppear {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 
 /* =====================================================
    INTRO
 ===================================================== */
 
 .booking-credits-intro {
-  max-width: 700px;
-  margin: 0 auto 45px;
+  max-width: 720px;
+
+  margin: 0 auto 48px;
+
   text-align: center;
 }
 
@@ -97,91 +207,138 @@
   align-items: center;
   gap: 7px;
 
-  padding: 7px 13px;
+  padding: 8px 14px;
 
   border-radius: 999px;
 
   background: rgba(255, 138, 0, 0.1);
+
   border: 1px solid rgba(255, 138, 0, 0.2);
 
-  color: #ff9d2e;
+  color: #ff9f2e;
 
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .booking-credits-intro h2 {
-  margin: 18px 0 10px;
+  margin: 18px 0 14px;
 
-  font-size: clamp(28px, 4vw, 40px);
-  line-height: 1.15;
+  font-size: clamp(30px, 5vw, 48px);
+
+  line-height: 1.1;
+
+  letter-spacing: -1px;
 }
 
 .booking-credits-intro p {
-  margin: 0;
+  max-width: 650px;
 
-  color: #8f98a5;
+  margin: 0 auto;
 
-  font-size: 15px;
+  color: #9ca3af;
+
+  font-size: clamp(14px, 1.7vw, 16px);
+
   line-height: 1.7;
 }
 
+
 /* =====================================================
-   PACKAGES
+   PACKAGE GRID
 ===================================================== */
 
 .booking-credits-packages {
   display: grid;
 
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
 
-  gap: 18px;
+  gap: 22px;
+
+  align-items: stretch;
 }
+
+
+/* =====================================================
+   CREDIT CARD
+===================================================== */
 
 .booking-credit-card {
   position: relative;
 
-  padding: 25px;
+  display: flex;
+  flex-direction: column;
+
+  min-height: 420px;
+
+  padding: 28px 24px 24px;
 
   border-radius: 18px;
 
-  background: #11161d;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.055),
+      rgba(255, 255, 255, 0.025)
+    );
+
+  border: 1px solid rgba(255, 255, 255, 0.09);
+
+  overflow: hidden;
 
   transition:
-    transform 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .booking-credit-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-6px);
 
-  border-color: rgba(255, 138, 0, 0.35);
+  border-color: rgba(255, 138, 0, 0.4);
 
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.35);
 }
 
+
+/* =====================================================
+   POPULAR CARD
+===================================================== */
+
 .booking-credit-card.popular {
-  border-color: rgba(255, 138, 0, 0.55);
+  border: 1px solid rgba(255, 138, 0, 0.65);
+
+  box-shadow:
+    0 15px 45px rgba(255, 138, 0, 0.08);
 }
 
 .booking-credit-popular {
   position: absolute;
 
   top: 0;
-  right: 20px;
+  right: 0;
+  left: 0;
 
-  padding: 6px 11px;
+  padding: 8px 12px;
 
-  border-radius: 0 0 8px 8px;
+  text-align: center;
 
   background: #ff8a00;
-  color: #111;
 
-  font-size: 10px;
+  color: #0b0f14;
+
+  font-size: 12px;
   font-weight: 800;
+
+  letter-spacing: 0.3px;
 }
+
+.booking-credit-card.popular {
+  padding-top: 52px;
+}
+
 
 /* =====================================================
    CARD HEADER
@@ -189,35 +346,49 @@
 
 .booking-credit-card-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
 
-  gap: 10px;
+  gap: 15px;
+
+  margin-bottom: 22px;
 }
 
 .booking-credit-card-header h3 {
   margin: 0;
 
-  font-size: 19px;
+  font-size: 21px;
+
+  font-weight: 700;
 }
 
 .booking-credit-price {
   display: flex;
   align-items: center;
+  gap: 2px;
 
   color: #ff8a00;
 }
 
 .booking-credit-price strong {
-  font-size: 25px;
+  font-size: 30px;
+
+  line-height: 1;
 }
+
 
 /* =====================================================
    CREDIT COUNT
 ===================================================== */
 
 .booking-credit-count {
-  margin-top: 18px;
+  padding: 12px 14px;
+
+  margin-bottom: 16px;
+
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.05);
 
   color: #ffffff;
 
@@ -225,16 +396,23 @@
   font-weight: 700;
 }
 
+
+/* =====================================================
+   DESCRIPTION
+===================================================== */
+
 .booking-credit-description {
-  min-height: 45px;
+  margin: 0 0 24px;
 
-  margin: 8px 0 20px;
+  min-height: 44px;
 
-  color: #8d96a3;
+  color: #9ca3af;
 
-  font-size: 13px;
+  font-size: 14px;
+
   line-height: 1.6;
 }
+
 
 /* =====================================================
    FEATURES
@@ -244,30 +422,32 @@
   display: flex;
   flex-direction: column;
 
-  gap: 11px;
+  gap: 13px;
 
-  padding: 17px 0;
-
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  margin-bottom: 28px;
 }
 
 .booking-credit-features div {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
 
-  gap: 8px;
+  gap: 9px;
 
-  color: #b8c0cc;
+  color: #cbd5e1;
 
-  font-size: 12px;
+  font-size: 13px;
+
+  line-height: 1.5;
 }
 
 .booking-credit-features svg {
   flex-shrink: 0;
 
-  color: #ff8a00;
+  margin-top: 1px;
+
+  color: #22c55e;
 }
+
 
 /* =====================================================
    BUY BUTTON
@@ -276,57 +456,95 @@
 .booking-credit-buy-button {
   width: 100%;
 
-  margin-top: 20px;
-  padding: 12px 15px;
+  margin-top: auto;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  gap: 8px;
+  gap: 9px;
+
+  padding: 13px 18px;
 
   border: none;
-  border-radius: 10px;
+
+  border-radius: 11px;
 
   background: #ff8a00;
-  color: #111;
 
-  font-size: 13px;
+  color: #0b0f14;
+
+  font-size: 14px;
   font-weight: 800;
 
   cursor: pointer;
 
-  transition: 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
 }
 
-.booking-credit-buy-button:hover {
-  background: #ff9d2e;
-  transform: translateY(-1px);
+.booking-credit-buy-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 10px 25px rgba(255, 138, 0, 0.25);
 }
+
+.booking-credit-buy-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.booking-credit-buy-button:disabled {
+  opacity: 0.65;
+
+  cursor: not-allowed;
+}
+
 
 /* =====================================================
-   INFORMATION
+   LOADER
+===================================================== */
+
+.booking-payment-loader {
+  animation: bookingSpin 0.8s linear infinite;
+}
+
+@keyframes bookingSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* =====================================================
+   INFORMATION SECTION
 ===================================================== */
 
 .booking-credits-info {
-  margin-top: 35px;
-
   display: flex;
+
   align-items: flex-start;
 
-  gap: 14px;
+  gap: 18px;
 
-  padding: 22px;
+  margin-top: 55px;
 
-  border-radius: 15px;
+  padding: clamp(22px, 4vw, 32px);
 
-  background: #10151c;
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 18px;
+
+  background:
+    rgba(255, 255, 255, 0.035);
+
+  border:
+    1px solid rgba(255, 255, 255, 0.08);
 }
 
 .booking-credits-info-icon {
-  width: 38px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
 
   flex-shrink: 0;
 
@@ -334,79 +552,308 @@
   align-items: center;
   justify-content: center;
 
-  border-radius: 10px;
+  border-radius: 12px;
 
-  background: rgba(255, 138, 0, 0.1);
+  background:
+    rgba(255, 138, 0, 0.1);
+
   color: #ff8a00;
 }
 
 .booking-credits-info h3 {
-  margin: 0 0 7px;
+  margin: 0 0 10px;
 
-  font-size: 15px;
+  font-size: 18px;
 }
 
 .booking-credits-info p {
-  margin: 5px 0;
+  margin: 8px 0 0;
 
-  color: #8993a0;
+  color: #9ca3af;
 
-  font-size: 13px;
-  line-height: 1.6;
+  font-size: 14px;
+
+  line-height: 1.7;
 }
 
+
 /* =====================================================
-   SECURITY
+   SECURITY SECTION
 ===================================================== */
 
 .booking-credits-security {
-  margin-top: 20px;
-
   display: flex;
   align-items: center;
   justify-content: center;
 
-  gap: 8px;
+  gap: 10px;
 
-  color: #788391;
+  margin-top: 22px;
 
-  font-size: 12px;
+  padding: 18px;
+
+  color: #94a3b8;
+
+  font-size: 13px;
+
+  text-align: center;
 }
 
 .booking-credits-security svg {
-  color: #ff8a00;
+  color: #22c55e;
+
+  flex-shrink: 0;
 }
 
+
 /* =====================================================
-   RESPONSIVE
+   LARGE LAPTOP / SMALL DESKTOP
 ===================================================== */
 
-@media (max-width: 1000px) {
+@media (max-width: 1100px) {
   .booking-credits-packages {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .booking-credit-card {
+    min-height: auto;
   }
 }
 
-@media (max-width: 650px) {
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+@media (max-width: 768px) {
   .booking-credits-topbar {
-    padding: 0 18px;
+    padding: 14px 20px;
+
+    min-height: auto;
+
+    gap: 15px;
+  }
+
+  .booking-credits-back {
+    padding: 10px;
   }
 
   .booking-credits-back span {
     display: none;
   }
 
-  .booking-credits-content {
-    width: min(100% - 28px, 520px);
+  .booking-credits-title-icon {
+    width: 40px;
+    height: 40px;
+  }
 
-    padding-top: 35px;
+  .booking-credits-title h1 {
+    font-size: 20px;
+  }
+
+  .booking-credits-title p {
+    font-size: 12px;
+  }
+
+  .booking-credits-content {
+    width: min(100% - 32px, 1180px);
+  }
+
+  .booking-credits-intro {
+    margin-bottom: 38px;
+  }
+
+  .booking-credits-packages {
+    gap: 18px;
+  }
+
+  .booking-credit-card {
+    padding: 24px 20px;
+  }
+
+  .booking-credit-card.popular {
+    padding-top: 48px;
+  }
+
+  .booking-credits-info {
+    margin-top: 42px;
+  }
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 600px) {
+  .booking-credits-topbar {
+    position: relative;
+  }
+
+  .booking-credits-title {
+    gap: 9px;
+  }
+
+  .booking-credits-title-icon {
+    width: 38px;
+    height: 38px;
+  }
+
+  .booking-credits-title h1 {
+    font-size: 18px;
+  }
+
+  .booking-credits-title p {
+    display: none;
+  }
+
+  .booking-credits-content {
+    width: min(100% - 28px, 1180px);
+
+    padding-top: 32px;
+  }
+
+  .booking-credits-intro h2 {
+    font-size: 32px;
+
+    letter-spacing: -0.6px;
+  }
+
+  .booking-credits-intro p {
+    font-size: 14px;
   }
 
   .booking-credits-packages {
     grid-template-columns: 1fr;
+
+    gap: 18px;
+  }
+
+  .booking-credit-card {
+    min-height: auto;
+
+    padding: 24px 20px;
+  }
+
+  .booking-credit-card-header h3 {
+    font-size: 20px;
+  }
+
+  .booking-credit-price strong {
+    font-size: 28px;
   }
 
   .booking-credit-description {
     min-height: auto;
+  }
+
+  .booking-credits-info {
+    flex-direction: column;
+
+    gap: 14px;
+
+    padding: 22px 18px;
+
+    border-radius: 15px;
+  }
+
+  .booking-credits-info h3 {
+    font-size: 17px;
+  }
+
+  .booking-credits-info p {
+    font-size: 13px;
+  }
+
+  .booking-credits-security {
+    align-items: flex-start;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+  }
+}
+
+
+/* =====================================================
+   SMALL MOBILE
+===================================================== */
+
+@media (max-width: 380px) {
+  .booking-credits-content {
+    width: calc(100% - 22px);
+  }
+
+  .booking-credits-topbar {
+    padding: 12px;
+  }
+
+  .booking-credits-intro h2 {
+    font-size: 28px;
+  }
+
+  .booking-credit-card {
+    padding: 20px 16px;
+  }
+
+  .booking-credit-card-header {
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 10px;
+  }
+
+  .booking-credit-price {
+    align-self: flex-start;
+  }
+
+  .booking-credit-buy-button {
+    min-height: 48px;
+  }
+}
+
+
+/* =====================================================
+   LARGE SCREENS
+===================================================== */
+
+@media (min-width: 1500px) {
+  .booking-credits-content {
+    width: min(1320px, calc(100% - 100px));
+  }
+
+  .booking-credit-card {
+    padding: 32px 28px 28px;
+  }
+}
+
+
+/* =====================================================
+   ACCESSIBILITY
+===================================================== */
+
+.booking-credits-back:focus-visible,
+.booking-credit-buy-button:focus-visible {
+  outline: 3px solid rgba(255, 138, 0, 0.45);
+
+  outline-offset: 3px;
+}
+
+
+/* =====================================================
+   REDUCE MOTION
+===================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+
+    transition-duration: 0.01ms !important;
+
+    animation-duration: 0.01ms !important;
   }
 }
