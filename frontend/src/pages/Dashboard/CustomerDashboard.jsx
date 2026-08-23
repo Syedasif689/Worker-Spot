@@ -395,130 +395,126 @@ function CustomerDashboard() {
   // CURRENT LOCATION
   // =====================================================
 
-  const handleCurrentLocation = () => {
-    if (!navigator.geolocation) {
-      setLocationStatus(
-        "Location services are not supported by this browser."
-      );
+ const handleCurrentLocation = () => {
+  if (!navigator.geolocation) {
+    setLocationStatus(
+      "Location services are not supported by this browser."
+    );
+    return;
+  }
 
-      return;
-    }
+  setGettingLocation(true);
+  setLocationStatus("Detecting your current location...");
+  setWorkerError("");
+  setWorkers([]);
 
-    setGettingLocation(true);
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      const { latitude, longitude, accuracy } = position.coords;
 
-    setLocationStatus("Detecting your current location...");
-
-    setWorkerError("");
-    setWorkers([]);
-
-   navigator.geolocation.getCurrentPosition(
-  async (position) => {
-    const { latitude, longitude } = position.coords;
-
-    try {
-      const addressData = await getAddressFromCoordinates(
-        latitude,
-        longitude
-      );
-
-      const newLocation = {
-        ...addressData,
+      console.log("Location detected:", {
         latitude,
         longitude,
-      };
-
-      setLocation(newLocation);
-      setLocationMode("current");
-
-      setLocationStatus(
-        "Current location detected successfully."
-      );
-
-      console.log(
-        "Customer coordinates:",
-        latitude,
-        longitude
-      );
-
-      if (selectedCategory) {
-        await findNearbyWorkers(
-          selectedCategory,
-          latitude,
-          longitude
-        );
-      }
-    } catch (error) {
-      console.error("Current location error:", error);
-
-      setLocation({
-        address: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`,
-        state: "",
-        district: "",
-        city: "",
-        area: "",
-        latitude,
-        longitude,
+        accuracy,
       });
 
-      setLocationMode("current");
+      try {
+        setLocationStatus("Finding your address...");
 
-      setLocationStatus(
-        "Location detected successfully."
+        const addressData =
+          await getAddressFromCoordinates(
+            latitude,
+            longitude
+          );
+
+        const newLocation = {
+          ...addressData,
+          latitude,
+          longitude,
+        };
+
+        setLocation(newLocation);
+        setLocationMode("current");
+
+        setLocationStatus(
+          "Current location detected successfully."
+        );
+
+        if (selectedCategory) {
+          await findNearbyWorkers(
+            selectedCategory,
+            latitude,
+            longitude
+          );
+        }
+
+      } catch (error) {
+        console.error(
+          "Address lookup failed:",
+          error
+        );
+
+        // Coordinates are still valid even if address lookup fails
+        setLocation({
+          address: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`,
+          state: "",
+          district: "",
+          city: "",
+          area: "",
+          latitude,
+          longitude,
+        });
+
+        setLocationMode("current");
+
+        setLocationStatus(
+          "Location detected successfully."
+        );
+
+      } finally {
+        setGettingLocation(false);
+      }
+    },
+
+    (error) => {
+      setGettingLocation(false);
+
+      console.error(
+        "Geolocation error:",
+        error.code,
+        error.message
       );
 
-      if (selectedCategory) {
-        await findNearbyWorkers(
-          selectedCategory,
-          latitude,
-          longitude
-        );
+      let message =
+        "Unable to detect your current location.";
+
+      switch (error.code) {
+        case 1:
+          message =
+            "Location permission denied. Please allow location access in your browser.";
+          break;
+
+        case 2:
+          message =
+            "Location is currently unavailable. Please turn on your phone's Location/GPS.";
+          break;
+
+        case 3:
+          message =
+            "Location request timed out. Please make sure GPS and internet are enabled, then try again.";
+          break;
       }
-    } finally {
-      setGettingLocation(false);
+
+      setLocationStatus(message);
+    },
+
+    {
+      enableHighAccuracy: false,
+      timeout: 60000,
+      maximumAge: 300000,
     }
-  },
-  (error) => {
-    setGettingLocation(false);
-
-    console.error(
-      "Geolocation error:",
-      error.code,
-      error.message
-    );
-
-    switch (error.code) {
-      case error.PERMISSION_DENIED:
-        setLocationStatus(
-          "Location permission was denied. Please allow location access."
-        );
-        break;
-
-      case error.POSITION_UNAVAILABLE:
-        setLocationStatus(
-          "Your current location is unavailable."
-        );
-        break;
-
-      case error.TIMEOUT:
-        setLocationStatus(
-          "Location request timed out. Please try again."
-        );
-        break;
-
-      default:
-        setLocationStatus(
-          "Unable to detect your current location."
-        );
-    }
-  },
-  {
-    enableHighAccuracy: false,
-    timeout: 30000,
-    maximumAge: 60000,
-  }
-);
-  };
-
+  );
+};
   // =====================================================
   // MANUAL LOCATION INPUT
   // =====================================================
