@@ -109,7 +109,9 @@ function CustomerDashboard() {
   useEffect(() => {
     const loadBookingAccess = async () => {
       try {
-        const token = localStorage.getItem("token");
+        const token =
+  localStorage.getItem("token") ||
+  sessionStorage.getItem("token");
 
         if (!token) {
           setLoadingBookingAccess(false);
@@ -308,7 +310,9 @@ function CustomerDashboard() {
       setLoadingWorkers(true);
       setWorkerError("");
 
-      const token = localStorage.getItem("token");
+      const token =
+  localStorage.getItem("token") ||
+  sessionStorage.getItem("token");
 
       if (!token) {
         throw new Error("Your session has expired. Please login again.");
@@ -801,7 +805,9 @@ function CustomerDashboard() {
   // =====================================================
 
   const handleSendBooking = async (description) => {
-    const token = localStorage.getItem("token");
+    const token =
+  localStorage.getItem("token") ||
+  sessionStorage.getItem("token");
 
     if (!token) {
       alert(

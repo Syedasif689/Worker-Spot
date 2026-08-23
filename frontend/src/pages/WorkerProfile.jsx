@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { getToken } from "../utils/auth";
 import {
   UserRound,
   Phone,
@@ -22,6 +23,13 @@ function WorkerProfile() {
   const navigate = useNavigate();
 
   // =====================================================
+  // API URL
+  // =====================================================
+
+  const API_URL =
+    import.meta.env.VITE_API_URL || "http://localhost:8080";
+
+  // =====================================================
   // PROFILE STATE
   // =====================================================
 
@@ -37,7 +45,6 @@ function WorkerProfile() {
     city: "",
     area: "",
 
-    // GPS LOCATION
     latitude: null,
     longitude: null,
 
@@ -46,132 +53,336 @@ function WorkerProfile() {
     about: "",
   });
 
-  const [loadingProfile, setLoadingProfile] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const [loadingProfile, setLoadingProfile] =
+    useState(true);
 
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [saving, setSaving] =
+    useState(false);
 
-  const [locationStatus, setLocationStatus] = useState("");
-  const [gettingLocation, setGettingLocation] = useState(false);
+  const [error, setError] =
+    useState("");
+
+  const [success, setSuccess] =
+    useState("");
+
+  const [locationStatus, setLocationStatus] =
+    useState("");
+
+  const [gettingLocation, setGettingLocation] =
+    useState(false);
+
+  // =====================================================
+  // GET TOKEN
+  // =====================================================
+
+  const getToken = () => {
+    const localToken =
+      localStorage.getItem("token");
+
+    const sessionToken =
+      sessionStorage.getItem("token");
+
+    const token =
+      localToken || sessionToken;
+
+    console.log(
+      "WorkerProfile - Token exists:",
+      !!token
+    );
+
+    if (token) {
+      console.log(
+        "WorkerProfile - Token preview:",
+        `${token.substring(0, 20)}...`
+      );
+    }
+
+    return token;
+  };
+
+  // =====================================================
+  // HANDLE AUTH FAILURE
+  // =====================================================
+
+  const handleAuthFailure = () => {
+    console.warn(
+      "Authentication failed. Removing stored token."
+    );
+
+    localStorage.removeItem("token");
+    sessionStorage.removeItem("token");
+
+    localStorage.removeItem("role");
+    sessionStorage.removeItem("role");
+
+    localStorage.removeItem("user");
+    sessionStorage.removeItem("user");
+
+    setError(
+      "Your session has expired. Please login again."
+    );
+
+    setTimeout(() => {
+      navigate("/worker-login", {
+        replace: true,
+      });
+    }, 1200);
+  };
+
+  // =====================================================
+  // PARSE RESPONSE
+  // =====================================================
+
+  const parseResponse = async (response) => {
+    const contentType =
+      response.headers.get("content-type");
+
+    if (
+      contentType &&
+      contentType.includes("application/json")
+    ) {
+      const text =
+        await response.text();
+
+      if (!text) {
+        return null;
+      }
+
+      try {
+        return JSON.parse(text);
+      } catch (error) {
+        console.warn(
+          "Unable to parse JSON response:",
+          error
+        );
+
+        return null;
+      }
+    }
+
+    const text =
+      await response.text();
+
+    return text || null;
+  };
 
   // =====================================================
   // LOAD CURRENT WORKER PROFILE
   // =====================================================
 
   useEffect(() => {
+    let mounted = true;
+
     const loadProfile = async () => {
       try {
+        if (!mounted) return;
+
         setLoadingProfile(true);
         setError("");
+        setSuccess("");
 
-        const token = localStorage.getItem("token");
+        // =================================================
+        // TOKEN
+        // =================================================
+
+        const token = getToken();
 
         if (!token) {
           setError(
             "Your session has expired. Please login again."
           );
+
+          setLoadingProfile(false);
+
+          setTimeout(() => {
+            navigate("/worker-login", {
+              replace: true,
+            });
+          }, 1000);
+
           return;
         }
 
-        const response = await fetch(
-  `${import.meta.env.VITE_API_URL}/api/workers/me`,
-  {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
+        // =================================================
+        // DEBUG
+        // =================================================
+
+        console.log(
+          "======================================"
         );
 
-        const contentType =
-          response.headers.get("content-type");
+        console.log(
+          "WORKER PROFILE GET REQUEST"
+        );
 
-        let result = null;
+        console.log(
+          "API URL:",
+          `${API_URL}/api/workers/me`
+        );
+
+        console.log(
+          "Authorization:",
+          "Bearer ********"
+        );
+
+        console.log(
+          "======================================"
+        );
+
+        // =================================================
+        // REQUEST
+        // =================================================
+
+        const response =
+          await fetch(
+            `${API_URL}/api/workers/me`,
+            {
+              method: "GET",
+
+              headers: {
+                Authorization:
+                  `Bearer ${token}`,
+
+                Accept:
+                  "application/json",
+              },
+
+              credentials: "include",
+            }
+          );
+
+        // =================================================
+        // DEBUG RESPONSE
+        // =================================================
+
+        console.log(
+          "Worker profile response status:",
+          response.status
+        );
+
+        console.log(
+          "Worker profile response OK:",
+          response.ok
+        );
+
+        const result =
+          await parseResponse(response);
+
+        console.log(
+          "Worker profile response body:",
+          result
+        );
+
+        // =================================================
+        // AUTHENTICATION FAILURE
+        // =================================================
 
         if (
-          contentType?.includes("application/json")
+          response.status === 401 ||
+          response.status === 403
         ) {
-          const text = await response.text();
-
-          if (text) {
-            try {
-              result = JSON.parse(text);
-            } catch {
-              result = null;
-            }
-          }
+          handleAuthFailure();
+          return;
         }
+
+        // =================================================
+        // OTHER ERROR
+        // =================================================
 
         if (!response.ok) {
-          throw new Error(
-            result?.message ||
-              "Unable to load worker profile."
-          );
+          let message =
+            "Unable to load worker profile.";
+
+          if (
+            result &&
+            typeof result === "object"
+          ) {
+            message =
+              result.message ||
+              result.error ||
+              message;
+          } else if (
+            typeof result === "string" &&
+            result.trim()
+          ) {
+            message = result;
+          }
+
+          throw new Error(message);
         }
+
+        // =================================================
+        // MAKE SURE COMPONENT STILL EXISTS
+        // =================================================
+
+        if (!mounted) return;
 
         // =================================================
         // BACKEND → FRONTEND
         // =================================================
 
         setProfile({
-          name: result.fullName || "",
+          name:
+            result?.fullName || "",
 
-          mobile: result.mobile || "",
+          mobile:
+            result?.mobile || "",
 
-          email: result.email || "",
+          email:
+            result?.email || "",
 
           age:
-            result.age !== null &&
-            result.age !== undefined
+            result?.age !== null &&
+            result?.age !== undefined
               ? result.age
               : "",
 
-          skill: result.category || "",
+          skill:
+            result?.category || "",
 
           experience:
-            result.experienceYears !== null &&
-            result.experienceYears !== undefined
+            result?.experienceYears !== null &&
+            result?.experienceYears !== undefined
               ? result.experienceYears
               : "",
 
-          state: result.state || "",
+          state:
+            result?.state || "",
 
-          district: result.district || "",
+          district:
+            result?.district || "",
 
-          city: result.city || "",
+          city:
+            result?.city || "",
 
-          area: result.area || "",
-
-          // =================================================
-          // GPS
-          // =================================================
+          area:
+            result?.area || "",
 
           latitude:
-            result.latitude !== null &&
-            result.latitude !== undefined
+            result?.latitude !== null &&
+            result?.latitude !== undefined
               ? Number(result.latitude)
               : null,
 
           longitude:
-            result.longitude !== null &&
-            result.longitude !== undefined
+            result?.longitude !== null &&
+            result?.longitude !== undefined
               ? Number(result.longitude)
               : null,
 
           charges:
-            result.charges !== null &&
-            result.charges !== undefined
+            result?.charges !== null &&
+            result?.charges !== undefined
               ? result.charges
               : "",
 
           availability:
-            result.availability === "BUSY"
+            result?.availability === "BUSY"
               ? "Busy"
               : "Available",
 
-          about: result.about || "",
+          about:
+            result?.about || "",
         });
 
         // =================================================
@@ -179,39 +390,55 @@ function WorkerProfile() {
         // =================================================
 
         if (
-          result.latitude !== null &&
-          result.latitude !== undefined &&
-          result.longitude !== null &&
-          result.longitude !== undefined
+          result?.latitude !== null &&
+          result?.latitude !== undefined &&
+          result?.longitude !== null &&
+          result?.longitude !== undefined
         ) {
           setLocationStatus(
             "Saved location is available."
           );
+        } else {
+          setLocationStatus(
+            "No GPS location saved. Please use your current location."
+          );
         }
+
       } catch (err) {
         console.error(
           "Load worker profile error:",
           err
         );
 
+        if (!mounted) return;
+
         setError(
-          err.message ||
+          err?.message ||
             "Unable to load your profile."
         );
       } finally {
-        setLoadingProfile(false);
+        if (mounted) {
+          setLoadingProfile(false);
+        }
       }
     };
 
     loadProfile();
-  }, []);
+
+    return () => {
+      mounted = false;
+    };
+  }, [navigate, API_URL]);
 
   // =====================================================
   // HANDLE INPUT CHANGES
   // =====================================================
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const {
+      name,
+      value,
+    } = e.target;
 
     setProfile((prev) => ({
       ...prev,
@@ -231,20 +458,25 @@ function WorkerProfile() {
       setLocationStatus(
         "Location services are not supported by this browser."
       );
+
       return;
     }
 
     setGettingLocation(true);
+
     setLocationStatus(
       "Getting your current location..."
     );
+
     setError("");
     setSuccess("");
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
-        const { latitude, longitude } =
-          position.coords;
+        const {
+          latitude,
+          longitude,
+        } = position.coords;
 
         console.log(
           "GPS latitude:",
@@ -261,9 +493,16 @@ function WorkerProfile() {
           // REVERSE GEOCODING
           // =================================================
 
-          const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`
-          );
+          const response =
+            await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`,
+              {
+                headers: {
+                  Accept:
+                    "application/json",
+                },
+              }
+            );
 
           if (!response.ok) {
             throw new Error(
@@ -271,9 +510,11 @@ function WorkerProfile() {
             );
           }
 
-          const data = await response.json();
+          const data =
+            await response.json();
 
-          const address = data.address || {};
+          const address =
+            data?.address || {};
 
           const state =
             address.state || "";
@@ -299,7 +540,7 @@ function WorkerProfile() {
             "";
 
           // =================================================
-          // SAVE GPS + ADDRESS INTO STATE
+          // SAVE GPS + ADDRESS
           // =================================================
 
           setProfile((prev) => ({
@@ -313,8 +554,6 @@ function WorkerProfile() {
 
             area,
 
-            // IMPORTANT
-            // Save actual GPS coordinates
             latitude,
 
             longitude,
@@ -325,6 +564,7 @@ function WorkerProfile() {
               6
             )}, ${longitude.toFixed(6)}`
           );
+
         } catch (error) {
           console.error(
             "Reverse geocoding error:",
@@ -332,12 +572,12 @@ function WorkerProfile() {
           );
 
           // =================================================
-          // EVEN IF ADDRESS LOOKUP FAILS,
-          // SAVE GPS COORDINATES
+          // GPS STILL SAVED
           // =================================================
 
           setProfile((prev) => ({
             ...prev,
+
             latitude,
             longitude,
           }));
@@ -357,24 +597,31 @@ function WorkerProfile() {
 
         switch (error.code) {
           case error.PERMISSION_DENIED:
+
             setLocationStatus(
               "Location permission was denied. Please allow location access."
             );
+
             break;
 
           case error.POSITION_UNAVAILABLE:
+
             setLocationStatus(
               "Your current location is unavailable."
             );
+
             break;
 
           case error.TIMEOUT:
+
             setLocationStatus(
               "Location request timed out. Please try again."
             );
+
             break;
 
           default:
+
             setLocationStatus(
               "Unable to detect your location."
             );
@@ -408,10 +655,14 @@ function WorkerProfile() {
       return;
     }
 
-    if (Number(profile.age) < 19) {
+    if (
+      !profile.age ||
+      Number(profile.age) < 19
+    ) {
       setError(
         "Workers must be 19 years or older."
       );
+
       return;
     }
 
@@ -419,30 +670,55 @@ function WorkerProfile() {
       setError(
         "Please provide a valid age."
       );
+
       return;
     }
 
-    if (Number(profile.experience) < 0) {
+    if (
+      !profile.skill.trim()
+    ) {
       setError(
-        "Experience cannot be negative."
+        "Skill / category is required."
       );
+
       return;
     }
 
-    if (Number(profile.charges) < 0) {
+    if (
+      !profile.experience ||
+      Number(profile.experience) < 0
+    ) {
       setError(
-        "Charges cannot be negative."
+        "Please provide valid experience."
       );
+
+      return;
+    }
+
+    if (
+      profile.charges === "" ||
+      Number(profile.charges) < 0
+    ) {
+      setError(
+        "Please provide valid charges."
+      );
+
       return;
     }
 
     if (!profile.state.trim()) {
-      setError("State is required.");
+      setError(
+        "State is required."
+      );
+
       return;
     }
 
     if (!profile.district.trim()) {
-      setError("District is required.");
+      setError(
+        "District is required."
+      );
+
       return;
     }
 
@@ -450,6 +726,7 @@ function WorkerProfile() {
       setError(
         "City / Town is required."
       );
+
       return;
     }
 
@@ -462,29 +739,36 @@ function WorkerProfile() {
       profile.latitude === undefined ||
       profile.longitude === null ||
       profile.longitude === undefined ||
-      Number.isNaN(Number(profile.latitude)) ||
-      Number.isNaN(Number(profile.longitude))
+      Number.isNaN(
+        Number(profile.latitude)
+      ) ||
+      Number.isNaN(
+        Number(profile.longitude)
+      )
     ) {
       setError(
         "Please use your current location before saving your profile."
       );
+
       return;
     }
 
     try {
       setSaving(true);
 
-      const token =
-        localStorage.getItem("token");
+      // =================================================
+      // TOKEN
+      // =================================================
+
+      const token = getToken();
 
       if (!token) {
-        throw new Error(
-          "Your session has expired. Please login again."
-        );
+        handleAuthFailure();
+        return;
       }
 
       // =================================================
-      // BACKEND DTO DATA
+      // BACKEND DTO
       // =================================================
 
       const workerData = {
@@ -512,10 +796,6 @@ function WorkerProfile() {
         area:
           profile.area.trim(),
 
-        // =================================================
-        // GPS
-        // =================================================
-
         latitude:
           Number(profile.latitude),
 
@@ -537,70 +817,113 @@ function WorkerProfile() {
       // =================================================
 
       console.log(
-        "Worker profile data being sent:",
+        "======================================"
+      );
+
+      console.log(
+        "WORKER PROFILE UPDATE REQUEST"
+      );
+
+      console.log(
+        "API URL:",
+        `${API_URL}/api/workers/me`
+      );
+
+      console.log(
+        "Worker profile data:",
         workerData
       );
 
       console.log(
-        "Sending latitude:",
-        workerData.latitude
+        "Authorization:",
+        "Bearer ********"
       );
 
       console.log(
-        "Sending longitude:",
-        workerData.longitude
+        "======================================"
       );
 
       // =================================================
-      // UPDATE API
+      // PUT REQUEST
       // =================================================
 
-      const response = await fetch(
-  `${import.meta.env.VITE_API_URL}/api/workers/me`,
-  {
-          method: "PUT",
+      const response =
+        await fetch(
+          `${API_URL}/api/workers/me`,
+          {
+            method: "PUT",
 
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type":
-              "application/json",
-          },
+            headers: {
+              Authorization:
+                `Bearer ${token}`,
 
-          body:
-            JSON.stringify(workerData),
-        }
-      );
+              "Content-Type":
+                "application/json",
 
-      const contentType =
-        response.headers.get(
-          "content-type"
+              Accept:
+                "application/json",
+            },
+
+            credentials: "include",
+
+            body:
+              JSON.stringify(workerData),
+          }
         );
 
-      let result = null;
+      // =================================================
+      // RESPONSE
+      // =================================================
+
+      console.log(
+        "Update profile status:",
+        response.status
+      );
+
+      const result =
+        await parseResponse(response);
+
+      console.log(
+        "Update profile response:",
+        result
+      );
+
+      // =================================================
+      // AUTH FAILURE
+      // =================================================
 
       if (
-        contentType?.includes(
-          "application/json"
-        )
+        response.status === 401 ||
+        response.status === 403
       ) {
-        const text =
-          await response.text();
-
-        if (text) {
-          try {
-            result =
-              JSON.parse(text);
-          } catch {
-            result = null;
-          }
-        }
+        handleAuthFailure();
+        return;
       }
 
+      // =================================================
+      // OTHER ERROR
+      // =================================================
+
       if (!response.ok) {
-        throw new Error(
-          result?.message ||
-            "Failed to update worker profile."
-        );
+        let message =
+          "Failed to update worker profile.";
+
+        if (
+          result &&
+          typeof result === "object"
+        ) {
+          message =
+            result.message ||
+            result.error ||
+            message;
+        } else if (
+          typeof result === "string" &&
+          result.trim()
+        ) {
+          message = result;
+        }
+
+        throw new Error(message);
       }
 
       // =================================================
@@ -613,7 +936,7 @@ function WorkerProfile() {
       );
 
       // =================================================
-      // GO TO DASHBOARD
+      // DASHBOARD
       // =================================================
 
       setTimeout(() => {
@@ -621,6 +944,7 @@ function WorkerProfile() {
           "/worker-dashboard"
         );
       }, 1200);
+
     } catch (err) {
       console.error(
         "Update worker profile error:",
@@ -628,9 +952,10 @@ function WorkerProfile() {
       );
 
       setError(
-        err.message ||
+        err?.message ||
           "Unable to update your profile."
       );
+
     } finally {
       setSaving(false);
     }
@@ -924,9 +1249,7 @@ function WorkerProfile() {
                   type="number"
                   min="0"
                   placeholder="Years of experience"
-                  value={
-                    profile.experience
-                  }
+                  value={profile.experience}
                   onChange={handleChange}
                   required
                 />
@@ -958,9 +1281,7 @@ function WorkerProfile() {
                   min="0"
                   step="0.01"
                   placeholder="Enter your charges"
-                  value={
-                    profile.charges
-                  }
+                  value={profile.charges}
                   onChange={handleChange}
                   required
                 />
@@ -1089,9 +1410,7 @@ function WorkerProfile() {
                   name="state"
                   type="text"
                   placeholder="Enter state"
-                  value={
-                    profile.state
-                  }
+                  value={profile.state}
                   onChange={
                     handleChange
                   }
@@ -1243,10 +1562,12 @@ function WorkerProfile() {
             />
 
             <div className="worker-profile-character-count">
+
               {
                 profile.about.length
               }
               /2000
+
             </div>
 
           </div>
@@ -1254,7 +1575,7 @@ function WorkerProfile() {
         </section>
 
         {/* =================================================
-            ERROR / SUCCESS
+            ERROR
         ================================================= */}
 
         {error && (
@@ -1262,6 +1583,10 @@ function WorkerProfile() {
             {error}
           </div>
         )}
+
+        {/* =================================================
+            SUCCESS
+        ================================================= */}
 
         {success && (
           <div className="worker-profile-success">

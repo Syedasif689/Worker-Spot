@@ -21,7 +21,9 @@ function WorkerProfileCard() {
 
             try {
 
-                const token = localStorage.getItem("token");
+               const token =
+  localStorage.getItem("token") ||
+  sessionStorage.getItem("token");
 
                 if (!token) {
                     setError("Authentication token not found.");

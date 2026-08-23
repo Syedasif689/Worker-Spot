@@ -16,7 +16,10 @@ import {
   CheckCircle,
   AlertCircle,
   ArrowLeft,
+  LogOut,
 } from "lucide-react";
+
+import { getToken, logout } from "../utils/auth";
 
 import "./CustomerProfile.css";
 
@@ -27,6 +30,7 @@ function CustomerProfile() {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const [editing, setEditing] = useState(false);
   const [fullName, setFullName] = useState("");
@@ -43,6 +47,35 @@ function CustomerProfile() {
   };
 
   // =====================================================
+  // LOGOUT
+  // =====================================================
+
+  const handleLogout = () => {
+    try {
+      setLoggingOut(true);
+
+      console.log("Customer logout started.");
+
+      // Clear authentication from both
+      // localStorage and sessionStorage
+      logout();
+
+      console.log("Customer authentication cleared.");
+
+      // Replace current history entry so the user
+      // cannot simply return to the profile page
+      navigate("/customer-login", {
+        replace: true,
+      });
+    } catch (err) {
+      console.error("Customer logout error:", err);
+
+      setLoggingOut(false);
+      setError("Unable to logout. Please try again.");
+    }
+  };
+
+  // =====================================================
   // LOAD CUSTOMER PROFILE
   // =====================================================
 
@@ -55,10 +88,17 @@ function CustomerProfile() {
       setLoading(true);
       setError("");
 
-      const token = localStorage.getItem("token");
+      const token = getToken();
 
       if (!token) {
         setError("You are not logged in.");
+
+        setTimeout(() => {
+          navigate("/customer-login", {
+            replace: true,
+          });
+        }, 800);
+
         return;
       }
 
@@ -66,6 +106,7 @@ function CustomerProfile() {
         `${import.meta.env.VITE_API_URL}/api/customers/me`,
         {
           method: "GET",
+
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -75,19 +116,51 @@ function CustomerProfile() {
 
       const data = await response.json();
 
+      // ===================================================
+      // AUTH FAILURE
+      // ===================================================
+
+      if (
+        response.status === 401 ||
+        response.status === 403
+      ) {
+        logout();
+
+        setError(
+          "Your session has expired. Please login again."
+        );
+
+        setTimeout(() => {
+          navigate("/customer-login", {
+            replace: true,
+          });
+        }, 800);
+
+        return;
+      }
+
+      // ===================================================
+      // OTHER ERROR
+      // ===================================================
+
       if (!response.ok) {
         throw new Error(
-          data.message || "Failed to load customer profile."
+          data.message ||
+            "Failed to load customer profile."
         );
       }
 
       setProfile(data);
       setFullName(data.fullName || "");
     } catch (err) {
-      console.error("Customer profile error:", err);
+      console.error(
+        "Customer profile error:",
+        err
+      );
 
       setError(
-        err.message || "Unable to load your profile."
+        err.message ||
+          "Unable to load your profile."
       );
     } finally {
       setLoading(false);
@@ -109,10 +182,15 @@ function CustomerProfile() {
       setError("");
       setMessage("");
 
-      const token = localStorage.getItem("token");
+      const token = getToken();
 
       if (!token) {
         setError("You are not logged in.");
+
+        navigate("/customer-login", {
+          replace: true,
+        });
+
         return;
       }
 
@@ -120,10 +198,12 @@ function CustomerProfile() {
         `${import.meta.env.VITE_API_URL}/api/customers/me`,
         {
           method: "PUT",
+
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
+
           body: JSON.stringify({
             fullName: fullName.trim(),
           }),
@@ -132,17 +212,45 @@ function CustomerProfile() {
 
       const data = await response.json();
 
+      // ===================================================
+      // AUTH FAILURE
+      // ===================================================
+
+      if (
+        response.status === 401 ||
+        response.status === 403
+      ) {
+        logout();
+
+        navigate("/customer-login", {
+          replace: true,
+        });
+
+        return;
+      }
+
+      // ===================================================
+      // OTHER ERROR
+      // ===================================================
+
       if (!response.ok) {
         throw new Error(
-          data.message || "Failed to update profile."
+          data.message ||
+            "Failed to update profile."
         );
       }
+
+      // ===================================================
+      // UPDATE PROFILE
+      // ===================================================
 
       setProfile(data);
       setFullName(data.fullName || "");
 
       setEditing(false);
-      setMessage("Profile updated successfully.");
+      setMessage(
+        "Profile updated successfully."
+      );
 
       setTimeout(() => {
         setMessage("");
@@ -154,7 +262,8 @@ function CustomerProfile() {
       );
 
       setError(
-        err.message || "Unable to update your profile."
+        err.message ||
+          "Unable to update your profile."
       );
     } finally {
       setSaving(false);
@@ -166,9 +275,13 @@ function CustomerProfile() {
   // =====================================================
 
   const handleCancel = () => {
-    setFullName(profile?.fullName || "");
+    setFullName(
+      profile?.fullName || ""
+    );
+
     setEditing(false);
     setError("");
+    setMessage("");
   };
 
   // =====================================================
@@ -183,7 +296,9 @@ function CustomerProfile() {
           size={32}
         />
 
-        <p>Loading your profile...</p>
+        <p>
+          Loading your profile...
+        </p>
       </div>
     );
   }
@@ -197,10 +312,13 @@ function CustomerProfile() {
       <div className="customer-profile-error">
         <AlertCircle size={32} />
 
-        <h3>Unable to load profile</h3>
+        <h3>
+          Unable to load profile
+        </h3>
 
         <p>
-          {error || "Something went wrong."}
+          {error ||
+            "Something went wrong."}
         </p>
 
         <div className="profile-error-actions">
@@ -215,10 +333,13 @@ function CustomerProfile() {
 
           <button
             type="button"
-            onClick={handleBackToDashboard}
+            onClick={
+              handleBackToDashboard
+            }
             className="profile-back-btn"
           >
             <ArrowLeft size={18} />
+
             Back to Dashboard
           </button>
 
@@ -232,7 +353,9 @@ function CustomerProfile() {
   // =====================================================
 
   const memberSince = profile.createdAt
-    ? new Date(profile.createdAt).toLocaleDateString(
+    ? new Date(
+        profile.createdAt
+      ).toLocaleDateString(
         "en-IN",
         {
           day: "2-digit",
@@ -258,13 +381,42 @@ function CustomerProfile() {
         <button
           type="button"
           className="profile-back-dashboard-btn"
-          onClick={handleBackToDashboard}
+          onClick={
+            handleBackToDashboard
+          }
+          disabled={loggingOut}
         >
           <ArrowLeft size={19} />
 
           <span>
             Back to Dashboard
           </span>
+        </button>
+
+        {/* LOGOUT */}
+
+        <button
+          type="button"
+          className="profile-logout-btn"
+          onClick={handleLogout}
+          disabled={loggingOut}
+        >
+          {loggingOut ? (
+            <>
+              <Loader2
+                size={18}
+                className="profile-spinner"
+              />
+
+              Logging out...
+            </>
+          ) : (
+            <>
+              <LogOut size={18} />
+
+              Logout
+            </>
+          )}
         </button>
 
       </div>
@@ -277,11 +429,15 @@ function CustomerProfile() {
       <div className="customer-profile-header">
 
         <div>
-          <h1>My Profile</h1>
+
+          <h1>
+            My Profile
+          </h1>
 
           <p>
             Manage your Worker Spot account information.
           </p>
+
         </div>
 
         {!editing ? (
@@ -294,6 +450,7 @@ function CustomerProfile() {
               setError("");
               setMessage("");
             }}
+            disabled={loggingOut}
           >
             <Edit3 size={18} />
 
@@ -455,7 +612,9 @@ function CustomerProfile() {
                   type="text"
                   value={fullName}
                   onChange={(e) =>
-                    setFullName(e.target.value)
+                    setFullName(
+                      e.target.value
+                    )
                   }
                   maxLength={100}
                   placeholder="Enter your full name"

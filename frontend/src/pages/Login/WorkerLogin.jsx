@@ -19,11 +19,16 @@ function WorkerLogin() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(true);
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+
+  // =====================================================
+  // LOGIN
+  // =====================================================
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,12 +38,14 @@ function WorkerLogin() {
 
     try {
       const response = await fetch(
-  `${import.meta.env.VITE_API_URL}/api/auth/login`,
-  {
+        `${import.meta.env.VITE_API_URL}/api/auth/login`,
+        {
           method: "POST",
+
           headers: {
             "Content-Type": "application/json",
           },
+
           body: JSON.stringify({
             email: email.trim(),
             password: password,
@@ -46,6 +53,10 @@ function WorkerLogin() {
           }),
         }
       );
+
+      // =================================================
+      // READ RESPONSE
+      // =================================================
 
       let data = {};
 
@@ -55,19 +66,75 @@ function WorkerLogin() {
         data = {};
       }
 
+      // =================================================
+      // LOGIN FAILED
+      // =================================================
+
       if (!response.ok) {
         throw new Error(
-          data.message || "Worker login failed. Please check your credentials."
+          data.message ||
+            "Worker login failed. Please check your credentials."
         );
       }
 
+      // =================================================
+      // DEBUG
+      // =================================================
+
       console.log("Worker login successful:", data);
 
-      // Store JWT
-      localStorage.setItem("token", data.token);
+      console.log("JWT token received:", data.token);
+      console.log("Worker role:", data.role);
+      console.log("Worker ID:", data.userId);
 
-      // Store basic user information
-      localStorage.setItem(
+      // =================================================
+      // VALIDATE TOKEN
+      // =================================================
+
+      if (!data.token) {
+        throw new Error(
+          "Login succeeded, but no authentication token was received."
+        );
+      }
+
+      // =================================================
+      // CLEAR OLD AUTHENTICATION DATA
+      // =================================================
+
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("user");
+
+      // =================================================
+      // CHOOSE STORAGE
+      //
+      // Remember Me ON
+      // → survives browser restart
+      //
+      // Remember Me OFF
+      // → survives refresh but ends when browser session ends
+      // =================================================
+
+      const storage = rememberMe
+        ? localStorage
+        : sessionStorage;
+
+      // =================================================
+      // SAVE JWT
+      // =================================================
+
+      storage.setItem(
+        "token",
+        data.token
+      );
+
+      // =================================================
+      // SAVE USER INFORMATION
+      // =================================================
+
+      storage.setItem(
         "user",
         JSON.stringify({
           userId: data.userId,
@@ -77,16 +144,68 @@ function WorkerLogin() {
         })
       );
 
-      // Redirect to worker dashboard
+      // =================================================
+      // ALSO SAVE INDIVIDUAL VALUES
+      //
+      // This makes it easier for existing components
+      // that may already read these values.
+      // =================================================
+
+      storage.setItem(
+        "userId",
+        String(data.userId)
+      );
+
+      storage.setItem(
+        "fullName",
+        data.fullName || ""
+      );
+
+      storage.setItem(
+        "email",
+        data.email || ""
+      );
+
+      storage.setItem(
+        "role",
+        data.role || "WORKER"
+      );
+
+      // =================================================
+      // VERIFY STORAGE
+      // =================================================
+
+      console.log(
+        "Authentication saved successfully."
+      );
+
+      console.log(
+        "Stored token:",
+        storage.getItem("token")
+      );
+
+      console.log(
+        "Stored role:",
+        storage.getItem("role")
+      );
+
+      // =================================================
+      // GO TO WORKER DASHBOARD
+      // =================================================
+
       navigate("/worker-dashboard");
 
     } catch (error) {
-      console.error("Worker login error:", error);
+      console.error(
+        "Worker login error:",
+        error
+      );
 
       setError(
         error.message ||
           "Unable to connect to the server. Please try again."
       );
+
     } finally {
       setLoading(false);
     }
@@ -100,9 +219,11 @@ function WorkerLogin() {
       ========================= */}
 
       <div className="login-content">
+
         <div className="login-content-inner">
 
           {/* Brand */}
+
           <div className="login-brand">
 
             <div className="login-brand-icon">
@@ -111,12 +232,16 @@ function WorkerLogin() {
 
             <div>
               <h2>Worker Spot</h2>
-              <span>Local services. Real opportunities.</span>
+
+              <span>
+                Local services. Real opportunities.
+              </span>
             </div>
 
           </div>
 
           {/* Message */}
+
           <div className="login-message">
 
             <div className="login-badge">
@@ -139,6 +264,7 @@ function WorkerLogin() {
           </div>
 
           {/* Features */}
+
           <div className="login-features">
 
             <div className="login-feature">
@@ -149,6 +275,7 @@ function WorkerLogin() {
 
               <div>
                 <h3>Connect With Customers</h3>
+
                 <p>
                   Get opportunities from customers looking
                   for your services.
@@ -165,6 +292,7 @@ function WorkerLogin() {
 
               <div>
                 <h3>Show Your Skills</h3>
+
                 <p>
                   Build your profile with your skills,
                   experience and services.
@@ -181,6 +309,7 @@ function WorkerLogin() {
 
               <div>
                 <h3>Free Worker Access</h3>
+
                 <p>
                   Worker Spot does not charge workers platform fees.
                 </p>
@@ -191,6 +320,7 @@ function WorkerLogin() {
           </div>
 
         </div>
+
       </div>
 
       {/* =========================
@@ -202,6 +332,7 @@ function WorkerLogin() {
         <div className="login-container">
 
           {/* Header */}
+
           <div className="login-header">
 
             <div className="login-icon">
@@ -217,9 +348,11 @@ function WorkerLogin() {
           </div>
 
           {/* Form */}
+
           <form onSubmit={handleSubmit}>
 
             {/* Email */}
+
             <div className="login-form-group">
 
               <label htmlFor="worker-email">
@@ -247,6 +380,7 @@ function WorkerLogin() {
             </div>
 
             {/* Password */}
+
             <div className="login-form-group">
 
               <label htmlFor="worker-password">
@@ -259,7 +393,11 @@ function WorkerLogin() {
 
                 <input
                   id="worker-password"
-                  type={showPassword ? "text" : "password"}
+                  type={
+                    showPassword
+                      ? "text"
+                      : "password"
+                  }
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => {
@@ -293,11 +431,21 @@ function WorkerLogin() {
             </div>
 
             {/* Options */}
+
             <div className="login-options">
 
               <label className="remember-me">
-                <input type="checkbox" />
+
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) =>
+                    setRememberMe(e.target.checked)
+                  }
+                />
+
                 Remember me
+
               </label>
 
               <Link to="/forgot-password">
@@ -307,6 +455,7 @@ function WorkerLogin() {
             </div>
 
             {/* Error */}
+
             {error && (
               <div className="login-error">
                 {error}
@@ -314,11 +463,13 @@ function WorkerLogin() {
             )}
 
             {/* Login */}
+
             <button
               type="submit"
               className="login-button"
               disabled={loading}
             >
+
               {loading ? (
                 "Logging in..."
               ) : (
@@ -327,11 +478,13 @@ function WorkerLogin() {
                   <LogIn size={18} />
                 </>
               )}
+
             </button>
 
           </form>
 
           {/* Register */}
+
           <div className="login-register">
 
             <p>
@@ -355,6 +508,7 @@ function WorkerLogin() {
           </div>
 
           {/* Safety */}
+
           <div className="login-safety">
 
             <ShieldCheck size={14} />

@@ -20,10 +20,17 @@ function CustomerLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  // Remember Me ON by default
+  const [rememberMe, setRememberMe] = useState(true);
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+
+  // =====================================================
+  // LOGIN
+  // =====================================================
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,12 +40,14 @@ function CustomerLogin() {
 
     try {
       const response = await fetch(
-  `${import.meta.env.VITE_API_URL}/api/auth/login`,
-  {
+        `${import.meta.env.VITE_API_URL}/api/auth/login`,
+        {
           method: "POST",
+
           headers: {
             "Content-Type": "application/json",
           },
+
           body: JSON.stringify({
             email: email.trim(),
             password: password,
@@ -47,19 +56,100 @@ function CustomerLogin() {
         }
       );
 
-      const data = await response.json();
+      // =================================================
+      // READ RESPONSE
+      // =================================================
+
+      let data = {};
+
+      try {
+        data = await response.json();
+      } catch {
+        data = {};
+      }
+
+      // =================================================
+      // LOGIN FAILED
+      // =================================================
 
       if (!response.ok) {
         throw new Error(
-          data.message || "Invalid email or password"
+          data.message ||
+            "Invalid email or password"
         );
       }
 
-      // Store JWT
-      localStorage.setItem("token", data.token);
+      console.log(
+        "Customer login successful:",
+        data
+      );
 
-      // Store logged-in user information
-      localStorage.setItem(
+      // =================================================
+      // CHECK ROLE
+      // =================================================
+
+      if (data.role !== "CUSTOMER") {
+        throw new Error(
+          "This account is not registered as a customer."
+        );
+      }
+
+      // =================================================
+      // CHECK TOKEN
+      // =================================================
+
+      if (!data.token) {
+        throw new Error(
+          "Login succeeded, but no authentication token was received."
+        );
+      }
+
+      // =================================================
+      // CLEAR OLD LOGIN DATA
+      // =================================================
+
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      localStorage.removeItem("userId");
+      localStorage.removeItem("fullName");
+      localStorage.removeItem("email");
+      localStorage.removeItem("role");
+
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("user");
+      sessionStorage.removeItem("userId");
+      sessionStorage.removeItem("fullName");
+      sessionStorage.removeItem("email");
+      sessionStorage.removeItem("role");
+
+      // =================================================
+      // CHOOSE STORAGE
+      //
+      // Remember Me ON
+      // → localStorage
+      //
+      // Remember Me OFF
+      // → sessionStorage
+      // =================================================
+
+      const storage = rememberMe
+        ? localStorage
+        : sessionStorage;
+
+      // =================================================
+      // SAVE JWT
+      // =================================================
+
+      storage.setItem(
+        "token",
+        data.token
+      );
+
+      // =================================================
+      // SAVE USER OBJECT
+      // =================================================
+
+      storage.setItem(
         "user",
         JSON.stringify({
           userId: data.userId,
@@ -69,28 +159,65 @@ function CustomerLogin() {
         })
       );
 
-      console.log("Customer login successful:", data);
+      // =================================================
+      // SAVE INDIVIDUAL USER VALUES
+      // =================================================
 
-      // Make sure only CUSTOMER accounts continue
-      if (data.role !== "CUSTOMER") {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+      storage.setItem(
+        "userId",
+        String(data.userId)
+      );
 
-        throw new Error(
-          "This account is not registered as a customer."
-        );
-      }
+      storage.setItem(
+        "fullName",
+        data.fullName || ""
+      );
 
-      // Temporary dashboard route
+      storage.setItem(
+        "email",
+        data.email || ""
+      );
+
+      storage.setItem(
+        "role",
+        data.role || "CUSTOMER"
+      );
+
+      // =================================================
+      // DEBUG
+      // =================================================
+
+      console.log(
+        "Customer authentication saved successfully."
+      );
+
+      console.log(
+        "Stored token:",
+        storage.getItem("token")
+      );
+
+      console.log(
+        "Stored role:",
+        storage.getItem("role")
+      );
+
+      // =================================================
+      // REDIRECT
+      // =================================================
+
       navigate("/customer-dashboard");
 
     } catch (error) {
-      console.error("Customer login error:", error);
+      console.error(
+        "Customer login error:",
+        error
+      );
 
       setError(
         error.message ||
           "Unable to login. Please try again."
       );
+
     } finally {
       setLoading(false);
     }
@@ -104,23 +231,29 @@ function CustomerLogin() {
       ========================= */}
 
       <div className="login-content">
+
         <div className="login-content-inner">
 
           {/* Brand */}
+
           <div className="login-brand">
+
             <div className="login-brand-icon">
               <User size={28} />
             </div>
 
             <div>
               <h2>Worker Spot</h2>
+
               <span>
                 Local services. Real opportunities.
               </span>
             </div>
+
           </div>
 
           {/* Message */}
+
           <div className="login-message">
 
             <div className="login-badge">
@@ -135,59 +268,71 @@ function CustomerLogin() {
             </h1>
 
             <p>
-              Login to Worker Spot and discover local workers
-              for your service needs. Find the right person,
-              connect with them and get your work done.
+              Login to Worker Spot and discover local
+              workers for your service needs. Find the
+              right person, connect with them and get
+              your work done.
             </p>
 
           </div>
 
           {/* Features */}
+
           <div className="login-features">
 
             <div className="login-feature">
+
               <div className="feature-icon">
                 <Search size={21} />
               </div>
 
               <div>
                 <h3>Find Local Workers</h3>
+
                 <p>
                   Discover workers available in your area.
                 </p>
               </div>
+
             </div>
 
             <div className="login-feature">
+
               <div className="feature-icon">
                 <Briefcase size={21} />
               </div>
 
               <div>
                 <h3>Choose the Right Service</h3>
+
                 <p>
                   Find workers based on their skills and
                   experience.
                 </p>
               </div>
+
             </div>
 
             <div className="login-feature">
+
               <div className="feature-icon">
                 <ShieldCheck size={21} />
               </div>
 
               <div>
                 <h3>Simple & Secure</h3>
+
                 <p>
                   Connect with workers through Worker Spot.
                 </p>
               </div>
+
             </div>
 
           </div>
 
         </div>
+
       </div>
 
       {/* =========================
@@ -199,6 +344,7 @@ function CustomerLogin() {
         <div className="login-container">
 
           {/* Header */}
+
           <div className="login-header">
 
             <div className="login-icon">
@@ -214,12 +360,14 @@ function CustomerLogin() {
           </div>
 
           {/* Form */}
+
           <form onSubmit={handleSubmit}>
 
             {/* Email */}
+
             <div className="login-form-group">
 
-              <label htmlFor="email">
+              <label htmlFor="customer-email">
                 Email Address
               </label>
 
@@ -228,7 +376,7 @@ function CustomerLogin() {
                 <Mail size={19} />
 
                 <input
-                  id="email"
+                  id="customer-email"
                   type="email"
                   placeholder="Enter your email"
                   value={email}
@@ -244,9 +392,10 @@ function CustomerLogin() {
             </div>
 
             {/* Password */}
+
             <div className="login-form-group">
 
-              <label htmlFor="password">
+              <label htmlFor="customer-password">
                 Password
               </label>
 
@@ -255,7 +404,7 @@ function CustomerLogin() {
                 <Lock size={19} />
 
                 <input
-                  id="password"
+                  id="customer-password"
                   type={
                     showPassword
                       ? "text"
@@ -294,11 +443,21 @@ function CustomerLogin() {
             </div>
 
             {/* Options */}
+
             <div className="login-options">
 
               <label className="remember-me">
-                <input type="checkbox" />
+
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) =>
+                    setRememberMe(e.target.checked)
+                  }
+                />
+
                 Remember me
+
               </label>
 
               <Link to="/forgot-password">
@@ -308,6 +467,7 @@ function CustomerLogin() {
             </div>
 
             {/* Error */}
+
             {error && (
               <div className="login-error">
                 {error}
@@ -315,21 +475,28 @@ function CustomerLogin() {
             )}
 
             {/* Login */}
+
             <button
               type="submit"
               className="login-button"
               disabled={loading}
             >
-              {loading
-                ? "Logging in..."
-                : "Login as Customer"}
 
-              {!loading && <LogIn size={18} />}
+              {loading ? (
+                "Logging in..."
+              ) : (
+                <>
+                  Login as Customer
+                  <LogIn size={18} />
+                </>
+              )}
+
             </button>
 
           </form>
 
           {/* Register */}
+
           <div className="login-register">
 
             <p>
@@ -353,9 +520,13 @@ function CustomerLogin() {
           </div>
 
           {/* Safety */}
+
           <div className="login-safety">
+
             <ShieldCheck size={14} />
+
             Your account information is protected
+
           </div>
 
         </div>
