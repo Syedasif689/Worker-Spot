@@ -26,14 +26,26 @@ import "./CustomerProfile.css";
 function CustomerProfile() {
   const navigate = useNavigate();
 
+  // =====================================================
+  // PROFILE STATE
+  // =====================================================
+
   const [profile, setProfile] = useState(null);
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
+  // =====================================================
+  // EDIT STATE
+  // =====================================================
+
   const [editing, setEditing] = useState(false);
   const [fullName, setFullName] = useState("");
+
+  // =====================================================
+  // MESSAGE STATE
+  // =====================================================
 
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -47,6 +59,74 @@ function CustomerProfile() {
   };
 
   // =====================================================
+  // SAFE RESPONSE JSON
+  // =====================================================
+
+  const getResponseData = async (response) => {
+    try {
+      const text = await response.text();
+
+      // Empty response
+      if (!text || !text.trim()) {
+        return {};
+      }
+
+      try {
+        return JSON.parse(text);
+      } catch (jsonError) {
+        console.error(
+          "Invalid JSON response:",
+          text
+        );
+
+        return {};
+      }
+    } catch (error) {
+      console.error(
+        "Unable to read server response:",
+        error
+      );
+
+      return {};
+    }
+  };
+
+  // =====================================================
+  // SESSION EXPIRED
+  // =====================================================
+
+  const handleSessionExpired = () => {
+    console.warn(
+      "Customer session expired. Logging out..."
+    );
+
+    // Prevent multiple logout attempts
+    if (loggingOut) {
+      return;
+    }
+
+    // Clear authentication
+    logout();
+
+    // Clear profile state
+    setProfile(null);
+
+    // Stop editing
+    setEditing(false);
+
+    // Show loading state before redirect
+    setLoading(false);
+
+    // Redirect to customer login
+    navigate("/customer-login", {
+      replace: true,
+      state: {
+        sessionExpired: true,
+      },
+    });
+  };
+
+  // =====================================================
   // LOGOUT
   // =====================================================
 
@@ -54,24 +134,32 @@ function CustomerProfile() {
     try {
       setLoggingOut(true);
 
-      console.log("Customer logout started.");
+      console.log(
+        "Customer logout started."
+      );
 
-      // Clear authentication from both
-      // localStorage and sessionStorage
+      // Clear authentication
       logout();
 
-      console.log("Customer authentication cleared.");
+      console.log(
+        "Customer authentication cleared."
+      );
 
-      // Replace current history entry so the user
-      // cannot simply return to the profile page
+      // Redirect to login
       navigate("/customer-login", {
         replace: true,
       });
     } catch (err) {
-      console.error("Customer logout error:", err);
+      console.error(
+        "Customer logout error:",
+        err
+      );
 
       setLoggingOut(false);
-      setError("Unable to logout. Please try again.");
+
+      setError(
+        "Unable to logout. Please try again."
+      );
     }
   };
 
@@ -79,28 +167,26 @@ function CustomerProfile() {
   // LOAD CUSTOMER PROFILE
   // =====================================================
 
-  useEffect(() => {
-    loadProfile();
-  }, []);
-
   const loadProfile = async () => {
     try {
       setLoading(true);
       setError("");
+      setMessage("");
 
       const token = getToken();
 
+      // ===================================================
+      // NO TOKEN
+      // ===================================================
+
       if (!token) {
-        setError("You are not logged in.");
-
-        setTimeout(() => {
-          navigate("/customer-login", {
-            replace: true,
-          });
-        }, 800);
-
+        handleSessionExpired();
         return;
       }
+
+      // ===================================================
+      // API REQUEST
+      // ===================================================
 
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/customers/me`,
@@ -109,49 +195,57 @@ function CustomerProfile() {
 
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
+            Accept: "application/json",
           },
         }
       );
 
-      const data = await response.json();
+      // ===================================================
+      // SAFE RESPONSE READING
+      // ===================================================
+
+      const data =
+        await getResponseData(response);
+
+      console.log(
+        "Customer profile response:",
+        response.status,
+        data
+      );
 
       // ===================================================
-      // AUTH FAILURE
+      // TOKEN EXPIRED / INVALID
       // ===================================================
 
       if (
         response.status === 401 ||
         response.status === 403
       ) {
-        logout();
-
-        setError(
-          "Your session has expired. Please login again."
-        );
-
-        setTimeout(() => {
-          navigate("/customer-login", {
-            replace: true,
-          });
-        }, 800);
-
+        handleSessionExpired();
         return;
       }
 
       // ===================================================
-      // OTHER ERROR
+      // OTHER SERVER ERROR
       // ===================================================
 
       if (!response.ok) {
         throw new Error(
-          data.message ||
+          data?.message ||
             "Failed to load customer profile."
         );
       }
 
+      // ===================================================
+      // SUCCESS
+      // ===================================================
+
       setProfile(data);
-      setFullName(data.fullName || "");
+
+      setFullName(
+        data.fullName || ""
+      );
+
     } catch (err) {
       console.error(
         "Customer profile error:",
@@ -162,37 +256,57 @@ function CustomerProfile() {
         err.message ||
           "Unable to load your profile."
       );
+
     } finally {
       setLoading(false);
     }
   };
 
   // =====================================================
+  // LOAD PROFILE WHEN PAGE OPENS
+  // =====================================================
+
+  useEffect(() => {
+    loadProfile();
+  }, []);
+
+  // =====================================================
   // SAVE PROFILE
   // =====================================================
 
   const handleSave = async () => {
+    // ===================================================
+    // VALIDATE NAME
+    // ===================================================
+
     if (!fullName.trim()) {
-      setError("Full name is required.");
+      setError(
+        "Full name is required."
+      );
+
       return;
     }
 
     try {
       setSaving(true);
+
       setError("");
       setMessage("");
+
+      // =================================================
+      // GET TOKEN
+      // =================================================
 
       const token = getToken();
 
       if (!token) {
-        setError("You are not logged in.");
-
-        navigate("/customer-login", {
-          replace: true,
-        });
-
+        handleSessionExpired();
         return;
       }
+
+      // =================================================
+      // UPDATE PROFILE
+      // =================================================
 
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/customers/me`,
@@ -202,59 +316,76 @@ function CustomerProfile() {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
+            Accept: "application/json",
           },
 
           body: JSON.stringify({
-            fullName: fullName.trim(),
+            fullName:
+              fullName.trim(),
           }),
         }
       );
 
-      const data = await response.json();
+      // =================================================
+      // SAFE RESPONSE
+      // =================================================
 
-      // ===================================================
-      // AUTH FAILURE
-      // ===================================================
+      const data =
+        await getResponseData(response);
+
+      console.log(
+        "Customer profile update response:",
+        response.status,
+        data
+      );
+
+      // =================================================
+      // TOKEN EXPIRED / INVALID
+      // =================================================
 
       if (
         response.status === 401 ||
         response.status === 403
       ) {
-        logout();
-
-        navigate("/customer-login", {
-          replace: true,
-        });
-
+        handleSessionExpired();
         return;
       }
 
-      // ===================================================
+      // =================================================
       // OTHER ERROR
-      // ===================================================
+      // =================================================
 
       if (!response.ok) {
         throw new Error(
-          data.message ||
+          data?.message ||
             "Failed to update profile."
         );
       }
 
-      // ===================================================
-      // UPDATE PROFILE
-      // ===================================================
+      // =================================================
+      // UPDATE PROFILE STATE
+      // =================================================
 
       setProfile(data);
-      setFullName(data.fullName || "");
+
+      setFullName(
+        data.fullName || ""
+      );
 
       setEditing(false);
+
       setMessage(
         "Profile updated successfully."
       );
 
+      // =================================================
+      // CLEAR SUCCESS MESSAGE
+      // =================================================
+
       setTimeout(() => {
         setMessage("");
       }, 3000);
+
     } catch (err) {
       console.error(
         "Update customer profile error:",
@@ -265,6 +396,7 @@ function CustomerProfile() {
         err.message ||
           "Unable to update your profile."
       );
+
     } finally {
       setSaving(false);
     }
@@ -280,6 +412,7 @@ function CustomerProfile() {
     );
 
     setEditing(false);
+
     setError("");
     setMessage("");
   };
@@ -291,6 +424,7 @@ function CustomerProfile() {
   if (loading) {
     return (
       <div className="customer-profile-loading">
+
         <Loader2
           className="profile-spinner"
           size={32}
@@ -299,17 +433,19 @@ function CustomerProfile() {
         <p>
           Loading your profile...
         </p>
+
       </div>
     );
   }
 
   // =====================================================
-  // ERROR
+  // PROFILE FAILED TO LOAD
   // =====================================================
 
   if (!profile) {
     return (
       <div className="customer-profile-error">
+
         <AlertCircle size={32} />
 
         <h3>
@@ -323,13 +459,24 @@ function CustomerProfile() {
 
         <div className="profile-error-actions">
 
+          {/* =================================================
+              TRY AGAIN
+          ================================================= */}
+
           <button
             type="button"
             onClick={loadProfile}
             className="profile-retry-btn"
+            disabled={loggingOut}
           >
+            <RefreshIcon />
+
             Try Again
           </button>
+
+          {/* =================================================
+              BACK TO DASHBOARD
+          ================================================= */}
 
           <button
             type="button"
@@ -337,13 +484,43 @@ function CustomerProfile() {
               handleBackToDashboard
             }
             className="profile-back-btn"
+            disabled={loggingOut}
           >
             <ArrowLeft size={18} />
 
             Back to Dashboard
           </button>
 
+          {/* =================================================
+              LOGOUT / LOGIN AGAIN
+          ================================================= */}
+
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="profile-logout-btn"
+            disabled={loggingOut}
+          >
+            {loggingOut ? (
+              <>
+                <Loader2
+                  size={18}
+                  className="profile-spinner"
+                />
+
+                Logging out...
+              </>
+            ) : (
+              <>
+                <LogOut size={18} />
+
+                Logout & Login Again
+              </>
+            )}
+          </button>
+
         </div>
+
       </div>
     );
   }
@@ -352,18 +529,19 @@ function CustomerProfile() {
   // DATE FORMAT
   // =====================================================
 
-  const memberSince = profile.createdAt
-    ? new Date(
-        profile.createdAt
-      ).toLocaleDateString(
-        "en-IN",
-        {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        }
-      )
-    : "—";
+  const memberSince =
+    profile.createdAt
+      ? new Date(
+          profile.createdAt
+        ).toLocaleDateString(
+          "en-IN",
+          {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          }
+        )
+      : "—";
 
   // =====================================================
   // RENDER
@@ -378,6 +556,8 @@ function CustomerProfile() {
 
       <div className="customer-profile-top-navigation">
 
+        {/* BACK TO DASHBOARD */}
+
         <button
           type="button"
           className="profile-back-dashboard-btn"
@@ -391,6 +571,7 @@ function CustomerProfile() {
           <span>
             Back to Dashboard
           </span>
+
         </button>
 
         {/* LOGOUT */}
@@ -401,6 +582,7 @@ function CustomerProfile() {
           onClick={handleLogout}
           disabled={loggingOut}
         >
+
           {loggingOut ? (
             <>
               <Loader2
@@ -417,10 +599,10 @@ function CustomerProfile() {
               Logout
             </>
           )}
+
         </button>
 
       </div>
-
 
       {/* =================================================
           HEADER
@@ -439,6 +621,10 @@ function CustomerProfile() {
           </p>
 
         </div>
+
+        {/* =================================================
+            EDIT MODE
+        ================================================= */}
 
         {!editing ? (
 
@@ -461,6 +647,8 @@ function CustomerProfile() {
 
           <div className="profile-action-buttons">
 
+            {/* CANCEL */}
+
             <button
               type="button"
               className="profile-cancel-btn"
@@ -472,12 +660,15 @@ function CustomerProfile() {
               Cancel
             </button>
 
+            {/* SAVE */}
+
             <button
               type="button"
               className="profile-save-btn"
               onClick={handleSave}
               disabled={saving}
             >
+
               {saving ? (
                 <>
                   <Loader2
@@ -494,6 +685,7 @@ function CustomerProfile() {
                   Save Changes
                 </>
               )}
+
             </button>
 
           </div>
@@ -502,9 +694,8 @@ function CustomerProfile() {
 
       </div>
 
-
       {/* =================================================
-          MESSAGES
+          SUCCESS MESSAGE
       ================================================= */}
 
       {message && (
@@ -517,6 +708,10 @@ function CustomerProfile() {
         </div>
       )}
 
+      {/* =================================================
+          ERROR MESSAGE
+      ================================================= */}
+
       {error && (
         <div className="profile-error-message">
 
@@ -527,13 +722,11 @@ function CustomerProfile() {
         </div>
       )}
 
-
       {/* =================================================
           PROFILE CARD
       ================================================= */}
 
       <div className="customer-profile-card">
-
 
         {/* =================================================
             PROFILE HERO
@@ -569,7 +762,6 @@ function CustomerProfile() {
 
         </div>
 
-
         {/* =================================================
             PERSONAL INFORMATION
         ================================================= */}
@@ -594,11 +786,11 @@ function CustomerProfile() {
 
           </div>
 
-
           <div className="profile-fields">
 
-
-            {/* FULL NAME */}
+            {/* =================================================
+                FULL NAME
+            ================================================= */}
 
             <div className="profile-field">
 
@@ -618,6 +810,7 @@ function CustomerProfile() {
                   }
                   maxLength={100}
                   placeholder="Enter your full name"
+                  disabled={saving}
                 />
 
               ) : (
@@ -634,8 +827,9 @@ function CustomerProfile() {
 
             </div>
 
-
-            {/* EMAIL */}
+            {/* =================================================
+                EMAIL
+            ================================================= */}
 
             <div className="profile-field">
 
@@ -657,8 +851,9 @@ function CustomerProfile() {
 
             </div>
 
-
-            {/* MOBILE */}
+            {/* =================================================
+                MOBILE
+            ================================================= */}
 
             <div className="profile-field">
 
@@ -680,8 +875,9 @@ function CustomerProfile() {
 
             </div>
 
-
-            {/* CUSTOMER ID */}
+            {/* =================================================
+                CUSTOMER ID
+            ================================================= */}
 
             <div className="profile-field">
 
@@ -702,7 +898,6 @@ function CustomerProfile() {
           </div>
 
         </div>
-
 
         {/* =================================================
             BOOKING ACCESS
@@ -728,11 +923,11 @@ function CustomerProfile() {
 
           </div>
 
-
           <div className="booking-stats">
 
-
-            {/* USED */}
+            {/* =================================================
+                USED
+            ================================================= */}
 
             <div className="booking-stat-card">
 
@@ -754,8 +949,9 @@ function CustomerProfile() {
 
             </div>
 
-
-            {/* REMAINING */}
+            {/* =================================================
+                REMAINING
+            ================================================= */}
 
             <div className="booking-stat-card">
 
@@ -777,8 +973,9 @@ function CustomerProfile() {
 
             </div>
 
-
-            {/* CREDITS */}
+            {/* =================================================
+                CREDITS
+            ================================================= */}
 
             <div className="booking-stat-card">
 
@@ -804,7 +1001,6 @@ function CustomerProfile() {
 
         </div>
 
-
         {/* =================================================
             ACCOUNT INFORMATION
         ================================================= */}
@@ -829,11 +1025,11 @@ function CustomerProfile() {
 
           </div>
 
-
           <div className="account-info-grid">
 
-
-            {/* STATUS */}
+            {/* =================================================
+                STATUS
+            ================================================= */}
 
             <div className="account-info-item">
 
@@ -848,15 +1044,18 @@ function CustomerProfile() {
                     : "status-inactive"
                 }
               >
+
                 {profile.active
                   ? "Active"
                   : "Inactive"}
+
               </strong>
 
             </div>
 
-
-            {/* ACCOUNT TYPE */}
+            {/* =================================================
+                ACCOUNT TYPE
+            ================================================= */}
 
             <div className="account-info-item">
 
@@ -870,8 +1069,9 @@ function CustomerProfile() {
 
             </div>
 
-
-            {/* MEMBER SINCE */}
+            {/* =================================================
+                MEMBER SINCE
+            ================================================= */}
 
             <div className="account-info-item">
 
@@ -896,6 +1096,28 @@ function CustomerProfile() {
       </div>
 
     </div>
+  );
+}
+
+// =====================================================
+// SMALL REFRESH ICON COMPONENT
+// =====================================================
+
+function RefreshIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M21 12a9 9 0 1 1-2.64-6.36" />
+      <polyline points="21 3 21 9 15 9" />
+    </svg>
   );
 }
 

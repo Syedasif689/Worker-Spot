@@ -1,12 +1,18 @@
-/* =====================================================
+/* =========================================================
    CUSTOMER PROFILE PAGE
-===================================================== */
+   Worker Spot
+   ========================================================= */
 
 .customer-profile-page {
   min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+
   background: #0b0f14;
-  color: #ffffff;
-  padding-bottom: 60px;
+  color: #f5f5f5;
+
+  padding: 28px 40px 60px;
+
   font-family:
     Inter,
     system-ui,
@@ -16,29 +22,51 @@
     sans-serif;
 }
 
+.customer-profile-page *,
+.customer-profile-page *::before,
+.customer-profile-page *::after {
+  box-sizing: border-box;
+}
 
-/* =====================================================
+
+/* =========================================================
    TOP NAVIGATION
-===================================================== */
+   ========================================================= */
 
 .customer-profile-top-navigation {
-  width: min(1180px, calc(100% - 48px));
-  margin: 0 auto;
-  padding: 24px 0 10px;
+  width: 100%;
+  max-width: 1200px;
+
+  margin: 0 auto 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
 }
+
+
+/* =========================================================
+   BACK TO DASHBOARD BUTTON
+   ========================================================= */
 
 .profile-back-dashboard-btn {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
+  justify-content: center;
 
-  padding: 10px 15px;
+  gap: 8px;
 
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  min-height: 44px;
+
+  padding: 10px 16px;
+
+  border: 1px solid #252d38;
   border-radius: 10px;
 
-  background: rgba(255, 255, 255, 0.04);
-  color: #ffffff;
+  background: #111720;
+  color: #dce2e8;
 
   font-size: 14px;
   font-weight: 600;
@@ -48,24 +76,90 @@
   transition:
     background 0.2s ease,
     border-color 0.2s ease,
+    color 0.2s ease,
     transform 0.2s ease;
 }
 
 .profile-back-dashboard-btn:hover {
-  background: rgba(255, 138, 0, 0.1);
-  border-color: rgba(255, 138, 0, 0.45);
-  transform: translateX(-2px);
+  background: #171e28;
+  border-color: #ff8a00;
+  color: #ffffff;
+
+  transform: translateY(-1px);
+}
+
+.profile-back-dashboard-btn:active {
+  transform: translateY(0);
+}
+
+.profile-back-dashboard-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 
-/* =====================================================
-   HEADER
-===================================================== */
+/* =========================================================
+   LOGOUT BUTTON
+   ========================================================= */
+
+.profile-logout-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  min-height: 44px;
+
+  padding: 10px 17px;
+
+  border: 1px solid rgba(255, 82, 82, 0.35);
+  border-radius: 10px;
+
+  background: rgba(255, 82, 82, 0.08);
+  color: #ff7373;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.profile-logout-btn:hover {
+  background: rgba(255, 82, 82, 0.14);
+  border-color: rgba(255, 82, 82, 0.65);
+  color: #ff8a8a;
+
+  transform: translateY(-1px);
+}
+
+.profile-logout-btn:active {
+  transform: translateY(0);
+}
+
+.profile-logout-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+
+/* =========================================================
+   PROFILE HEADER
+   ========================================================= */
 
 .customer-profile-header {
-  width: min(1180px, calc(100% - 48px));
+  width: 100%;
+  max-width: 1200px;
 
-  margin: 20px auto 24px;
+  margin: 0 auto 24px;
 
   display: flex;
   align-items: center;
@@ -75,30 +169,34 @@
 }
 
 .customer-profile-header h1 {
-  margin: 0;
+  margin: 0 0 6px;
 
-  font-size: clamp(30px, 4vw, 42px);
+  font-size: clamp(26px, 3vw, 34px);
+  line-height: 1.2;
+
   font-weight: 750;
+  letter-spacing: -0.5px;
 
-  letter-spacing: -1px;
+  color: #ffffff;
 }
 
 .customer-profile-header p {
-  margin: 8px 0 0;
+  margin: 0;
 
-  color: #94a3b8;
+  color: #8e99a7;
 
-  font-size: 15px;
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 
-/* =====================================================
-   ACTION BUTTONS
-===================================================== */
+/* =========================================================
+   EDIT PROFILE BUTTON
+   ========================================================= */
 
-.profile-edit-btn,
-.profile-save-btn,
-.profile-cancel-btn {
+.profile-edit-btn {
+  flex-shrink: 0;
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -107,9 +205,125 @@
 
   min-height: 44px;
 
-  padding: 11px 17px;
+  padding: 10px 18px;
 
+  border: 1px solid #ff8a00;
   border-radius: 10px;
+
+  background: rgba(255, 138, 0, 0.1);
+  color: #ff9d2e;
+
+  font-size: 14px;
+  font-weight: 650;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.profile-edit-btn:hover {
+  background: #ff8a00;
+  color: #111111;
+
+  box-shadow: 0 8px 24px rgba(255, 138, 0, 0.18);
+
+  transform: translateY(-1px);
+}
+
+.profile-edit-btn:active {
+  transform: translateY(0);
+}
+
+.profile-edit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+
+/* =========================================================
+   PROFILE ACTION BUTTONS
+   ========================================================= */
+
+.profile-action-buttons {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  flex-shrink: 0;
+}
+
+
+/* =========================================================
+   CANCEL BUTTON
+   ========================================================= */
+
+.profile-cancel-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  min-height: 44px;
+
+  padding: 10px 16px;
+
+  border: 1px solid #303946;
+  border-radius: 10px;
+
+  background: #141a22;
+  color: #c4ccd5;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.profile-cancel-btn:hover {
+  background: #1b222c;
+  border-color: #46505e;
+  color: #ffffff;
+}
+
+.profile-cancel-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   SAVE BUTTON
+   ========================================================= */
+
+.profile-save-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  min-height: 44px;
+
+  padding: 10px 18px;
+
+  border: 1px solid #ff8a00;
+  border-radius: 10px;
+
+  background: #ff8a00;
+  color: #111111;
 
   font-size: 14px;
   font-weight: 700;
@@ -117,145 +331,147 @@
   cursor: pointer;
 
   transition:
+    background 0.2s ease,
     transform 0.2s ease,
-    box-shadow 0.2s ease,
-    background 0.2s ease;
+    box-shadow 0.2s ease;
 }
 
-.profile-edit-btn,
-.profile-save-btn {
-  border: none;
+.profile-save-btn:hover {
+  background: #ff9d2e;
 
-  background: #ff8a00;
-  color: #0b0f14;
+  box-shadow: 0 8px 24px rgba(255, 138, 0, 0.2);
+
+  transform: translateY(-1px);
 }
 
-.profile-edit-btn:hover,
-.profile-save-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-
-  box-shadow:
-    0 10px 25px rgba(255, 138, 0, 0.22);
+.profile-save-btn:active {
+  transform: translateY(0);
 }
 
-.profile-cancel-btn {
-  border: 1px solid rgba(255, 255, 255, 0.12);
-
-  background: rgba(255, 255, 255, 0.05);
-  color: #ffffff;
-}
-
-.profile-cancel-btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.09);
-}
-
-.profile-action-buttons {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.profile-save-btn:disabled,
-.profile-cancel-btn:disabled {
+.profile-save-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 
-/* =====================================================
-   SUCCESS / ERROR MESSAGES
-===================================================== */
+/* =========================================================
+   SUCCESS MESSAGE
+   ========================================================= */
 
-.profile-success-message,
-.profile-error-message {
-  width: min(1180px, calc(100% - 48px));
+.profile-success-message {
+  width: 100%;
+  max-width: 1200px;
 
-  margin: 0 auto 20px;
+  margin: 0 auto 18px;
 
   display: flex;
   align-items: center;
 
   gap: 10px;
 
-  padding: 14px 17px;
-
-  border-radius: 12px;
-
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.profile-success-message {
-  color: #86efac;
-
-  background: rgba(34, 197, 94, 0.1);
+  padding: 13px 16px;
 
   border: 1px solid rgba(34, 197, 94, 0.25);
+  border-radius: 10px;
+
+  background: rgba(34, 197, 94, 0.08);
+  color: #72e59a;
+
+  font-size: 14px;
+  font-weight: 600;
 }
+
+.profile-success-message svg {
+  flex-shrink: 0;
+}
+
+
+/* =========================================================
+   ERROR MESSAGE
+   ========================================================= */
 
 .profile-error-message {
-  color: #fca5a5;
+  width: 100%;
+  max-width: 1200px;
 
-  background: rgba(239, 68, 68, 0.1);
+  margin: 0 auto 18px;
 
-  border: 1px solid rgba(239, 68, 68, 0.25);
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 13px 16px;
+
+  border: 1px solid rgba(255, 82, 82, 0.25);
+  border-radius: 10px;
+
+  background: rgba(255, 82, 82, 0.08);
+  color: #ff8989;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.profile-error-message svg {
+  flex-shrink: 0;
 }
 
 
-/* =====================================================
-   MAIN PROFILE CARD
-===================================================== */
+/* =========================================================
+   PROFILE CARD
+   ========================================================= */
 
 .customer-profile-card {
-  width: min(1180px, calc(100% - 48px));
+  width: 100%;
+  max-width: 1200px;
 
   margin: 0 auto;
 
   overflow: hidden;
 
-  border-radius: 20px;
+  border: 1px solid #202832;
+  border-radius: 18px;
 
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.045),
-      rgba(255, 255, 255, 0.018)
-    );
-
-  border:
-    1px solid rgba(255, 255, 255, 0.09);
+  background: #10161e;
 
   box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.22);
+    0 18px 50px rgba(0, 0, 0, 0.25);
 }
 
 
-/* =====================================================
+/* =========================================================
    PROFILE HERO
-===================================================== */
+   ========================================================= */
 
 .customer-profile-hero {
   display: flex;
   align-items: center;
 
-  gap: 20px;
+  gap: 18px;
 
-  padding: 32px;
+  padding: 30px;
+
+  border-bottom: 1px solid #202832;
 
   background:
     linear-gradient(
       135deg,
-      rgba(255, 138, 0, 0.13),
-      rgba(255, 255, 255, 0.025)
+      rgba(255, 138, 0, 0.08),
+      rgba(255, 138, 0, 0.02)
     );
-
-  border-bottom:
-    1px solid rgba(255, 255, 255, 0.08);
 }
 
+
+/* =========================================================
+   AVATAR
+   ========================================================= */
+
 .customer-avatar {
-  width: 76px;
-  height: 76px;
+  width: 72px;
+  height: 72px;
 
   flex-shrink: 0;
 
@@ -263,96 +479,127 @@
   align-items: center;
   justify-content: center;
 
+  border: 2px solid rgba(255, 138, 0, 0.45);
   border-radius: 50%;
 
-  background: #ff8a00;
+  background:
+    linear-gradient(
+      135deg,
+      #ff8a00,
+      #ffad42
+    );
 
-  color: #0b0f14;
+  color: #111111;
 
-  font-size: 30px;
+  font-size: 29px;
   font-weight: 800;
 
   box-shadow:
-    0 10px 30px rgba(255, 138, 0, 0.2);
+    0 8px 24px rgba(255, 138, 0, 0.16);
+}
+
+
+/* =========================================================
+   PROFILE NAME
+   ========================================================= */
+
+.customer-profile-name {
+  min-width: 0;
 }
 
 .customer-profile-name h2 {
-  margin: 0;
+  margin: 0 0 7px;
 
-  font-size: 25px;
+  color: #ffffff;
+
+  font-size: clamp(21px, 2.5vw, 26px);
   font-weight: 750;
+
+  line-height: 1.25;
+
+  overflow-wrap: anywhere;
 }
 
 .customer-profile-name span {
-  margin-top: 8px;
-
   display: inline-flex;
   align-items: center;
 
   gap: 6px;
 
-  color: #ff9d2e;
+  color: #8f9aa8;
 
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 550;
+}
+
+.customer-profile-name span svg {
+  color: #ff9d2e;
 }
 
 
-/* =====================================================
-   PROFILE SECTIONS
-===================================================== */
+/* =========================================================
+   PROFILE SECTION
+   ========================================================= */
 
 .profile-section {
-  padding: 32px;
+  padding: 30px;
 
-  border-bottom:
-    1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid #202832;
 }
 
 .profile-section:last-child {
   border-bottom: none;
 }
 
+
+/* =========================================================
+   SECTION TITLE
+   ========================================================= */
+
 .profile-section-title {
   display: flex;
   align-items: flex-start;
 
-  gap: 13px;
+  gap: 12px;
 
-  margin-bottom: 25px;
+  margin-bottom: 22px;
+}
+
+.profile-section-title > svg {
+  flex-shrink: 0;
+
+  margin-top: 2px;
 
   color: #ff8a00;
 }
 
-.profile-section-title > div {
-  color: #ffffff;
-}
-
 .profile-section-title h3 {
-  margin: 0;
+  margin: 0 0 4px;
 
-  font-size: 18px;
+  color: #ffffff;
+
+  font-size: 17px;
   font-weight: 700;
 }
 
 .profile-section-title p {
-  margin: 5px 0 0;
+  margin: 0;
 
-  color: #94a3b8;
+  color: #7f8a98;
 
   font-size: 13px;
+  line-height: 1.5;
 }
 
 
-/* =====================================================
-   PERSONAL INFORMATION GRID
-===================================================== */
+/* =========================================================
+   PROFILE FIELDS
+   ========================================================= */
 
 .profile-fields {
   display: grid;
 
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 
   gap: 20px;
 }
@@ -364,81 +611,108 @@
 .profile-field label {
   display: block;
 
-  margin-bottom: 9px;
+  margin-bottom: 8px;
 
-  color: #94a3b8;
+  color: #9aa5b2;
 
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
 }
 
-.profile-field input,
-.profile-value {
-  width: 100%;
-  min-height: 50px;
 
-  box-sizing: border-box;
+/* =========================================================
+   PROFILE INPUT
+   ========================================================= */
+
+.profile-field input {
+  width: 100%;
+  min-height: 46px;
+
+  padding: 11px 13px;
+
+  border: 1px solid #303946;
+  border-radius: 9px;
+
+  outline: none;
+
+  background: #0c1117;
+  color: #ffffff;
+
+  font-family: inherit;
+  font-size: 14px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.profile-field input::placeholder {
+  color: #5f6a77;
+}
+
+.profile-field input:hover {
+  border-color: #414c59;
+}
+
+.profile-field input:focus {
+  border-color: #ff8a00;
+
+  background: #0f151c;
+
+  box-shadow:
+    0 0 0 3px rgba(255, 138, 0, 0.1);
+}
+
+.profile-field input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   PROFILE VALUE
+   ========================================================= */
+
+.profile-value {
+  min-height: 46px;
 
   display: flex;
   align-items: center;
 
   gap: 10px;
 
-  padding: 12px 15px;
-
-  border-radius: 10px;
-
-  font-size: 14px;
-}
-
-.profile-field input {
-  outline: none;
-
-  border:
-    1px solid rgba(255, 138, 0, 0.45);
-
-  background: rgba(255, 255, 255, 0.04);
-
-  color: #ffffff;
-
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.profile-field input:focus {
-  border-color: #ff8a00;
-
-  box-shadow:
-    0 0 0 3px rgba(255, 138, 0, 0.12);
-}
-
-.profile-value {
   min-width: 0;
 
-  border:
-    1px solid rgba(255, 255, 255, 0.08);
+  padding: 11px 13px;
 
-  background:
-    rgba(255, 255, 255, 0.025);
+  border: 1px solid #252e39;
+  border-radius: 9px;
 
-  color: #e5e7eb;
+  background: #0c1117;
+
+  color: #e6eaf0;
+
+  font-size: 14px;
+  font-weight: 550;
+
+  overflow-wrap: anywhere;
 }
 
 .profile-value svg {
   flex-shrink: 0;
 
-  color: #ff8a00;
+  color: #ff9d2e;
 }
+
+
+/* =========================================================
+   READONLY VALUE
+   ========================================================= */
 
 .profile-value.readonly {
-  color: #cbd5e1;
+  color: #aeb7c2;
 }
-
-
-/* =====================================================
-   READONLY LABEL
-===================================================== */
 
 .readonly-label {
   margin-left: auto;
@@ -447,30 +721,36 @@
 
   padding: 4px 8px;
 
-  border-radius: 999px;
+  border-radius: 6px;
 
-  background:
-    rgba(148, 163, 184, 0.1);
+  background: #171e27;
 
-  color: #94a3b8;
+  color: #707c89;
 
   font-size: 10px;
   font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 
-/* =====================================================
+/* =========================================================
    BOOKING STATS
-===================================================== */
+   ========================================================= */
 
 .booking-stats {
   display: grid;
 
-  grid-template-columns:
-    repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 
-  gap: 18px;
+  gap: 16px;
 }
+
+
+/* =========================================================
+   BOOKING STAT CARD
+   ========================================================= */
 
 .booking-stat-card {
   min-width: 0;
@@ -480,31 +760,35 @@
 
   gap: 14px;
 
-  padding: 20px;
+  padding: 18px;
 
-  border-radius: 14px;
+  border: 1px solid #252e39;
+  border-radius: 12px;
 
-  background:
-    rgba(255, 255, 255, 0.035);
-
-  border:
-    1px solid rgba(255, 255, 255, 0.08);
+  background: #0c1117;
 
   transition:
+    border-color 0.2s ease,
     transform 0.2s ease,
-    border-color 0.2s ease;
+    background 0.2s ease;
 }
 
 .booking-stat-card:hover {
-  transform: translateY(-3px);
+  border-color: rgba(255, 138, 0, 0.35);
 
-  border-color:
-    rgba(255, 138, 0, 0.35);
+  background: #0f151c;
+
+  transform: translateY(-2px);
 }
 
+
+/* =========================================================
+   BOOKING STAT ICON
+   ========================================================= */
+
 .booking-stat-icon {
-  width: 44px;
-  height: 44px;
+  width: 43px;
+  height: 43px;
 
   flex-shrink: 0;
 
@@ -512,303 +796,346 @@
   align-items: center;
   justify-content: center;
 
-  border-radius: 11px;
+  border-radius: 10px;
 
-  background:
-    rgba(255, 138, 0, 0.12);
+  background: rgba(255, 138, 0, 0.1);
 
-  color: #ff8a00;
+  color: #ff9d2e;
 }
 
-.booking-stat-card div:last-child {
-  min-width: 0;
-}
+
+/* =========================================================
+   BOOKING STAT TEXT
+   ========================================================= */
 
 .booking-stat-card span {
   display: block;
 
-  color: #94a3b8;
+  margin-bottom: 5px;
+
+  color: #808b98;
 
   font-size: 12px;
-
   line-height: 1.4;
 }
 
 .booking-stat-card strong {
   display: block;
 
-  margin-top: 5px;
-
   color: #ffffff;
 
-  font-size: 26px;
+  font-size: 23px;
+  line-height: 1.2;
+
   font-weight: 750;
 }
 
 
-/* =====================================================
-   REMOVE UNWANTED MARK / BADGE
-   FROM BOOKING CREDITS AREA
-===================================================== */
-
-.booking-stat-card::before,
-.booking-stat-card::after,
-.booking-stat-icon::before,
-.booking-stat-icon::after {
-  content: none !important;
-}
-
-
-/* =====================================================
-   ACCOUNT INFORMATION
-===================================================== */
+/* =========================================================
+   ACCOUNT INFORMATION GRID
+   ========================================================= */
 
 .account-info-grid {
   display: grid;
 
-  grid-template-columns:
-    repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 
-  gap: 18px;
+  gap: 16px;
 }
 
 .account-info-item {
-  padding: 19px;
+  min-width: 0;
 
-  border-radius: 13px;
+  padding: 17px;
 
-  background:
-    rgba(255, 255, 255, 0.03);
+  border: 1px solid #252e39;
+  border-radius: 11px;
 
-  border:
-    1px solid rgba(255, 255, 255, 0.08);
+  background: #0c1117;
 }
 
 .account-info-item > span {
   display: block;
 
-  margin-bottom: 9px;
+  margin-bottom: 8px;
 
-  color: #94a3b8;
+  color: #7f8a97;
 
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 550;
 }
 
-.account-info-item strong {
+.account-info-item > strong {
   display: flex;
   align-items: center;
 
   gap: 7px;
 
-  color: #ffffff;
+  color: #e8edf2;
 
-  font-size: 15px;
+  font-size: 14px;
+  font-weight: 700;
+
+  overflow-wrap: anywhere;
 }
 
+.account-info-item > strong svg {
+  flex-shrink: 0;
+
+  color: #ff9d2e;
+}
+
+
+/* =========================================================
+   ACCOUNT STATUS
+   ========================================================= */
+
 .status-active {
-  color: #4ade80 !important;
+  color: #5ee58b !important;
 }
 
 .status-inactive {
-  color: #f87171 !important;
+  color: #ff7474 !important;
 }
 
 
-/* =====================================================
-   LOADING SCREEN
-===================================================== */
+/* =========================================================
+   LOADING STATE
+   ========================================================= */
 
 .customer-profile-loading {
   min-height: 100vh;
+  width: 100%;
 
   display: flex;
   flex-direction: column;
-
   align-items: center;
   justify-content: center;
 
-  gap: 15px;
+  gap: 14px;
+
+  padding: 30px;
 
   background: #0b0f14;
-
   color: #ffffff;
+
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
 }
 
 .customer-profile-loading p {
   margin: 0;
 
-  color: #94a3b8;
+  color: #8994a1;
 
   font-size: 14px;
 }
 
-
-/* =====================================================
-   SPINNER
-===================================================== */
-
 .profile-spinner {
-  animation: profileSpin 0.8s linear infinite;
+  animation: profile-spin 1s linear infinite;
 }
 
-@keyframes profileSpin {
+@keyframes profile-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
   to {
     transform: rotate(360deg);
   }
 }
 
 
-/* =====================================================
+/* =========================================================
    ERROR SCREEN
-===================================================== */
+   ========================================================= */
 
 .customer-profile-error {
   min-height: 100vh;
-
-  padding: 30px;
+  width: 100%;
 
   display: flex;
   flex-direction: column;
-
   align-items: center;
   justify-content: center;
 
-  text-align: center;
+  padding: 30px;
 
   background: #0b0f14;
 
   color: #ffffff;
+
+  text-align: center;
+
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
 }
 
 .customer-profile-error > svg {
-  color: #f87171;
-
   margin-bottom: 14px;
+
+  color: #ff7777;
 }
 
 .customer-profile-error h3 {
-  margin: 0;
+  margin: 0 0 8px;
 
-  font-size: 22px;
+  color: #ffffff;
+
+  font-size: 21px;
+  font-weight: 700;
 }
 
-.customer-profile-error p {
-  max-width: 420px;
+.customer-profile-error > p {
+  max-width: 520px;
 
-  margin: 10px 0 24px;
+  margin: 0 auto 22px;
 
-  color: #94a3b8;
+  color: #8e99a7;
+
+  font-size: 14px;
+  line-height: 1.6;
 }
+
+
+/* =========================================================
+   ERROR ACTIONS
+   ========================================================= */
 
 .profile-error-actions {
   display: flex;
-
+  align-items: center;
   justify-content: center;
 
-  gap: 12px;
-
   flex-wrap: wrap;
+
+  gap: 10px;
+
+  width: 100%;
+  max-width: 650px;
 }
 
-.profile-retry-btn,
-.profile-back-btn {
+
+/* =========================================================
+   RETRY BUTTON
+   ========================================================= */
+
+.profile-retry-btn {
+  min-height: 44px;
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
   gap: 8px;
 
-  min-height: 44px;
+  padding: 10px 17px;
 
-  padding: 10px 16px;
-
+  border: 1px solid #ff8a00;
   border-radius: 10px;
+
+  background: #ff8a00;
+  color: #111111;
 
   font-size: 14px;
   font-weight: 700;
 
   cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.profile-retry-btn {
-  border: none;
+.profile-retry-btn:hover {
+  background: #ff9d2e;
 
-  background: #ff8a00;
+  box-shadow:
+    0 8px 22px rgba(255, 138, 0, 0.18);
 
-  color: #0b0f14;
+  transform: translateY(-1px);
 }
+
+.profile-retry-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+
+/* =========================================================
+   ERROR BACK BUTTON
+   ========================================================= */
 
 .profile-back-btn {
-  border:
-    1px solid rgba(255, 255, 255, 0.12);
+  min-height: 44px;
 
-  background:
-    rgba(255, 255, 255, 0.05);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
+  gap: 8px;
+
+  padding: 10px 17px;
+
+  border: 1px solid #303946;
+  border-radius: 10px;
+
+  background: #141a22;
+  color: #c4ccd5;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.profile-back-btn:hover {
+  background: #1b222c;
+  border-color: #46505e;
   color: #ffffff;
 }
 
-
-/* =====================================================
-   TABLET
-===================================================== */
-
-@media (max-width: 900px) {
-
-  .booking-stats {
-    grid-template-columns:
-      repeat(3, minmax(0, 1fr));
-  }
-
-  .booking-stat-card {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .account-info-grid {
-    grid-template-columns:
-      repeat(3, minmax(0, 1fr));
-  }
-
+.profile-back-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 
-/* =====================================================
-   MOBILE / SMALL TABLET
-===================================================== */
+/* =========================================================
+   ERROR LOGOUT BUTTON
+   ========================================================= */
 
-@media (max-width: 700px) {
+.customer-profile-error .profile-logout-btn {
+  min-height: 44px;
+}
 
-  .customer-profile-top-navigation,
-  .customer-profile-header,
-  .profile-success-message,
-  .profile-error-message,
-  .customer-profile-card {
-    width: min(100% - 32px, 1180px);
-  }
 
-  .customer-profile-header {
-    align-items: flex-start;
-    flex-direction: column;
+/* =========================================================
+   TABLET
+   ========================================================= */
 
-    margin-top: 18px;
-  }
+@media (max-width: 900px) {
 
-  .customer-profile-header h1 {
-    font-size: 32px;
-  }
-
-  .profile-edit-btn {
-    width: 100%;
-  }
-
-  .profile-action-buttons {
-    width: 100%;
-  }
-
-  .profile-action-buttons button {
-    flex: 1;
+  .customer-profile-page {
+    padding: 24px 24px 50px;
   }
 
   .profile-fields {
@@ -816,12 +1143,76 @@
   }
 
   .booking-stats {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .booking-stat-card {
-    flex-direction: row;
-    align-items: center;
+  .account-info-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+}
+
+
+/* =========================================================
+   SMALL TABLET / LARGE MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+  .customer-profile-page {
+    padding: 18px 16px 40px;
+  }
+
+  .customer-profile-top-navigation {
+    margin-bottom: 22px;
+  }
+
+  .customer-profile-header {
+    align-items: flex-start;
+    flex-direction: column;
+
+    gap: 16px;
+
+    margin-bottom: 20px;
+  }
+
+  .customer-profile-header > div:first-child {
+    width: 100%;
+  }
+
+  .profile-edit-btn,
+  .profile-action-buttons {
+    width: 100%;
+  }
+
+  .profile-edit-btn {
+    width: 100%;
+  }
+
+  .profile-action-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .profile-cancel-btn,
+  .profile-save-btn {
+    width: 100%;
+  }
+
+  .customer-profile-card {
+    border-radius: 14px;
+  }
+
+  .customer-profile-hero {
+    padding: 24px 20px;
+  }
+
+  .profile-section {
+    padding: 24px 20px;
+  }
+
+  .booking-stats {
+    grid-template-columns: 1fr;
   }
 
   .account-info-grid {
@@ -831,18 +1222,35 @@
 }
 
 
-/* =====================================================
+/* =========================================================
    MOBILE
-===================================================== */
+   ========================================================= */
 
-@media (max-width: 500px) {
+@media (max-width: 520px) {
 
   .customer-profile-page {
-    padding-bottom: 35px;
+    padding: 14px 12px 32px;
   }
 
+  /* -------------------------------------------------------
+     TOP NAVIGATION
+     ------------------------------------------------------- */
+
   .customer-profile-top-navigation {
-    padding-top: 16px;
+    width: 100%;
+
+    gap: 8px;
+
+    margin-bottom: 18px;
+  }
+
+  .profile-back-dashboard-btn,
+  .customer-profile-top-navigation .profile-logout-btn {
+    min-height: 42px;
+
+    padding: 9px 11px;
+
+    font-size: 12px;
   }
 
   .profile-back-dashboard-btn span {
@@ -851,51 +1259,96 @@
 
   .profile-back-dashboard-btn {
     width: 42px;
-    height: 42px;
-
-    padding: 0;
+    padding: 9px;
   }
 
+  .customer-profile-top-navigation .profile-logout-btn {
+    padding-left: 13px;
+    padding-right: 13px;
+  }
+
+
+  /* -------------------------------------------------------
+     HEADER
+     ------------------------------------------------------- */
+
   .customer-profile-header h1 {
-    font-size: 29px;
+    font-size: 25px;
   }
 
   .customer-profile-header p {
     font-size: 13px;
-    line-height: 1.6;
   }
 
-  .customer-profile-card {
-    border-radius: 16px;
-  }
+
+  /* -------------------------------------------------------
+     HERO
+     ------------------------------------------------------- */
 
   .customer-profile-hero {
-    padding: 24px 20px;
+    align-items: flex-start;
 
-    gap: 14px;
+    gap: 13px;
+
+    padding: 20px 16px;
   }
 
   .customer-avatar {
-    width: 60px;
-    height: 60px;
+    width: 56px;
+    height: 56px;
 
-    font-size: 24px;
+    font-size: 23px;
   }
 
   .customer-profile-name h2 {
     font-size: 20px;
   }
 
+  .customer-profile-name span {
+    font-size: 11px;
+  }
+
+
+  /* -------------------------------------------------------
+     SECTION
+     ------------------------------------------------------- */
+
   .profile-section {
-    padding: 24px 18px;
+    padding: 22px 16px;
   }
 
   .profile-section-title {
-    margin-bottom: 20px;
+    gap: 10px;
+
+    margin-bottom: 18px;
   }
 
-  .profile-value {
-    padding: 11px 13px;
+  .profile-section-title h3 {
+    font-size: 16px;
+  }
+
+  .profile-section-title p {
+    font-size: 12px;
+  }
+
+
+  /* -------------------------------------------------------
+     PROFILE FIELDS
+     ------------------------------------------------------- */
+
+  .profile-fields {
+    gap: 15px;
+  }
+
+  .profile-field label {
+    font-size: 12px;
+  }
+
+  .profile-value,
+  .profile-field input {
+    min-height: 44px;
+
+    padding: 10px 11px;
 
     font-size: 13px;
   }
@@ -904,91 +1357,154 @@
     display: none;
   }
 
+
+  /* -------------------------------------------------------
+     BOOKING STATS
+     ------------------------------------------------------- */
+
   .booking-stat-card {
-    padding: 17px;
+    padding: 15px;
+
+    gap: 12px;
+  }
+
+  .booking-stat-icon {
+    width: 39px;
+    height: 39px;
+  }
+
+  .booking-stat-card span {
+    font-size: 11px;
   }
 
   .booking-stat-card strong {
-    font-size: 23px;
+    font-size: 21px;
   }
 
-  .profile-success-message,
-  .profile-error-message {
+
+  /* -------------------------------------------------------
+     ACCOUNT INFO
+     ------------------------------------------------------- */
+
+  .account-info-item {
+    padding: 15px;
+  }
+
+  .account-info-item > span {
+    font-size: 11px;
+  }
+
+  .account-info-item > strong {
     font-size: 13px;
   }
 
-}
 
+  /* -------------------------------------------------------
+     ERROR ACTIONS
+     ------------------------------------------------------- */
 
-/* =====================================================
-   VERY SMALL MOBILE
-===================================================== */
-
-@media (max-width: 360px) {
-
-  .customer-profile-top-navigation,
-  .customer-profile-header,
-  .profile-success-message,
-  .profile-error-message,
-  .customer-profile-card {
-    width: calc(100% - 22px);
+  .customer-profile-error {
+    padding: 24px 16px;
   }
 
-  .profile-action-buttons {
+  .customer-profile-error h3 {
+    font-size: 19px;
+  }
+
+  .customer-profile-error > p {
+    font-size: 13px;
+  }
+
+  .profile-error-actions {
     flex-direction: column;
-  }
 
-  .profile-action-buttons button {
     width: 100%;
   }
 
+  .profile-error-actions button {
+    width: 100%;
+  }
+
+}
+
+
+/* =========================================================
+   VERY SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 360px) {
+
+  .customer-profile-page {
+    padding-left: 9px;
+    padding-right: 9px;
+  }
+
+  .customer-profile-header h1 {
+    font-size: 23px;
+  }
+
   .customer-profile-hero {
-    align-items: flex-start;
-    flex-direction: column;
+    padding: 18px 13px;
+  }
+
+  .profile-section {
+    padding: 20px 13px;
+  }
+
+  .customer-avatar {
+    width: 50px;
+    height: 50px;
+
+    font-size: 21px;
+  }
+
+  .customer-profile-name h2 {
+    font-size: 18px;
+  }
+
+  .profile-action-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-stat-card {
+    padding: 13px;
   }
 
 }
 
 
-/* =====================================================
-   LARGE SCREENS
-===================================================== */
-
-@media (min-width: 1500px) {
-
-  .customer-profile-top-navigation,
-  .customer-profile-header,
-  .profile-success-message,
-  .profile-error-message,
-  .customer-profile-card {
-    width: min(1320px, calc(100% - 100px));
-  }
-
-}
-
-
-/* =====================================================
+/* =========================================================
    ACCESSIBILITY
-===================================================== */
+   ========================================================= */
 
-button:focus-visible,
-input:focus-visible {
-  outline: 3px solid rgba(255, 138, 0, 0.45);
-  outline-offset: 3px;
+.profile-back-dashboard-btn:focus-visible,
+.profile-logout-btn:focus-visible,
+.profile-edit-btn:focus-visible,
+.profile-cancel-btn:focus-visible,
+.profile-save-btn:focus-visible,
+.profile-retry-btn:focus-visible,
+.profile-back-btn:focus-visible,
+.profile-field input:focus-visible {
+  outline: 2px solid #ff8a00;
+  outline-offset: 2px;
 }
 
 
-/* =====================================================
-   REDUCE MOTION
-===================================================== */
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
 
-  *,
-  *::before,
-  *::after {
+  .customer-profile-page *,
+  .customer-profile-page *::before,
+  .customer-profile-page *::after {
+    scroll-behavior: auto !important;
+
+    transition: none !important;
+
     animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
   }
 
 }

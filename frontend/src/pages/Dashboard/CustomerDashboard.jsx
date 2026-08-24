@@ -29,8 +29,9 @@ import BookingModal from "../../components/booking/BookingModal";
 import CustomerBookings from "../../components/booking/CustomerBookings";
 
 function CustomerDashboard() {
+  
   const navigate = useNavigate();
-
+  const LOCATION_STORAGE_KEY = "workerSpot_customer_location";
   // =====================================================
   // REF FOR SCROLLING TO BOOKINGS
   // =====================================================
@@ -55,7 +56,81 @@ function CustomerDashboard() {
   const [locationStatus, setLocationStatus] = useState("");
   const [gettingLocation, setGettingLocation] = useState(false);
   const [manualLocation, setManualLocation] = useState("");
+  
+  // =====================================================
+// RESTORE SAVED LOCATION
+// =====================================================
 
+useEffect(() => {
+  try {
+    const savedLocation =
+      localStorage.getItem(LOCATION_STORAGE_KEY);
+
+    if (!savedLocation) {
+      return;
+    }
+
+    const parsedLocation = JSON.parse(savedLocation);
+
+    if (
+      parsedLocation &&
+      parsedLocation.latitude !== null &&
+      parsedLocation.longitude !== null
+    ) {
+      setLocation(parsedLocation);
+
+      setLocationMode(
+        parsedLocation.locationMode || "current"
+      );
+
+      setLocationStatus(
+        "Saved service location restored."
+      );
+
+      console.log(
+        "Saved location restored:",
+        parsedLocation
+      );
+    }
+  } catch (error) {
+    console.error(
+      "Unable to restore saved location:",
+      error
+    );
+
+    localStorage.removeItem(
+      LOCATION_STORAGE_KEY
+    );
+  }
+}, []);
+ 
+  // =====================================================
+// SAVE LOCATION
+// =====================================================
+
+const saveLocation = (locationData, mode) => {
+  try {
+    const locationToSave = {
+      ...locationData,
+      locationMode: mode,
+    };
+
+    localStorage.setItem(
+      LOCATION_STORAGE_KEY,
+      JSON.stringify(locationToSave)
+    );
+
+    console.log(
+      "Location saved:",
+      locationToSave
+    );
+  } catch (error) {
+    console.error(
+      "Unable to save location:",
+      error
+    );
+  }
+};
   // =====================================================
   // WORKERS
   // =====================================================
@@ -476,13 +551,19 @@ const handleCurrentLocation = async () => {
     // SAVE COORDINATES IMMEDIATELY
     // -------------------------------------------------
 
-    setLocation((prev) => ({
-      ...prev,
-      latitude,
-      longitude,
-    }));
+    const coordinatesLocation = {
+  ...location,
+  latitude,
+  longitude,
+};
 
-    setLocationMode("current");
+setLocation(coordinatesLocation);
+setLocationMode("current");
+
+saveLocation(
+  coordinatesLocation,
+  "current"
+);
 
     setLocationStatus(
       "Location detected. Finding your address..."
@@ -511,17 +592,24 @@ const handleCurrentLocation = async () => {
         longitude
       );
 
-    setLocation({
-      ...addressData,
-      latitude,
-      longitude,
-    });
+      const finalLocation = {
+  ...addressData,
+  latitude,
+  longitude,
+};
 
-    setLocationMode("current");
+setLocation(finalLocation);
 
-    setLocationStatus(
-      "Current location detected successfully."
-    );
+setLocationMode("current");
+
+saveLocation(
+  finalLocation,
+  "current"
+);
+
+setLocationStatus(
+  "Current location detected successfully."
+);
 
   } catch (error) {
     console.error(
@@ -640,20 +728,24 @@ const handleCurrentLocation = async () => {
         "";
 
       const displayAddress = data.display_name || value;
-
       const newLocation = {
-        address: displayAddress,
-        state,
-        district,
-        city,
-        area,
-        latitude,
-        longitude,
-      };
+  address: displayAddress,
+  state,
+  district,
+  city,
+  area,
+  latitude,
+  longitude,
+};
 
-      setLocation(newLocation);
+setLocation(newLocation);
 
-      setLocationMode("manual");
+setLocationMode("manual");
+
+saveLocation(
+  newLocation,
+  "manual"
+);
 
       setLocationStatus("Location selected successfully.");
 
