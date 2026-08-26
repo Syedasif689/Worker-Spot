@@ -13,7 +13,7 @@ import {
     LogOut,
 } from "lucide-react";
 
-import { getToken, logout } from "../utils/auth";
+import { getToken, logout } from "../../utils/auth";
 
 import "./WorkerProfileCard.css";
 
