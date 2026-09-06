@@ -90,150 +90,175 @@ function Register() {
   // =====================================================
 
   const handleUseCurrentLocation = () => {
-    if (!navigator.geolocation) {
-      setLocationStatus(
-        "Location services are not supported by this browser."
-      );
-      return;
-    }
-
-    setGettingLocation(true);
-    setLocationStatus("Getting your current location...");
-    setError("");
-    setSuccess("");
-
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
-
-        // -------------------------------------------------
-        // Save coordinates immediately
-        // -------------------------------------------------
-
-        setFormData((prev) => ({
-          ...prev,
-          latitude: latitude.toString(),
-          longitude: longitude.toString(),
-        }));
-
-        try {
-          // -------------------------------------------------
-          // Reverse geocoding
-          // -------------------------------------------------
-
-          const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`
-          );
-
-          if (!response.ok) {
-            throw new Error("Unable to find address.");
-          }
-
-          const data = await response.json();
-          const address = data.address || {};
-
-          const state = address.state || "";
-
-          const district =
-            address.state_district ||
-            address.district ||
-            address.county ||
-            "";
-
-          const city =
-            address.city ||
-            address.town ||
-            address.village ||
-            address.municipality ||
-            "";
-
-          const area =
-            address.suburb ||
-            address.neighbourhood ||
-            address.residential ||
-            address.hamlet ||
-            "";
-
-          // -------------------------------------------------
-          // Save address + coordinates
-          // -------------------------------------------------
-
-          setFormData((prev) => ({
-            ...prev,
-
-            latitude: latitude.toString(),
-            longitude: longitude.toString(),
-
-            state,
-            district,
-            city,
-            area,
-          }));
-
-          setLocationStatus(
-            "Location detected successfully."
-          );
-        } catch (reverseError) {
-          console.error(
-            "Reverse geocoding error:",
-            reverseError
-          );
-
-          // Coordinates are still valid even if
-          // address lookup fails.
-
-          setLocationStatus(
-            "Location detected. Please enter the address manually."
-          );
-        } finally {
-          setGettingLocation(false);
-        }
-      },
-
-      // -----------------------------------------------------
-      // LOCATION ERROR
-      // -----------------------------------------------------
-
-      (error) => {
-        setGettingLocation(false);
-
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            setLocationStatus(
-              "Location permission was denied. Please allow location access."
-            );
-            break;
-
-          case error.POSITION_UNAVAILABLE:
-            setLocationStatus(
-              "Your current location is unavailable."
-            );
-            break;
-
-          case error.TIMEOUT:
-            setLocationStatus(
-              "Location request timed out. Please try again."
-            );
-            break;
-
-          default:
-            setLocationStatus(
-              "Unable to detect your location."
-            );
-        }
-      },
-
-      // -----------------------------------------------------
-      // GPS OPTIONS
-      // -----------------------------------------------------
-
-      {
-        enableHighAccuracy: true,
-        timeout: 15000,
-        maximumAge: 0,
-      }
+  if (!navigator.geolocation) {
+    setLocationStatus(
+      "Location services are not supported by this browser."
     );
+    return;
+  }
+
+  setGettingLocation(true);
+  setLocationStatus("Getting your current location...");
+  setError("");
+  setSuccess("");
+
+  // =====================================================
+  // PROCESS SUCCESSFUL LOCATION
+  // =====================================================
+
+  const handleLocationSuccess = async (position) => {
+    const { latitude, longitude } = position.coords;
+
+    // Save GPS immediately
+    setFormData((prev) => ({
+      ...prev,
+      latitude: latitude.toString(),
+      longitude: longitude.toString(),
+    }));
+
+    try {
+      setLocationStatus("Location found. Getting address...");
+
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`
+      );
+
+      if (!response.ok) {
+        throw new Error("Unable to find address.");
+      }
+
+      const data = await response.json();
+      const address = data.address || {};
+
+      const state = address.state || "";
+
+      const district =
+        address.state_district ||
+        address.district ||
+        address.county ||
+        "";
+
+      const city =
+        address.city ||
+        address.town ||
+        address.village ||
+        address.municipality ||
+        "";
+
+      const area =
+        address.suburb ||
+        address.neighbourhood ||
+        address.residential ||
+        address.hamlet ||
+        address.village ||
+        "";
+
+      setFormData((prev) => ({
+        ...prev,
+
+        latitude: latitude.toString(),
+        longitude: longitude.toString(),
+
+        state,
+        district,
+        city,
+        area,
+      }));
+
+      setLocationStatus("Location detected successfully.");
+    } catch (reverseError) {
+      console.error(
+        "Reverse geocoding error:",
+        reverseError
+      );
+
+      // GPS coordinates were obtained successfully,
+      // only address lookup failed.
+      setLocationStatus(
+        "GPS detected. Please enter your address manually."
+      );
+    } finally {
+      setGettingLocation(false);
+    }
   };
+
+  // =====================================================
+  // FINAL LOCATION ERROR
+  // =====================================================
+
+  const handleFinalError = (error) => {
+    console.error("Location error:", error);
+
+    setGettingLocation(false);
+
+    switch (error.code) {
+      case error.PERMISSION_DENIED:
+        setLocationStatus(
+          "Location permission was denied. Please allow location access in your browser."
+        );
+        break;
+
+      case error.POSITION_UNAVAILABLE:
+        setLocationStatus(
+          "Your location is currently unavailable. Please check your device location settings."
+        );
+        break;
+
+      case error.TIMEOUT:
+        setLocationStatus(
+          "Unable to detect location. Please check location services and try again."
+        );
+        break;
+
+      default:
+        setLocationStatus(
+          "Unable to detect your location."
+        );
+    }
+  };
+
+  // =====================================================
+  // FIRST ATTEMPT - HIGH ACCURACY
+  // =====================================================
+
+  navigator.geolocation.getCurrentPosition(
+    handleLocationSuccess,
+
+    (error) => {
+      if (error.code === error.TIMEOUT) {
+        console.warn(
+          "High accuracy location timed out. Retrying with normal accuracy..."
+        );
+
+        setLocationStatus(
+          "GPS is taking longer. Trying network location..."
+        );
+
+        // =================================================
+        // SECOND ATTEMPT - NORMAL ACCURACY
+        // =================================================
+
+        navigator.geolocation.getCurrentPosition(
+          handleLocationSuccess,
+          handleFinalError,
+          {
+            enableHighAccuracy: false,
+            timeout: 20000,
+            maximumAge: 60000,
+          }
+        );
+      } else {
+        handleFinalError(error);
+      }
+    },
+
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 30000,
+    }
+  );
+};
 
   // =====================================================
   // WORKER REGISTRATION
