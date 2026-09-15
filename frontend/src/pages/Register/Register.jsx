@@ -24,6 +24,102 @@ import {
 } from "lucide-react";
 
 import "./Register.css";
+// =====================================================
+// WORKER SPOT PRICING CONFIGURATION
+// =====================================================
+
+const PRICING_RULES = {
+  Plumber: [
+    { maxExperience: 2, min: 250, max: 350 },
+    { maxExperience: 5, min: 300, max: 450 },
+    { maxExperience: 10, min: 350, max: 500 },
+    { maxExperience: Infinity, min: 400, max: 500 },
+  ],
+
+  Electrician: [
+    { maxExperience: 2, min: 250, max: 350 },
+    { maxExperience: 5, min: 300, max: 450 },
+    { maxExperience: 10, min: 400, max: 500 },
+    { maxExperience: Infinity, min: 450, max: 500 },
+  ],
+
+  Carpenter: [
+    { maxExperience: 2, min: 300, max: 400 },
+    { maxExperience: 5, min: 350, max: 500 },
+    { maxExperience: 10, min: 400, max: 500 },
+    { maxExperience: Infinity, min: 450, max: 500 },
+  ],
+
+  Mechanic: [
+    { maxExperience: 2, min: 300, max: 400 },
+    { maxExperience: 5, min: 350, max: 500 },
+    { maxExperience: 10, min: 400, max: 500 },
+    { maxExperience: Infinity, min: 450, max: 500 },
+  ],
+
+  Painter: [
+    { maxExperience: 2, min: 200, max: 300 },
+    { maxExperience: 5, min: 250, max: 350 },
+    { maxExperience: 10, min: 300, max: 400 },
+    { maxExperience: Infinity, min: 350, max: 450 },
+  ],
+
+  "AC Technician": [
+    { maxExperience: 2, min: 350, max: 450 },
+    { maxExperience: 5, min: 400, max: 500 },
+    { maxExperience: 10, min: 450, max: 500 },
+    { maxExperience: Infinity, min: 500, max: 500 },
+  ],
+
+  Mason: [
+    { maxExperience: 2, min: 250, max: 350 },
+    { maxExperience: 5, min: 300, max: 400 },
+    { maxExperience: 10, min: 350, max: 500 },
+    { maxExperience: Infinity, min: 400, max: 500 },
+  ],
+
+  Welder: [
+    { maxExperience: 2, min: 300, max: 400 },
+    { maxExperience: 5, min: 350, max: 500 },
+    { maxExperience: 10, min: 400, max: 500 },
+    { maxExperience: Infinity, min: 450, max: 500 },
+  ],
+
+  Other: [
+    { maxExperience: 2, min: 250, max: 350 },
+    { maxExperience: 5, min: 300, max: 450 },
+    { maxExperience: 10, min: 350, max: 500 },
+    { maxExperience: Infinity, min: 400, max: 500 },
+  ],
+};
+
+// =====================================================
+// GET RECOMMENDED PRICE RANGE
+// =====================================================
+
+const getPriceRange = (category, experience) => {
+  if (!category || experience === "") {
+    return null;
+  }
+
+  const years = Number(experience);
+
+  if (isNaN(years) || years < 0) {
+    return null;
+  }
+
+  const rules = PRICING_RULES[category];
+
+  if (!rules) {
+    return null;
+  }
+
+  return (
+    rules.find(
+      (rule) => years <= rule.maxExperience
+    ) || rules[rules.length - 1]
+  );
+};
 
 function Register() {
   const [showPassword, setShowPassword] = useState(false);
@@ -69,6 +165,10 @@ function Register() {
     terms: false,
   });
 
+    const recommendedRange = getPriceRange(
+  formData.category,
+  formData.experienceYears
+);
   // =====================================================
   // HANDLE INPUT CHANGES
   // =====================================================
@@ -311,10 +411,36 @@ function Register() {
       return;
     }
 
-    if (Number(formData.charges) < 0) {
-      setError("Charges cannot be negative.");
-      return;
-    }
+    if (!recommendedRange) {
+  setError(
+    "Please select your work category and enter your experience."
+  );
+  return;
+}
+
+const workerCharge = Number(formData.charges);
+
+if (isNaN(workerCharge) || workerCharge <= 0) {
+  setError(
+    "Please enter a valid hourly service charge."
+  );
+  return;
+}
+
+if (workerCharge > 500) {
+  setError("Worker service charge cannot exceed ₹500 per hour.");
+  return;
+}
+
+if (
+  workerCharge < recommendedRange.min ||
+  workerCharge > recommendedRange.max
+) {
+  setError(
+    `Your hourly charge should be between ₹${recommendedRange.min} and ₹${recommendedRange.max} for your category and experience.`
+  );
+  return;
+}
 
     // -----------------------------------------------------
     // LOCATION VALIDATION
@@ -525,7 +651,22 @@ function Register() {
   // =====================================================
 
   return (
-    <div className="register-page">
+    <>
+      <style>{`
+        /* Remove value up/down spinner arrows from number inputs */
+        .register-input-box input[type="number"]::-webkit-inner-spin-button,
+        .register-input-box input[type="number"]::-webkit-outer-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+
+        .register-input-box input[type="number"] {
+          -moz-appearance: textfield;
+          appearance: textfield;
+        }
+      `}</style>
+
+      <div className="register-page">
 
       <div className="register-layout">
 
@@ -1032,37 +1173,68 @@ function Register() {
 
               </div>
 
-              {/* Charges */}
+                {/* =================================================
+    SERVICE CHARGES
+================================================= */}
 
-              <div className="register-form-group">
+<div className="register-form-group">
 
-                <label>
-                  Service Charges
-                </label>
+  <label>
+    Service Charge (per hour)
+  </label>
 
-                <div className="register-input-box">
+  {/* Recommended Range */}
 
-                  <IndianRupee size={19} />
+  {recommendedRange && (
+    <div className="pricing-recommendation">
 
-                  <input
-                    type="number"
-                    name="charges"
-                    placeholder="Your starting service charge"
-                    min="0"
-                    step="0.01"
-                    value={formData.charges}
-                    onChange={handleChange}
-                    required
-                  />
+      <IndianRupee size={17} />
 
-                </div>
+      <div>
 
-                <small>
-                  Set the amount you normally
-                  charge for your service.
-                </small>
+        <strong>
+          Recommended: ₹{recommendedRange.min} – ₹
+          {recommendedRange.max}/hour
+        </strong>
 
-              </div>
+        <span>
+          Based on your category and experience.
+        </span>
+
+      </div>
+
+    </div>
+  )}
+
+  <div className="register-input-box">
+
+    <IndianRupee size={19} />
+
+    <input
+      type="number"
+      name="charges"
+      placeholder={
+        recommendedRange
+          ? `Enter ₹${recommendedRange.min}–₹${recommendedRange.max}`
+          : "Select category and experience first"
+      }
+      min={recommendedRange?.min || 0}
+      max={500}
+      step="1"
+      value={formData.charges}
+      onChange={handleChange}
+      required
+      disabled={!recommendedRange}
+    />
+
+  </div>
+
+  <small>
+    Enter your normal hourly service charge within the
+    recommended range.
+  </small>
+
+</div>
 
               {/* About */}
 
@@ -1449,7 +1621,8 @@ function Register() {
 
       </div>
 
-    </div>
+      </div>
+    </>
   );
 }
 

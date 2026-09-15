@@ -128,7 +128,36 @@
   box-shadow:
     0 0 25px rgba(255, 138, 0, 0.08);
 }
+.pricing-recommendation {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(255, 138, 0, 0.35);
+  border-radius: 10px;
+  background: rgba(255, 138, 0, 0.08);
+}
 
+.pricing-recommendation svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.pricing-recommendation div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.pricing-recommendation strong {
+  font-size: 14px;
+}
+
+.pricing-recommendation span {
+  font-size: 12px;
+  opacity: 0.75;
+}
 .register-brand h2 {
   margin: 0;
 
