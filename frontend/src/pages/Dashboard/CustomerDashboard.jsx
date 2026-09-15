@@ -23,10 +23,524 @@ import {
   History,
   Home,
 } from "lucide-react";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  Polyline,
+  useMap,
+} from "react-leaflet";
+
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 
 import "./CustomerDashboard.css";
 import BookingModal from "../../components/booking/BookingModal";
 import CustomerBookings from "../../components/booking/CustomerBookings";
+
+// =====================================================
+// CUSTOMER MAP HELPERS
+// =====================================================
+
+const customerMapIcon = L.divIcon({
+  className: "worker-spot-customer-marker",
+  html: `
+    <div class="customer-map-marker">
+      <div class="customer-map-marker-pulse"></div>
+      <div class="customer-map-marker-icon">📍</div>
+    </div>
+  `,
+  iconSize: [46, 46],
+  iconAnchor: [23, 43],
+  popupAnchor: [0, -43],
+});
+
+const workerMapIcon = L.divIcon({
+  className: "worker-spot-worker-marker",
+  html: `
+    <div class="worker-map-marker">
+      <div class="worker-map-marker-icon">👷</div>
+    </div>
+  `,
+  iconSize: [42, 42],
+  iconAnchor: [21, 39],
+  popupAnchor: [0, -39],
+});
+
+
+// =====================================================
+// MAP AUTO FIT
+// =====================================================
+
+function CustomerMapController({
+  customerPosition,
+  workers,
+}) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (
+      !customerPosition ||
+      customerPosition.length !== 2
+    ) {
+      return;
+    }
+
+    const validWorkers = workers.filter(
+      (worker) =>
+        Number.isFinite(Number(worker.latitude)) &&
+        Number.isFinite(Number(worker.longitude))
+    );
+
+    const bounds = L.latLngBounds([
+      customerPosition,
+    ]);
+
+    validWorkers.forEach((worker) => {
+      bounds.extend([
+        Number(worker.latitude),
+        Number(worker.longitude),
+      ]);
+    });
+
+    if (bounds.isValid()) {
+      map.fitBounds(bounds, {
+        padding: [50, 50],
+        maxZoom: 15,
+        animate: true,
+      });
+    }
+  }, [map, customerPosition, workers]);
+
+  return null;
+}
+
+
+// =====================================================
+// HAVERSINE DISTANCE
+// =====================================================
+
+const calculateDistanceKm = (
+  lat1,
+  lon1,
+  lat2,
+  lon2
+) => {
+  const R = 6371;
+
+  const dLat =
+    ((lat2 - lat1) * Math.PI) / 180;
+
+  const dLon =
+    ((lon2 - lon1) * Math.PI) / 180;
+
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) ** 2;
+
+  const c =
+    2 *
+    Math.atan2(
+      Math.sqrt(a),
+      Math.sqrt(1 - a)
+    );
+
+  return R * c;
+};
+
+
+// =====================================================
+// FORMAT MAP DISTANCE
+// =====================================================
+
+const formatMapDistance = (distanceKm) => {
+  if (
+    distanceKm === null ||
+    distanceKm === undefined ||
+    !Number.isFinite(Number(distanceKm))
+  ) {
+    return "Distance unavailable";
+  }
+
+  const distance = Number(distanceKm);
+
+  if (distance < 1) {
+    return `${Math.round(distance * 1000)} m`;
+  }
+
+  return `${distance.toFixed(2)} km`;
+};
+
+
+// =====================================================
+// CUSTOMER + WORKER MAP
+// =====================================================
+
+function CustomerWorkerMap({
+  location,
+  workers,
+  selectedCategory,
+})  {
+  const customerLatitude = Number(
+    location?.latitude
+  );
+
+  const customerLongitude = Number(
+    location?.longitude
+  );
+
+  const hasCustomerLocation =
+    Number.isFinite(customerLatitude) &&
+    Number.isFinite(customerLongitude);
+
+  const validWorkers = workers.filter(
+    (worker) =>
+      Number.isFinite(Number(worker.latitude)) &&
+      Number.isFinite(Number(worker.longitude))
+  );
+
+  if (!hasCustomerLocation) {
+    return (
+      <section className="customer-worker-map-section">
+        <div className="customer-worker-map-empty">
+          <MapPin size={30} />
+
+          <h3>
+            Select your service location
+          </h3>
+
+          <p>
+            Your location will appear on the map
+            after you select your service location.
+          </p>
+        </div>
+      </section>
+    );
+  }
+
+  const customerPosition = [
+    customerLatitude,
+    customerLongitude,
+  ];
+
+  return (
+    <section className="customer-worker-map-section">
+
+      {/* HEADER */}
+
+      <div className="customer-worker-map-header">
+
+        <div>
+          <span className="customer-worker-map-badge">
+            <Navigation size={14} />
+            Live Service Map
+          </span>
+
+          <h2>
+            Workers Near You
+          </h2>
+
+          <p>
+            View your service location and nearby
+            workers on the map.
+          </p>
+        </div>
+
+        <div className="customer-worker-map-count">
+          <strong>
+            {validWorkers.length}
+          </strong>
+
+          <span>
+            {validWorkers.length === 1
+              ? "Worker"
+              : "Workers"}
+          </span>
+        </div>
+
+      </div>
+
+
+      {/* MAP */}
+
+      <div className="customer-worker-map-container">
+
+        <MapContainer
+          center={customerPosition}
+          zoom={14}
+          scrollWheelZoom={true}
+          className="customer-worker-leaflet-map"
+        >
+
+          <TileLayer
+            attribution='&copy; OpenStreetMap contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+
+
+          <CustomerMapController
+            customerPosition={customerPosition}
+            workers={validWorkers}
+          />
+
+
+          {/* CUSTOMER */}
+
+          <Marker
+            position={customerPosition}
+            icon={customerMapIcon}
+          >
+            <Popup>
+
+              <div className="customer-map-popup">
+
+                <div className="customer-map-popup-title">
+                  <MapPin size={17} />
+                  Your Service Location
+                </div>
+
+                <p>
+                  {location.address ||
+                    "Selected service location"}
+                </p>
+
+                {location.area && (
+                  <small>
+                    {[
+                      location.area,
+                      location.city,
+                      location.district,
+                      location.state,
+                    ]
+                      .filter(Boolean)
+                      .join(", ")}
+                  </small>
+                )}
+
+              </div>
+
+            </Popup>
+          </Marker>
+
+
+          {/* WORKERS */}
+
+          {validWorkers.map((worker, index) => {
+
+            const workerLatitude =
+              Number(worker.latitude);
+
+            const workerLongitude =
+              Number(worker.longitude);
+
+            const workerPosition = [
+              workerLatitude,
+              workerLongitude,
+            ];
+
+            /*
+             * Calculate distance independently on
+             * the frontend so the map always has
+             * a distance available.
+             */
+
+            const calculatedDistance =
+              calculateDistanceKm(
+                customerLatitude,
+                customerLongitude,
+                workerLatitude,
+                workerLongitude
+              );
+
+            /*
+             * Prefer backend distance when
+             * available because that is the
+             * distance used by your worker search.
+             */
+
+            const distanceKm =
+              Number.isFinite(
+                Number(worker.distanceKm)
+              )
+                ? Number(worker.distanceKm)
+                : calculatedDistance;
+
+            return (
+              <div key={
+                worker.workerId ??
+                `worker-map-${index}`
+              }>
+
+                {/* LINE BETWEEN CUSTOMER AND WORKER */}
+
+                <Polyline
+                  positions={[
+                    customerPosition,
+                    workerPosition,
+                  ]}
+                  pathOptions={{
+                    color: "#ff7a00",
+                    weight: 3,
+                    opacity: 0.65,
+                    dashArray: "8 8",
+                  }}
+                />
+
+
+                {/* WORKER MARKER */}
+
+                <Marker
+                  position={workerPosition}
+                  icon={workerMapIcon}
+                >
+
+                  <Popup>
+
+                    <div className="worker-map-popup">
+
+                      <div className="worker-map-popup-header">
+
+                        <div className="worker-map-popup-avatar">
+                          <UserRound size={19} />
+                        </div>
+
+                        <div>
+                          <strong>
+                            {worker.fullName ||
+                              "Worker"}
+                          </strong>
+
+                          <span>
+                            {worker.category ||
+                              selectedCategory}
+                          </span>
+                        </div>
+
+                      </div>
+
+
+                      <div className="worker-map-popup-distance">
+
+                        <Navigation size={16} />
+
+                        <strong>
+                          {formatMapDistance(
+                            distanceKm
+                          )}
+                        </strong>
+
+                        <span>
+                          from you
+                        </span>
+
+                      </div>
+
+
+                      <div className="worker-map-popup-details">
+
+                        <div>
+                          <BriefcaseBusiness
+                            size={14}
+                          />
+
+                          <span>
+                            {worker.experienceYears ??
+                              0}{" "}
+                            years experience
+                          </span>
+                        </div>
+
+                        <div>
+                          <IndianRupee
+                            size={14}
+                          />
+
+                          <span>
+                            ₹
+                            {Number(
+                              worker.charges ?? 0
+                            ).toFixed(0)}
+                            /hour
+                          </span>
+                        </div>
+
+                        <div>
+                          <MapPin
+                            size={14}
+                          />
+
+                          <span>
+                            {[
+                              worker.area,
+                              worker.city,
+                            ]
+                              .filter(Boolean)
+                              .join(", ") ||
+                              "Location unavailable"}
+                          </span>
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                  </Popup>
+
+                </Marker>
+
+              </div>
+            );
+          })}
+
+        </MapContainer>
+
+
+        {/* MAP LEGEND */}
+
+        <div className="customer-worker-map-legend">
+
+          <div className="customer-map-legend-item">
+
+            <span className="customer-map-legend-customer">
+              📍
+            </span>
+
+            <span>
+              Your location
+            </span>
+
+          </div>
+
+
+          <div className="customer-map-legend-item">
+
+            <span className="customer-map-legend-worker">
+              👷
+            </span>
+
+            <span>
+              Worker
+            </span>
+
+          </div>
+
+
+          <div className="customer-map-legend-line"></div>
+
+          <span>
+            Distance
+          </span>
+
+        </div>
+
+      </div>
+
+    </section>
+  );
+}
 
 function CustomerDashboard() {
   
@@ -1160,7 +1674,7 @@ saveLocation(
     Booking Credits
   </span>
 </button>
-
+          
           {/* My Bookings */}
 
           <button
@@ -1893,6 +2407,15 @@ saveLocation(
             )}
 
         </section>
+                {/* =================================================
+            CUSTOMER + WORKER MAP
+        ================================================= */}
+
+        <CustomerWorkerMap
+          location={location}
+          workers={workers}
+          selectedCategory={selectedCategory}
+        />
 
         {/* =================================================
             MY BOOKINGS
