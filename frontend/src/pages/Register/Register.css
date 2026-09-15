@@ -1,456 +1,482 @@
 /* =========================================================
-   WORKER SPOT — REGISTER PAGE
-   Fully responsive stylesheet
+   WORKER SPOT — WORKER REGISTRATION PAGE
+   Responsive CSS
+   Desktop • Laptop • Tablet • Mobile
    ========================================================= */
 
-/* ---------------------------------------------------------
-   1. DESIGN TOKENS
-   --------------------------------------------------------- */
-
 :root {
-  --ws-primary: #1d4ed8;
-  --ws-primary-dark: #1e3a8a;
-  --ws-primary-light: #3b82f6;
-  --ws-accent: #f97316;
-  --ws-accent-soft: #fbbf24;
-
-  --ws-ink: #0f172a;
-  --ws-ink-soft: #475569;
-  --ws-muted: #64748b;
-
-  --ws-line: #e2e8f0;
-  --ws-line-strong: #cbd5e1;
-
-  --ws-bg: #eef2f8;
-  --ws-card: #ffffff;
-
+  --ws-primary: #2563eb;
+  --ws-primary-dark: #1d4ed8;
+  --ws-primary-soft: #eff6ff;
+  --ws-accent: #0f766e;
   --ws-success: #15803d;
-  --ws-success-bg: #f0fdf4;
-  --ws-success-line: #bbf7d0;
+  --ws-success-soft: #f0fdf4;
+  --ws-danger: #dc2626;
+  --ws-danger-soft: #fef2f2;
 
-  --ws-error: #b91c1c;
-  --ws-error-bg: #fef2f2;
-  --ws-error-line: #fecaca;
+  --ws-text: #172033;
+  --ws-heading: #0f172a;
+  --ws-muted: #64748b;
+  --ws-border: #dbe3ee;
+  --ws-border-light: #e8edf4;
+  --ws-surface: #ffffff;
+  --ws-background: #f5f7fb;
 
   --ws-radius-sm: 10px;
-  --ws-radius: 14px;
+  --ws-radius-md: 14px;
   --ws-radius-lg: 22px;
+  --ws-radius-xl: 28px;
 
-  --ws-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
-  --ws-shadow-md: 0 14px 34px -18px rgba(15, 23, 42, 0.28);
-  --ws-shadow-lg: 0 40px 80px -40px rgba(15, 23, 42, 0.45);
+  --ws-shadow-sm: 0 4px 14px rgba(15, 23, 42, 0.06);
+  --ws-shadow-md: 0 16px 45px rgba(15, 23, 42, 0.09);
 
-  --ws-font: "Inter", "Segoe UI", system-ui, -apple-system,
-    "Helvetica Neue", Arial, sans-serif;
-
-  --ws-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ws-transition: 180ms ease;
 }
 
-/* ---------------------------------------------------------
-   2. PAGE SHELL
-   --------------------------------------------------------- */
+/* =========================================================
+   RESET / BASE
+   ========================================================= */
 
-.register-page {
-  min-height: 100vh;
-  min-height: 100dvh;
-  background: var(--ws-bg);
-  font-family: var(--ws-font);
-  color: var(--ws-ink);
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-}
-
+.register-page,
 .register-page *,
 .register-page *::before,
 .register-page *::after {
   box-sizing: border-box;
 }
 
-.register-layout {
-  display: grid;
-  grid-template-columns: minmax(320px, 42%) minmax(0, 1fr);
+.register-page {
   min-height: 100vh;
   min-height: 100dvh;
+  width: 100%;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(37, 99, 235, 0.08), transparent 28rem),
+    radial-gradient(circle at 90% 85%, rgba(15, 118, 110, 0.06), transparent 24rem),
+    var(--ws-background);
+  color: var(--ws-text);
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.register-page button,
+.register-page input,
+.register-page textarea,
+.register-page select {
+  font: inherit;
+}
+
+.register-page button,
+.register-page a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.register-page a {
+  color: inherit;
 }
 
 /* =========================================================
-   3. LEFT / BRAND PANEL
+   MAIN TWO-COLUMN LAYOUT
+   ========================================================= */
+
+.register-layout {
+  width: min(1500px, 100%);
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(390px, 0.82fr) minmax(560px, 1.18fr);
+}
+
+/* =========================================================
+   LEFT / BRAND SIDE
    ========================================================= */
 
 .register-content {
   position: relative;
-  isolation: isolate;
-  overflow: hidden;
+  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
-  padding: 56px clamp(24px, 4.5vw, 68px);
-  color: #ffffff;
+  overflow: hidden;
   background:
-    linear-gradient(158deg, #08152f 0%, #12306b 44%, #1d4ed8 100%);
+    radial-gradient(circle at 15% 15%, rgba(96, 165, 250, 0.22), transparent 20rem),
+    radial-gradient(circle at 85% 85%, rgba(45, 212, 191, 0.14), transparent 22rem),
+    linear-gradient(145deg, #0f172a 0%, #172554 52%, #0f3d56 100%);
+  color: #fff;
 }
 
-/* decorative glows */
 .register-content::before,
 .register-content::after {
   content: "";
   position: absolute;
-  border-radius: 50%;
   pointer-events: none;
-  z-index: -1;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .register-content::before {
-  width: 520px;
-  height: 520px;
-  top: -190px;
-  right: -190px;
-  background: radial-gradient(
-    circle,
-    rgba(59, 130, 246, 0.55),
-    transparent 68%
-  );
+  width: 420px;
+  height: 420px;
+  right: -220px;
+  top: -170px;
 }
 
 .register-content::after {
-  width: 420px;
-  height: 420px;
-  bottom: -200px;
-  left: -160px;
-  background: radial-gradient(
-    circle,
-    rgba(249, 115, 22, 0.32),
-    transparent 70%
-  );
+  width: 330px;
+  height: 330px;
+  left: -210px;
+  bottom: -170px;
 }
 
 .register-content-inner {
-  width: 100%;
-  max-width: 520px;
-  display: flex;
-  flex-direction: column;
-  gap: 26px;
+  position: relative;
+  z-index: 1;
+  width: min(570px, 100%);
   margin: 0 auto;
+  padding: 56px 54px;
 }
 
-/* ---------------- Brand ---------------- */
+/* Brand */
 
 .register-brand {
   display: flex;
   align-items: center;
   gap: 14px;
+  margin-bottom: 36px;
 }
 
 .register-brand-icon {
   width: 52px;
   height: 52px;
-  flex-shrink: 0;
+  flex: 0 0 52px;
   display: grid;
   place-items: center;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.14);
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.13);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(12px);
 }
 
 .register-brand h2 {
   margin: 0;
-  font-size: 1.4rem;
+  font-size: 1.45rem;
+  line-height: 1.1;
   font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
+  letter-spacing: -0.035em;
 }
 
 .register-brand h2 span {
-  color: var(--ws-accent-soft);
+  color: #60a5fa;
 }
 
 .register-brand p {
-  margin: 3px 0 0;
+  margin: 5px 0 0;
+  color: rgba(255, 255, 255, 0.62);
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.68);
+}
+
+/* Badge */
+
+.register-badge {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 20px;
+  padding: 8px 12px;
+  border: 1px solid rgba(147, 197, 253, 0.25);
+  border-radius: 999px;
+  background: rgba(59, 130, 246, 0.13);
+  color: #bfdbfe;
+  font-size: 0.78rem;
+  font-weight: 700;
   letter-spacing: 0.01em;
 }
 
-/* ---------------- Badge ---------------- */
-
-.register-badge {
-  align-self: flex-start;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 15px;
-  border-radius: 999px;
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  color: #fde68a;
-  background: rgba(251, 191, 36, 0.12);
-  border: 1px solid rgba(251, 191, 36, 0.32);
-}
-
-/* ---------------- Headline ---------------- */
-
 .register-message h1 {
-  margin: 0 0 14px;
-  font-size: clamp(1.85rem, 3.1vw, 2.6rem);
-  font-weight: 800;
-  line-height: 1.15;
-  letter-spacing: -0.03em;
+  max-width: 510px;
+  margin: 0;
+  color: #fff;
+  font-size: clamp(2.35rem, 4vw, 4rem);
+  line-height: 1.04;
+  font-weight: 850;
+  letter-spacing: -0.055em;
 }
 
 .register-message h1 span {
-  background: linear-gradient(92deg, #fbbf24, #f97316);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: #60a5fa;
 }
 
 .register-message p {
-  margin: 0;
-  font-size: 0.98rem;
-  line-height: 1.68;
-  color: rgba(255, 255, 255, 0.76);
-  max-width: 46ch;
+  max-width: 500px;
+  margin: 20px 0 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1rem;
+  line-height: 1.75;
 }
 
-/* ---------------- Feature cards ---------------- */
+/* Features */
 
 .register-features {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
+  gap: 10px;
+  margin-top: 38px;
 }
 
 .register-feature {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  padding: 15px 16px;
-  border-radius: var(--ws-radius);
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  transition: background 0.22s var(--ws-ease),
-    transform 0.22s var(--ws-ease),
-    border-color 0.22s var(--ws-ease);
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  align-items: start;
+  gap: 13px;
+  padding: 13px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.045);
+  transition:
+    transform var(--ws-transition),
+    background var(--ws-transition),
+    border-color var(--ws-transition);
 }
 
 .register-feature:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.22);
-  transform: translateY(-2px);
+  transform: translateX(4px);
+  background: rgba(255, 255, 255, 0.075);
+  border-color: rgba(255, 255, 255, 0.13);
 }
 
 .feature-icon {
-  width: 40px;
-  height: 40px;
-  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
   display: grid;
   place-items: center;
   border-radius: 12px;
-  color: #bfdbfe;
-  background: rgba(59, 130, 246, 0.2);
-  border: 1px solid rgba(147, 197, 253, 0.28);
+  background: rgba(96, 165, 250, 0.12);
+  color: #93c5fd;
 }
 
 .register-feature h3 {
-  margin: 0 0 3px;
-  font-size: 0.92rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
+  margin: 1px 0 3px;
+  color: #fff;
+  font-size: 0.91rem;
+  font-weight: 750;
 }
 
 .register-feature p {
   margin: 0;
-  font-size: 0.83rem;
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.68);
+  color: rgba(255, 255, 255, 0.57);
+  font-size: 0.79rem;
+  line-height: 1.55;
 }
-
-/* ---------------- Side note ---------------- */
 
 .register-side-note {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 13px 16px;
-  border-radius: var(--ws-radius);
-  font-size: 0.84rem;
-  color: rgba(255, 255, 255, 0.8);
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px dashed rgba(255, 255, 255, 0.2);
-}
-
-.register-side-note svg {
-  flex-shrink: 0;
-  color: #86efac;
+  gap: 9px;
+  margin-top: 28px;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.78rem;
 }
 
 /* =========================================================
-   4. RIGHT / FORM PANEL
+   RIGHT / FORM SIDE
    ========================================================= */
 
 .register-form-side {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: clamp(22px, 3.5vw, 52px) clamp(16px, 3.5vw, 52px) 64px;
+  min-width: 0;
+  padding: 48px 42px;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.86)),
+    var(--ws-background);
 }
 
 .register-container {
-  width: 100%;
-  max-width: 640px;
-  background: var(--ws-card);
-  border: 1px solid var(--ws-line);
-  border-radius: var(--ws-radius-lg);
+  width: min(690px, 100%);
+  margin: 0 auto;
+  padding: 42px 44px;
+  border: 1px solid rgba(219, 227, 238, 0.9);
+  border-radius: var(--ws-radius-xl);
+  background: rgba(255, 255, 255, 0.96);
   box-shadow: var(--ws-shadow-md);
-  padding: clamp(22px, 3vw, 42px);
 }
 
-/* ---------------- Header ---------------- */
+/* Form header */
 
 .register-header {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 32px;
 }
 
 .register-icon {
-  width: 60px;
-  height: 60px;
-  margin: 0 auto 16px;
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 15px;
   display: grid;
   place-items: center;
-  border-radius: 18px;
-  color: #ffffff;
-  background: linear-gradient(
-    135deg,
-    var(--ws-primary-light),
-    var(--ws-primary-dark)
-  );
-  box-shadow: 0 14px 26px -12px rgba(29, 78, 216, 0.7);
+  border-radius: 17px;
+  background: var(--ws-primary-soft);
+  color: var(--ws-primary);
 }
 
 .register-header h1 {
-  margin: 0 0 8px;
-  font-size: clamp(1.4rem, 2.2vw, 1.72rem);
+  margin: 0;
+  color: var(--ws-heading);
+  font-size: clamp(1.65rem, 2.5vw, 2.1rem);
+  line-height: 1.15;
   font-weight: 800;
-  letter-spacing: -0.025em;
-  color: var(--ws-ink);
+  letter-spacing: -0.035em;
 }
 
 .register-header p {
-  margin: 0;
-  font-size: 0.92rem;
-  line-height: 1.6;
+  max-width: 470px;
+  margin: 9px auto 0;
   color: var(--ws-muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
 }
 
 /* =========================================================
-   5. FORM STRUCTURE
+   FORM FIELDS
    ========================================================= */
 
-.register-container form {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
 .register-form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  margin-bottom: 19px;
 }
 
 .register-form-group > label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--ws-ink-soft);
-  letter-spacing: 0.005em;
+  display: block;
+  margin: 0 0 8px;
+  color: #334155;
+  font-size: 0.84rem;
+  line-height: 1.3;
+  font-weight: 700;
 }
-
-.register-form-group small {
-  font-size: 0.76rem;
-  line-height: 1.5;
-  color: var(--ws-muted);
-}
-
-/* ---------------- Input shell ---------------- */
 
 .register-input-box {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 12px;
   min-height: 52px;
-  padding: 0 14px;
-  background: #ffffff;
-  border: 1.5px solid var(--ws-line);
-  border-radius: var(--ws-radius);
-  transition: border-color 0.18s var(--ws-ease),
-    box-shadow 0.18s var(--ws-ease), background 0.18s var(--ws-ease);
-}
-
-.register-input-box:hover {
-  border-color: var(--ws-line-strong);
-}
-
-.register-input-box:focus-within {
-  border-color: var(--ws-primary-light);
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.16);
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--ws-border);
+  border-radius: var(--ws-radius-sm);
+  background: #fff;
+  transition:
+    border-color var(--ws-transition),
+    box-shadow var(--ws-transition),
+    background var(--ws-transition);
 }
 
 .register-input-box > svg {
-  flex-shrink: 0;
-  color: var(--ws-muted);
-  transition: color 0.18s var(--ws-ease);
+  flex: 0 0 auto;
+  margin-left: 15px;
+  color: #94a3b8;
+  transition: color var(--ws-transition);
+}
+
+.register-input-box:focus-within {
+  border-color: rgba(37, 99, 235, 0.75);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.09);
+  background: #fff;
 }
 
 .register-input-box:focus-within > svg {
   color: var(--ws-primary);
 }
 
-/* ---------------- Fields ---------------- */
-
 .register-input-box input,
 .register-input-box select,
 .register-input-box textarea {
-  flex: 1 1 auto;
   min-width: 0;
   width: 100%;
   border: 0;
   outline: 0;
   background: transparent;
-  font-family: inherit;
-  font-size: 0.95rem;
-  color: var(--ws-ink);
-  padding: 14px 0;
-  line-height: 1.4;
+  color: var(--ws-heading);
+}
+
+.register-input-box input,
+.register-input-box select {
+  height: 50px;
+  padding: 0 15px 0 12px;
 }
 
 .register-input-box input::placeholder,
 .register-input-box textarea::placeholder {
-  color: #94a3b8;
+  color: #a1adbd;
+  opacity: 1;
+}
+
+.register-input-box select {
+  cursor: pointer;
+  appearance: auto;
 }
 
 .register-input-box input:disabled,
-.register-input-box select:disabled,
-.register-input-box textarea:disabled {
+.register-input-box select:disabled {
   cursor: not-allowed;
   color: #94a3b8;
-}
-
-.register-input-box:has(input:disabled),
-.register-input-box:has(select:disabled) {
   background: #f8fafc;
-  border-style: dashed;
 }
 
-/* remove number spinners */
-.register-input-box input[type="number"]::-webkit-outer-spin-button,
-.register-input-box input[type="number"]::-webkit-inner-spin-button {
+.register-input-box:has(input:disabled) {
+  background: #f8fafc;
+}
+
+/* Password eye button */
+
+.register-password-button {
+  width: 48px;
+  height: 50px;
+  flex: 0 0 48px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+  transition:
+    color var(--ws-transition),
+    background var(--ws-transition);
+}
+
+.register-password-button:hover {
+  color: var(--ws-primary);
+  background: var(--ws-primary-soft);
+}
+
+.register-password-button:focus-visible {
+  outline: 2px solid var(--ws-primary);
+  outline-offset: -4px;
+  border-radius: 8px;
+}
+
+/* Textarea */
+
+.register-textarea-box {
+  align-items: flex-start;
+  min-height: 120px;
+}
+
+.register-textarea-box > svg {
+  margin-top: 16px;
+}
+
+.register-input-box textarea {
+  min-height: 118px;
+  padding: 14px 15px 14px 12px;
+  resize: vertical;
+  line-height: 1.55;
+}
+
+/* Remove number spinner arrows */
+
+.register-input-box input[type="number"]::-webkit-inner-spin-button,
+.register-input-box input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
@@ -460,891 +486,761 @@
   appearance: textfield;
 }
 
-/* ---------------- Select ---------------- */
+/* Help text */
 
-.register-input-box select {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  cursor: pointer;
-  padding-right: 28px;
-  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 2px center;
-  background-size: 16px 16px;
-}
-
-/* ---------------- Textarea ---------------- */
-
-.register-textarea-box {
-  align-items: flex-start;
-  padding-top: 14px;
-  padding-bottom: 14px;
-}
-
-.register-textarea-box > svg {
-  margin-top: 3px;
-}
-
-.register-input-box textarea {
-  resize: vertical;
-  min-height: 96px;
-  max-height: 260px;
-  padding: 0;
-  line-height: 1.62;
-}
-
-/* ---------------- Password toggle ---------------- */
-
-.register-password-button {
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  padding: 0;
-  border: 0;
-  border-radius: 10px;
-  background: transparent;
-  color: var(--ws-muted);
-  cursor: pointer;
-  transition: background 0.18s var(--ws-ease), color 0.18s var(--ws-ease);
-}
-
-.register-password-button:hover {
-  background: #f1f5f9;
-  color: var(--ws-primary);
-}
-
-.register-password-button:focus-visible {
-  outline: 2px solid var(--ws-primary-light);
-  outline-offset: 2px;
+.register-form-group small {
+  display: block;
+  margin: 6px 2px 0;
+  color: #8a98aa;
+  font-size: 0.72rem;
+  line-height: 1.45;
 }
 
 /* =========================================================
-   6. PRICING RECOMMENDATION
+   PRICING RECOMMENDATION
    ========================================================= */
 
 .pricing-recommendation {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 11px;
-  padding: 12px 14px;
-  border-radius: var(--ws-radius);
-  background: linear-gradient(
-    135deg,
-    rgba(59, 130, 246, 0.09),
-    rgba(29, 78, 216, 0.06)
-  );
-  border: 1px solid rgba(59, 130, 246, 0.24);
+  margin: 0 0 9px;
+  padding: 12px 13px;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #eff6ff, #f8fbff);
+  color: var(--ws-primary);
 }
 
 .pricing-recommendation > svg {
-  flex-shrink: 0;
-  margin-top: 2px;
-  color: var(--ws-primary);
+  flex: 0 0 auto;
 }
 
 .pricing-recommendation strong {
   display: block;
-  font-size: 0.86rem;
-  font-weight: 700;
-  color: var(--ws-primary-dark);
-  line-height: 1.4;
+  color: #1e40af;
+  font-size: 0.8rem;
+  line-height: 1.35;
 }
 
 .pricing-recommendation span {
   display: block;
   margin-top: 2px;
-  font-size: 0.76rem;
-  color: var(--ws-muted);
-  line-height: 1.45;
+  color: #64748b;
+  font-size: 0.71rem;
+  line-height: 1.4;
 }
 
 /* =========================================================
-   7. LOCATION
+   LOCATION
    ========================================================= */
 
 .register-location-action {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  margin-top: 2px;
 }
 
 .register-location-button {
   width: 100%;
+  min-height: 48px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 14px 18px;
-  border-radius: var(--ws-radius);
-  border: 1.5px dashed rgba(59, 130, 246, 0.55);
-  background: rgba(59, 130, 246, 0.07);
-  color: var(--ws-primary);
-  font-family: inherit;
-  font-size: 0.92rem;
-  font-weight: 650;
+  gap: 9px;
+  padding: 11px 16px;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+  background: var(--ws-primary-soft);
+  color: #1d4ed8;
+  font-size: 0.84rem;
+  font-weight: 750;
   cursor: pointer;
-  transition: background 0.18s var(--ws-ease),
-    border-color 0.18s var(--ws-ease), transform 0.18s var(--ws-ease);
+  transition:
+    transform var(--ws-transition),
+    background var(--ws-transition),
+    border-color var(--ws-transition),
+    box-shadow var(--ws-transition);
 }
 
 .register-location-button:hover:not(:disabled) {
-  background: rgba(59, 130, 246, 0.13);
-  border-color: var(--ws-primary-light);
+  transform: translateY(-1px);
+  background: #dbeafe;
+  border-color: #93c5fd;
+  box-shadow: 0 7px 18px rgba(37, 99, 235, 0.1);
 }
 
 .register-location-button:active:not(:disabled) {
-  transform: scale(0.99);
+  transform: translateY(0);
 }
 
 .register-location-button:disabled {
-  opacity: 0.62;
-  cursor: not-allowed;
-}
-
-.register-location-button:focus-visible {
-  outline: 2px solid var(--ws-primary-light);
-  outline-offset: 3px;
+  cursor: wait;
+  opacity: 0.65;
 }
 
 .register-location-status {
-  margin: 0;
-  font-size: 0.8rem;
-  line-height: 1.55;
+  margin: 8px 2px 0;
   color: var(--ws-muted);
+  font-size: 0.75rem;
+  line-height: 1.5;
 }
+
+/* GPS detected */
 
 .register-location-detected {
   display: flex;
   align-items: flex-start;
-  gap: 11px;
-  padding: 13px 15px;
-  border-radius: var(--ws-radius);
-  background: var(--ws-success-bg);
-  border: 1px solid var(--ws-success-line);
+  gap: 10px;
+  margin: 4px 0 20px;
+  padding: 13px 14px;
+  border: 1px solid #bbf7d0;
+  border-radius: 12px;
+  background: var(--ws-success-soft);
   color: var(--ws-success);
 }
 
 .register-location-detected > svg {
-  flex-shrink: 0;
+  flex: 0 0 auto;
   margin-top: 1px;
 }
 
 .register-location-detected strong {
   display: block;
-  font-size: 0.86rem;
-  font-weight: 700;
+  color: #166534;
+  font-size: 0.79rem;
 }
 
 .register-location-detected small {
   display: block;
   margin-top: 3px;
-  font-size: 0.78rem;
-  line-height: 1.5;
-  color: #166534;
+  color: #4b7a5b;
+  font-size: 0.71rem;
+  line-height: 1.45;
 }
 
 /* =========================================================
-   8. POLICY / TERMS / SAFETY
+   WORKER POLICY
    ========================================================= */
 
 .worker-policy {
+  margin: 28px 0 22px;
   padding: 18px;
-  border-radius: var(--ws-radius);
-  background: #f8fafc;
-  border: 1px solid var(--ws-line);
+  border: 1px solid #dbeafe;
+  border-radius: 15px;
+  background: linear-gradient(145deg, #f8fbff, #f1f7ff);
 }
 
 .worker-policy-title {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 9px;
-  margin-bottom: 12px;
-  color: var(--ws-primary-dark);
+  margin-bottom: 11px;
+  color: #1d4ed8;
 }
 
 .worker-policy-title svg {
-  flex-shrink: 0;
+  flex: 0 0 auto;
+  margin-top: 1px;
 }
 
 .worker-policy-title h3 {
   margin: 0;
-  font-size: 0.9rem;
-  font-weight: 700;
-  line-height: 1.4;
-  letter-spacing: -0.01em;
+  color: #1e3a8a;
+  font-size: 0.88rem;
+  line-height: 1.35;
+  font-weight: 800;
 }
 
 .worker-policy p {
-  margin: 0 0 10px;
-  font-size: 0.8rem;
-  line-height: 1.66;
-  color: var(--ws-ink-soft);
-}
-
-.worker-policy p:last-child {
-  margin-bottom: 0;
+  margin: 8px 0 0;
+  color: #526174;
+  font-size: 0.74rem;
+  line-height: 1.6;
 }
 
 .worker-policy strong {
-  color: var(--ws-ink);
-  font-weight: 700;
+  color: #1e3a8a;
 }
 
-/* ---------------- Terms ---------------- */
+/* =========================================================
+   TERMS / SAFETY
+   ========================================================= */
 
 .register-terms {
-  display: flex;
-  align-items: flex-start;
-  gap: 11px;
-  padding: 14px 15px;
-  border-radius: var(--ws-radius);
-  background: #f8fafc;
-  border: 1px solid var(--ws-line);
+  display: grid;
+  grid-template-columns: 19px 1fr;
+  align-items: start;
+  gap: 10px;
   cursor: pointer;
-  font-size: 0.82rem;
-  line-height: 1.62;
-  color: var(--ws-ink-soft);
-  transition: border-color 0.18s var(--ws-ease),
-    background 0.18s var(--ws-ease);
+  color: #59677a;
+  font-size: 0.76rem;
+  line-height: 1.55;
 }
 
-.register-terms:hover {
-  background: #f1f5f9;
-  border-color: var(--ws-line-strong);
-}
-
-.register-terms input[type="checkbox"] {
-  flex-shrink: 0;
-  width: 18px;
-  height: 18px;
+.register-terms input {
+  width: 17px;
+  height: 17px;
   margin: 2px 0 0;
   accent-color: var(--ws-primary);
   cursor: pointer;
 }
 
-.register-terms a {
-  color: var(--ws-primary);
-  font-weight: 650;
-  text-decoration: none;
-  border-bottom: 1px solid rgba(29, 78, 216, 0.3);
-  transition: border-color 0.16s var(--ws-ease), color 0.16s var(--ws-ease);
-}
-
-.register-terms a:hover {
-  color: var(--ws-primary-dark);
-  border-bottom-color: var(--ws-primary-dark);
-}
-
-/* ---------------- Safety ---------------- */
-
-.registration-safety {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  margin: -4px 0 0;
-  font-size: 0.76rem;
-  line-height: 1.55;
-  color: var(--ws-muted);
-}
-
-.registration-safety svg {
-  flex-shrink: 0;
-  color: var(--ws-primary);
-}
-
+.register-terms a,
 .registration-safety a {
   color: var(--ws-primary);
-  font-weight: 600;
+  font-weight: 700;
   text-decoration: none;
 }
 
+.register-terms a:hover,
 .registration-safety a:hover {
   text-decoration: underline;
 }
 
+.registration-safety {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 10px 0 20px;
+  color: #7b8798;
+  font-size: 0.71rem;
+  line-height: 1.5;
+}
+
+.registration-safety svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+  color: #64748b;
+}
+
 /* =========================================================
-   9. ALERTS
+   ERROR / SUCCESS
    ========================================================= */
 
 .register-error,
 .register-success {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
-  padding: 13px 15px;
-  border-radius: var(--ws-radius);
-  font-size: 0.85rem;
-  font-weight: 550;
-  line-height: 1.55;
-  animation: ws-fade-in 0.25s var(--ws-ease);
+  gap: 9px;
+  margin: 15px 0;
+  padding: 12px 13px;
+  border-radius: 11px;
+  font-size: 0.77rem;
+  line-height: 1.5;
 }
 
 .register-error {
-  color: var(--ws-error);
-  background: var(--ws-error-bg);
-  border: 1px solid var(--ws-error-line);
+  border: 1px solid #fecaca;
+  background: var(--ws-danger-soft);
+  color: #b91c1c;
 }
 
 .register-success {
-  color: var(--ws-success);
-  background: var(--ws-success-bg);
-  border: 1px solid var(--ws-success-line);
+  border: 1px solid #bbf7d0;
+  background: var(--ws-success-soft);
+  color: #166534;
+}
+
+.register-error::before {
+  content: "!";
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #fee2e2;
+  color: #dc2626;
+  font-size: 0.7rem;
+  font-weight: 900;
 }
 
 .register-success svg {
-  flex-shrink: 0;
+  flex: 0 0 auto;
   margin-top: 1px;
 }
 
-@keyframes ws-fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 /* =========================================================
-   10. SUBMIT BUTTON
+   SUBMIT BUTTON
    ========================================================= */
 
 .register-button {
   width: 100%;
-  display: inline-flex;
+  min-height: 54px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 16px 22px;
-  margin-top: 4px;
+  gap: 9px;
+  margin-top: 20px;
+  padding: 13px 18px;
   border: 0;
-  border-radius: var(--ws-radius);
-  background: linear-gradient(
-    135deg,
-    var(--ws-primary-light),
-    var(--ws-primary-dark)
-  );
-  color: #ffffff;
-  font-family: inherit;
-  font-size: 0.98rem;
-  font-weight: 700;
-  letter-spacing: 0.005em;
+  border-radius: 13px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #fff;
+  font-size: 0.91rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  box-shadow: 0 9px 22px rgba(37, 99, 235, 0.2);
   cursor: pointer;
-  box-shadow: 0 16px 28px -16px rgba(29, 78, 216, 0.85);
-  transition: transform 0.18s var(--ws-ease),
-    box-shadow 0.18s var(--ws-ease), filter 0.18s var(--ws-ease);
+  transition:
+    transform var(--ws-transition),
+    box-shadow var(--ws-transition),
+    filter var(--ws-transition);
 }
 
 .register-button:hover:not(:disabled) {
-  filter: brightness(1.06);
-  box-shadow: 0 20px 34px -16px rgba(29, 78, 216, 0.95);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 13px 28px rgba(37, 99, 235, 0.25);
+  filter: brightness(1.03);
 }
 
 .register-button:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: 0 10px 20px -14px rgba(29, 78, 216, 0.9);
-}
-
-.register-button:focus-visible {
-  outline: 3px solid rgba(59, 130, 246, 0.5);
-  outline-offset: 3px;
 }
 
 .register-button:disabled {
-  opacity: 0.72;
   cursor: not-allowed;
-  filter: grayscale(0.15);
+  opacity: 0.65;
   box-shadow: none;
-  transform: none;
 }
 
 /* =========================================================
-   11. LOGIN FOOTER
+   LOGIN
    ========================================================= */
 
 .register-login {
-  margin-top: 26px;
-  padding-top: 22px;
-  border-top: 1px solid var(--ws-line);
+  margin-top: 25px;
+  padding-top: 21px;
+  border-top: 1px solid var(--ws-border-light);
   text-align: center;
 }
 
 .register-login p {
-  margin: 0 0 8px;
-  font-size: 0.86rem;
-  color: var(--ws-muted);
+  margin: 0 0 6px;
+  color: #7b8798;
+  font-size: 0.76rem;
 }
 
 .register-login a {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.9rem;
-  font-weight: 700;
   color: var(--ws-primary);
+  font-size: 0.82rem;
+  font-weight: 800;
   text-decoration: none;
-  transition: color 0.16s var(--ws-ease), gap 0.16s var(--ws-ease);
-}
-
-.register-login a::after {
-  content: "→";
-  font-size: 0.95em;
-  transition: transform 0.18s var(--ws-ease);
 }
 
 .register-login a:hover {
-  color: var(--ws-primary-dark);
-}
-
-.register-login a:hover::after {
-  transform: translateX(3px);
+  text-decoration: underline;
 }
 
 /* =========================================================
-   12. RESPONSIVE — LARGE DESKTOP
+   ACCESSIBILITY
    ========================================================= */
 
-@media (min-width: 1440px) {
-  .register-layout {
-    grid-template-columns: minmax(380px, 40%) minmax(0, 1fr);
-  }
-
-  .register-container {
-    max-width: 680px;
-  }
+.register-page :focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.3);
+  outline-offset: 2px;
 }
 
-/* =========================================================
-   13. RESPONSIVE — DESKTOP (sticky brand panel)
-   ========================================================= */
-
-@media (min-width: 1024px) {
-  .register-content {
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    height: 100dvh;
-    overflow-y: auto;
-    overflow-x: hidden;
-    align-items: center;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
-  }
-
-  .register-content::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  .register-content::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.22);
-    border-radius: 999px;
-  }
-
-  .register-content::-webkit-scrollbar-track {
-    background: transparent;
-  }
+.register-page input:invalid:not(:placeholder-shown) {
+  /* Browser validation remains available without aggressively
+     coloring empty required fields. */
 }
-
-/* =========================================================
-   14. RESPONSIVE — TABLET (stacked)
-   ========================================================= */
-
-@media (max-width: 1023px) {
-  .register-layout {
-    grid-template-columns: minmax(0, 1fr);
-    min-height: auto;
-  }
-
-  .register-content {
-    padding: 44px clamp(20px, 5vw, 52px) 48px;
-    border-radius: 0 0 30px 30px;
-  }
-
-  .register-content-inner {
-    max-width: 720px;
-    gap: 22px;
-  }
-
-  .register-message p {
-    max-width: 60ch;
-  }
-
-  /* two-column feature grid on tablets */
-  .register-features {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-  }
-
-  .register-side-note {
-    max-width: 520px;
-  }
-
-  .register-form-side {
-    padding: 40px clamp(16px, 5vw, 52px) 72px;
-    margin-top: -28px;
-  }
-
-  .register-container {
-    max-width: 720px;
-    box-shadow: var(--ws-shadow-lg);
-  }
-}
-
-/* =========================================================
-   15. RESPONSIVE — SMALL TABLET / LARGE PHONE
-   ========================================================= */
-
-@media (max-width: 767px) {
-  .register-content {
-    padding: 34px 20px 40px;
-    border-radius: 0 0 24px 24px;
-  }
-
-  .register-content-inner {
-    gap: 18px;
-  }
-
-  .register-brand-icon {
-    width: 46px;
-    height: 46px;
-    border-radius: 14px;
-  }
-
-  .register-brand h2 {
-    font-size: 1.22rem;
-  }
-
-  .register-brand p {
-    font-size: 0.76rem;
-  }
-
-  .register-badge {
-    font-size: 0.72rem;
-    padding: 6px 13px;
-  }
-
-  .register-message h1 {
-    font-size: 1.6rem;
-    margin-bottom: 10px;
-  }
-
-  .register-message p {
-    font-size: 0.9rem;
-    line-height: 1.62;
-  }
-
-  /* hide the long feature list — the form is the priority */
-  .register-features,
-  .register-side-note {
-    display: none;
-  }
-
-  .register-form-side {
-    padding: 22px 14px 56px;
-    margin-top: -18px;
-  }
-
-  .register-container {
-    border-radius: 20px;
-    padding: 24px 18px 28px;
-    box-shadow: var(--ws-shadow-md);
-  }
-
-  .register-header {
-    margin-bottom: 24px;
-  }
-
-  .register-icon {
-    width: 52px;
-    height: 52px;
-    border-radius: 15px;
-    margin-bottom: 13px;
-  }
-
-  .register-header h1 {
-    font-size: 1.28rem;
-  }
-
-  .register-header p {
-    font-size: 0.86rem;
-  }
-
-  .register-container form {
-    gap: 16px;
-  }
-
-  /* 16px prevents iOS auto-zoom on focus */
-  .register-input-box input,
-  .register-input-box select,
-  .register-input-box textarea {
-    font-size: 16px;
-  }
-
-  .register-input-box {
-    min-height: 50px;
-    padding: 0 13px;
-    gap: 10px;
-  }
-
-  .register-input-box input,
-  .register-input-box select {
-    padding: 13px 0;
-  }
-
-  .register-button {
-    padding: 15px 18px;
-    font-size: 0.94rem;
-  }
-
-  .worker-policy,
-  .register-terms {
-    padding: 14px;
-  }
-
-  .worker-policy p {
-    font-size: 0.78rem;
-  }
-
-  .register-terms {
-    font-size: 0.79rem;
-  }
-}
-
-/* =========================================================
-   16. RESPONSIVE — PHONES
-   ========================================================= */
-
-@media (max-width: 480px) {
-  .register-content {
-    padding: 28px 16px 34px;
-    border-radius: 0 0 20px 20px;
-  }
-
-  .register-brand {
-    gap: 11px;
-  }
-
-  .register-brand-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 12px;
-  }
-
-  .register-brand-icon svg {
-    width: 22px;
-    height: 22px;
-  }
-
-  .register-brand h2 {
-    font-size: 1.1rem;
-  }
-
-  .register-brand p {
-    font-size: 0.72rem;
-  }
-
-  .register-message h1 {
-    font-size: 1.38rem;
-    line-height: 1.22;
-  }
-
-  .register-message p {
-    font-size: 0.85rem;
-  }
-
-  .register-form-side {
-    padding: 16px 10px 48px;
-    margin-top: -14px;
-  }
-
-  .register-container {
-    border-radius: 18px;
-    padding: 20px 15px 24px;
-    border-color: #e8edf5;
-  }
-
-  .register-header {
-    margin-bottom: 20px;
-  }
-
-  .register-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 14px;
-  }
-
-  .register-icon svg {
-    width: 23px;
-    height: 23px;
-  }
-
-  .register-header h1 {
-    font-size: 1.16rem;
-  }
-
-  .register-header p {
-    font-size: 0.82rem;
-  }
-
-  .register-form-group > label {
-    font-size: 0.82rem;
-  }
-
-  .register-form-group small {
-    font-size: 0.73rem;
-  }
-
-  .register-container form {
-    gap: 15px;
-  }
-
-  .register-input-box {
-    min-height: 48px;
-    padding: 0 12px;
-    border-radius: 12px;
-  }
-
-  .register-input-box > svg {
-    width: 17px;
-    height: 17px;
-  }
-
-  .register-password-button {
-    width: 32px;
-    height: 32px;
-  }
-
-  .register-location-button {
-    padding: 13px 14px;
-    font-size: 0.86rem;
-  }
-
-  .pricing-recommendation {
-    padding: 11px 12px;
-  }
-
-  .pricing-recommendation strong {
-    font-size: 0.81rem;
-  }
-
-  .pricing-recommendation span {
-    font-size: 0.72rem;
-  }
-
-  .worker-policy-title h3 {
-    font-size: 0.85rem;
-  }
-
-  .register-button {
-    padding: 14px 16px;
-    font-size: 0.9rem;
-    border-radius: 12px;
-  }
-
-  .register-error,
-  .register-success {
-    font-size: 0.8rem;
-    padding: 12px 13px;
-  }
-
-  .register-login {
-    margin-top: 20px;
-    padding-top: 18px;
-  }
-
-  .register-login p {
-    font-size: 0.82rem;
-  }
-
-  .register-login a {
-    font-size: 0.86rem;
-  }
-}
-
-/* =========================================================
-   17. RESPONSIVE — VERY SMALL PHONES
-   ========================================================= */
-
-@media (max-width: 360px) {
-  .register-container {
-    padding: 18px 12px 22px;
-  }
-
-  .register-message h1 {
-    font-size: 1.24rem;
-  }
-
-  .register-input-box {
-    padding: 0 10px;
-    gap: 8px;
-  }
-
-  .register-button {
-    font-size: 0.86rem;
-    gap: 8px;
-  }
-
-  .register-button svg {
-    width: 17px;
-    height: 17px;
-  }
-}
-
-/* =========================================================
-   18. LANDSCAPE PHONES
-   ========================================================= */
-
-@media (max-height: 520px) and (orientation: landscape) {
-  .register-content {
-    padding: 24px 20px 28px;
-  }
-
-  .register-features,
-  .register-side-note {
-    display: none;
-  }
-
-  .register-message h1 {
-    font-size: 1.4rem;
-  }
-}
-
-/* =========================================================
-   19. LARGE TEXT / ACCESSIBILITY
-   ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
   .register-page *,
   .register-page *::before,
   .register-page *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+    transition: none !important;
+    animation: none !important;
   }
 }
 
-.register-page a:focus-visible,
-.register-page button:focus-visible,
-.register-page input:focus-visible,
-.register-page select:focus-visible,
-.register-page textarea:focus-visible {
-  outline: 2px solid var(--ws-primary-light);
-  outline-offset: 2px;
+/* =========================================================
+   LARGE LAPTOP
+   ========================================================= */
+
+@media (max-width: 1250px) {
+  .register-layout {
+    grid-template-columns: minmax(350px, 0.72fr) minmax(540px, 1.28fr);
+  }
+
+  .register-content-inner {
+    padding: 48px 38px;
+  }
+
+  .register-form-side {
+    padding: 38px 30px;
+  }
+
+  .register-container {
+    padding: 36px 36px;
+  }
+
+  .register-message h1 {
+    font-size: clamp(2.15rem, 4vw, 3.2rem);
+  }
 }
 
 /* =========================================================
-   20. DARK MODE (optional, respects system preference)
+   TABLET / SMALL LAPTOP
    ========================================================= */
 
-@media (prefers-color-scheme: dark) {
-  /* Intentionally left opt-in — remove this block if you
-     do not want dark mode support. */
+@media (max-width: 1024px) {
+  .register-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .register-content {
+    min-height: auto;
+  }
+
+  .register-content-inner {
+    width: min(760px, 100%);
+    padding: 46px 34px;
+  }
+
+  .register-message h1 {
+    max-width: 700px;
+    font-size: clamp(2.25rem, 6vw, 3.5rem);
+  }
+
+  .register-message p {
+    max-width: 680px;
+  }
+
+  .register-features {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .register-side-note {
+    margin-top: 20px;
+  }
+
+  .register-form-side {
+    padding: 34px 24px 48px;
+  }
+
+  .register-container {
+    width: min(760px, 100%);
+    padding: 38px 42px;
+  }
+}
+
+/* =========================================================
+   TABLET PORTRAIT
+   ========================================================= */
+
+@media (max-width: 700px) {
+  .register-content-inner {
+    padding: 36px 22px;
+  }
+
+  .register-brand {
+    margin-bottom: 28px;
+  }
+
+  .register-brand-icon {
+    width: 46px;
+    height: 46px;
+    flex-basis: 46px;
+    border-radius: 14px;
+  }
+
+  .register-message h1 {
+    font-size: clamp(2rem, 9vw, 2.8rem);
+  }
+
+  .register-message p {
+    margin-top: 15px;
+    font-size: 0.9rem;
+  }
+
+  .register-features {
+    grid-template-columns: 1fr;
+    margin-top: 27px;
+  }
+
+  .register-feature {
+    padding: 12px;
+  }
+
+  .register-form-side {
+    padding: 20px 14px 36px;
+  }
+
+  .register-container {
+    padding: 30px 22px;
+    border-radius: 20px;
+  }
+
+  .register-header {
+    margin-bottom: 26px;
+  }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+  .register-content-inner {
+    padding: 30px 17px 34px;
+  }
+
+  .register-content {
+    min-height: auto;
+  }
+
+  .register-brand {
+    gap: 11px;
+    margin-bottom: 24px;
+  }
+
+  .register-brand-icon {
+    width: 43px;
+    height: 43px;
+    flex-basis: 43px;
+  }
+
+  .register-brand h2 {
+    font-size: 1.25rem;
+  }
+
+  .register-brand p {
+    font-size: 0.72rem;
+  }
+
+  .register-badge {
+    margin-bottom: 15px;
+    padding: 7px 10px;
+    font-size: 0.72rem;
+  }
+
+  .register-message h1 {
+    font-size: 2rem;
+    line-height: 1.08;
+  }
+
+  .register-message p {
+    font-size: 0.83rem;
+    line-height: 1.6;
+  }
+
+  .register-features {
+    gap: 8px;
+    margin-top: 23px;
+  }
+
+  .register-feature {
+    grid-template-columns: 39px 1fr;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .feature-icon {
+    width: 39px;
+    height: 39px;
+    border-radius: 10px;
+  }
+
+  .register-feature h3 {
+    font-size: 0.82rem;
+  }
+
+  .register-feature p {
+    font-size: 0.71rem;
+  }
+
+  .register-side-note {
+    margin-top: 18px;
+    font-size: 0.7rem;
+  }
+
+  .register-form-side {
+    padding: 12px 9px 28px;
+  }
+
+  .register-container {
+    padding: 26px 16px;
+    border-radius: 18px;
+    box-shadow: 0 9px 28px rgba(15, 23, 42, 0.07);
+  }
+
+  .register-icon {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 12px;
+    border-radius: 15px;
+  }
+
+  .register-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .register-header p {
+    font-size: 0.78rem;
+  }
+
+  .register-form-group {
+    margin-bottom: 16px;
+  }
+
+  .register-form-group > label {
+    margin-bottom: 7px;
+    font-size: 0.79rem;
+  }
+
+  .register-input-box {
+    min-height: 49px;
+  }
+
+  .register-input-box input,
+  .register-input-box select {
+    height: 48px;
+    padding-left: 10px;
+    padding-right: 11px;
+    font-size: 0.85rem;
+  }
+
+  .register-input-box > svg {
+    width: 17px;
+    height: 17px;
+    margin-left: 13px;
+  }
+
+  .register-password-button {
+    width: 44px;
+    height: 48px;
+    flex-basis: 44px;
+  }
+
+  .register-input-box textarea {
+    min-height: 105px;
+    font-size: 0.85rem;
+  }
+
+  .register-form-group small {
+    font-size: 0.68rem;
+  }
+
+  .pricing-recommendation {
+    gap: 9px;
+    padding: 10px;
+  }
+
+  .pricing-recommendation strong {
+    font-size: 0.75rem;
+  }
+
+  .pricing-recommendation span {
+    font-size: 0.66rem;
+  }
+
+  .register-location-button {
+    min-height: 47px;
+    font-size: 0.78rem;
+  }
+
+  .register-location-detected {
+    padding: 11px;
+  }
+
+  .worker-policy {
+    margin: 23px 0 19px;
+    padding: 14px;
+  }
+
+  .worker-policy-title h3 {
+    font-size: 0.79rem;
+  }
+
+  .worker-policy p {
+    font-size: 0.69rem;
+  }
+
+  .register-terms {
+    grid-template-columns: 18px 1fr;
+    gap: 8px;
+    font-size: 0.69rem;
+  }
+
+  .registration-safety {
+    font-size: 0.66rem;
+  }
+
+  .register-button {
+    min-height: 51px;
+    margin-top: 17px;
+    font-size: 0.83rem;
+  }
+
+  .register-login {
+    margin-top: 21px;
+    padding-top: 18px;
+  }
+
+  .register-login p {
+    font-size: 0.69rem;
+  }
+
+  .register-login a {
+    font-size: 0.76rem;
+  }
+}
+
+/* =========================================================
+   VERY SMALL PHONES
+   ========================================================= */
+
+@media (max-width: 360px) {
+  .register-content-inner {
+    padding-left: 13px;
+    padding-right: 13px;
+  }
+
+  .register-form-side {
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+
+  .register-container {
+    padding-left: 13px;
+    padding-right: 13px;
+  }
+
+  .register-message h1 {
+    font-size: 1.8rem;
+  }
+
+  .register-feature {
+    grid-template-columns: 35px 1fr;
+  }
+
+  .feature-icon {
+    width: 35px;
+    height: 35px;
+  }
+}
+
+/* =========================================================
+   LANDSCAPE PHONES
+   ========================================================= */
+
+@media (max-height: 600px) and (orientation: landscape) {
+  .register-content-inner {
+    padding-top: 25px;
+    padding-bottom: 25px;
+  }
+
+  .register-features {
+    margin-top: 20px;
+  }
+
+  .register-feature:nth-child(n + 3) {
+    display: none;
+  }
+
+  .register-form-side {
+    padding-top: 20px;
+  }
 }
