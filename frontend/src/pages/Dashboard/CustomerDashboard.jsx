@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Fragment } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   MapPin,
@@ -68,22 +68,15 @@ const workerMapIcon = L.divIcon({
   popupAnchor: [0, -39],
 });
 
-
 // =====================================================
 // MAP AUTO FIT
 // =====================================================
 
-function CustomerMapController({
-  customerPosition,
-  workers,
-}) {
+function CustomerMapController({ customerPosition, workers }) {
   const map = useMap();
 
   useEffect(() => {
-    if (
-      !customerPosition ||
-      customerPosition.length !== 2
-    ) {
+    if (!customerPosition || customerPosition.length !== 2) {
       return;
     }
 
@@ -93,9 +86,7 @@ function CustomerMapController({
         Number.isFinite(Number(worker.longitude))
     );
 
-    const bounds = L.latLngBounds([
-      customerPosition,
-    ]);
+    const bounds = L.latLngBounds([customerPosition]);
 
     validWorkers.forEach((worker) => {
       bounds.extend([
@@ -116,24 +107,15 @@ function CustomerMapController({
   return null;
 }
 
-
 // =====================================================
 // HAVERSINE DISTANCE
 // =====================================================
 
-const calculateDistanceKm = (
-  lat1,
-  lon1,
-  lat2,
-  lon2
-) => {
+const calculateDistanceKm = (lat1, lon1, lat2, lon2) => {
   const R = 6371;
 
-  const dLat =
-    ((lat2 - lat1) * Math.PI) / 180;
-
-  const dLon =
-    ((lon2 - lon1) * Math.PI) / 180;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
 
   const a =
     Math.sin(dLat / 2) ** 2 +
@@ -141,16 +123,10 @@ const calculateDistanceKm = (
       Math.cos((lat2 * Math.PI) / 180) *
       Math.sin(dLon / 2) ** 2;
 
-  const c =
-    2 *
-    Math.atan2(
-      Math.sqrt(a),
-      Math.sqrt(1 - a)
-    );
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
   return R * c;
 };
-
 
 // =====================================================
 // FORMAT MAP DISTANCE
@@ -174,23 +150,13 @@ const formatMapDistance = (distanceKm) => {
   return `${distance.toFixed(2)} km`;
 };
 
-
 // =====================================================
 // CUSTOMER + WORKER MAP
 // =====================================================
 
-function CustomerWorkerMap({
-  location,
-  workers,
-  selectedCategory,
-})  {
-  const customerLatitude = Number(
-    location?.latitude
-  );
-
-  const customerLongitude = Number(
-    location?.longitude
-  );
+function CustomerWorkerMap({ location, workers, selectedCategory }) {
+  const customerLatitude = Number(location?.latitude);
+  const customerLongitude = Number(location?.longitude);
 
   const hasCustomerLocation =
     Number.isFinite(customerLatitude) &&
@@ -208,104 +174,76 @@ function CustomerWorkerMap({
         <div className="customer-worker-map-empty">
           <MapPin size={30} />
 
-          <h3>
-            Select your service location
-          </h3>
+          <h3>Select your service location</h3>
 
           <p>
-            Your location will appear on the map
-            after you select your service location.
+            Your location will appear on the map after you select your
+            service location.
           </p>
         </div>
       </section>
     );
   }
 
-  const customerPosition = [
-    customerLatitude,
-    customerLongitude,
-  ];
+  const customerPosition = [customerLatitude, customerLongitude];
 
   return (
     <section className="customer-worker-map-section">
-
       {/* HEADER */}
 
       <div className="customer-worker-map-header">
-
         <div>
           <span className="customer-worker-map-badge">
             <Navigation size={14} />
             Live Service Map
           </span>
 
-          <h2>
-            Workers Near You
-          </h2>
+          <h2>Workers Near You</h2>
 
           <p>
-            View your service location and nearby
-            workers on the map.
+            View your service location and nearby workers on the map.
           </p>
         </div>
 
         <div className="customer-worker-map-count">
-          <strong>
-            {validWorkers.length}
-          </strong>
+          <strong>{validWorkers.length}</strong>
 
           <span>
-            {validWorkers.length === 1
-              ? "Worker"
-              : "Workers"}
+            {validWorkers.length === 1 ? "Worker" : "Workers"}
           </span>
         </div>
-
       </div>
-
 
       {/* MAP */}
 
       <div className="customer-worker-map-container">
-
         <MapContainer
           center={customerPosition}
           zoom={14}
           scrollWheelZoom={true}
           className="customer-worker-leaflet-map"
         >
-
           <TileLayer
-            attribution='&copy; OpenStreetMap contributors'
+            attribution="&copy; OpenStreetMap contributors"
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-
 
           <CustomerMapController
             customerPosition={customerPosition}
             workers={validWorkers}
           />
 
-
           {/* CUSTOMER */}
 
-          <Marker
-            position={customerPosition}
-            icon={customerMapIcon}
-          >
+          <Marker position={customerPosition} icon={customerMapIcon}>
             <Popup>
-
               <div className="customer-map-popup">
-
                 <div className="customer-map-popup-title">
                   <MapPin size={17} />
                   Your Service Location
                 </div>
 
-                <p>
-                  {location.address ||
-                    "Selected service location"}
-                </p>
+                <p>{location.address || "Selected service location"}</p>
 
                 {location.area && (
                   <small>
@@ -319,68 +257,47 @@ function CustomerWorkerMap({
                       .join(", ")}
                   </small>
                 )}
-
               </div>
-
             </Popup>
           </Marker>
-
 
           {/* WORKERS */}
 
           {validWorkers.map((worker, index) => {
+            const workerLatitude = Number(worker.latitude);
+            const workerLongitude = Number(worker.longitude);
 
-            const workerLatitude =
-              Number(worker.latitude);
+            const workerPosition = [workerLatitude, workerLongitude];
 
-            const workerLongitude =
-              Number(worker.longitude);
+            /*
+             * Calculate distance independently on the frontend so the
+             * map always has a distance available.
+             */
 
-            const workerPosition = [
+            const calculatedDistance = calculateDistanceKm(
+              customerLatitude,
+              customerLongitude,
               workerLatitude,
-              workerLongitude,
-            ];
+              workerLongitude
+            );
 
             /*
-             * Calculate distance independently on
-             * the frontend so the map always has
-             * a distance available.
+             * Prefer backend distance when available because that is
+             * the distance used by your worker search.
              */
 
-            const calculatedDistance =
-              calculateDistanceKm(
-                customerLatitude,
-                customerLongitude,
-                workerLatitude,
-                workerLongitude
-              );
-
-            /*
-             * Prefer backend distance when
-             * available because that is the
-             * distance used by your worker search.
-             */
-
-            const distanceKm =
-              Number.isFinite(
-                Number(worker.distanceKm)
-              )
-                ? Number(worker.distanceKm)
-                : calculatedDistance;
+            const distanceKm = Number.isFinite(Number(worker.distanceKm))
+              ? Number(worker.distanceKm)
+              : calculatedDistance;
 
             return (
-              <div key={
-                worker.workerId ??
-                `worker-map-${index}`
-              }>
-
+              <Fragment
+                key={worker.workerId ?? `worker-map-${index}`}
+              >
                 {/* LINE BETWEEN CUSTOMER AND WORKER */}
 
                 <Polyline
-                  positions={[
-                    customerPosition,
-                    workerPosition,
-                  ]}
+                  positions={[customerPosition, workerPosition]}
                   pathOptions={{
                     color: "#ff7a00",
                     weight: 3,
@@ -389,163 +306,97 @@ function CustomerWorkerMap({
                   }}
                 />
 
-
                 {/* WORKER MARKER */}
 
-                <Marker
-                  position={workerPosition}
-                  icon={workerMapIcon}
-                >
-
+                <Marker position={workerPosition} icon={workerMapIcon}>
                   <Popup>
-
                     <div className="worker-map-popup">
-
                       <div className="worker-map-popup-header">
-
                         <div className="worker-map-popup-avatar">
                           <UserRound size={19} />
                         </div>
 
                         <div>
                           <strong>
-                            {worker.fullName ||
-                              "Worker"}
+                            {worker.fullName || "Worker"}
                           </strong>
 
                           <span>
-                            {worker.category ||
-                              selectedCategory}
+                            {worker.category || selectedCategory}
                           </span>
                         </div>
-
                       </div>
-
 
                       <div className="worker-map-popup-distance">
-
                         <Navigation size={16} />
 
-                        <strong>
-                          {formatMapDistance(
-                            distanceKm
-                          )}
-                        </strong>
+                        <strong>{formatMapDistance(distanceKm)}</strong>
 
-                        <span>
-                          from you
-                        </span>
-
+                        <span>from you</span>
                       </div>
-
 
                       <div className="worker-map-popup-details">
-
                         <div>
-                          <BriefcaseBusiness
-                            size={14}
-                          />
+                          <BriefcaseBusiness size={14} />
 
                           <span>
-                            {worker.experienceYears ??
-                              0}{" "}
-                            years experience
+                            {worker.experienceYears ?? 0} years experience
                           </span>
                         </div>
 
                         <div>
-                          <IndianRupee
-                            size={14}
-                          />
+                          <IndianRupee size={14} />
 
                           <span>
-                            ₹
-                            {Number(
-                              worker.charges ?? 0
-                            ).toFixed(0)}
-                            /hour
+                            ₹{Number(worker.charges ?? 0).toFixed(0)}/hour
                           </span>
                         </div>
 
                         <div>
-                          <MapPin
-                            size={14}
-                          />
+                          <MapPin size={14} />
 
                           <span>
-                            {[
-                              worker.area,
-                              worker.city,
-                            ]
+                            {[worker.area, worker.city]
                               .filter(Boolean)
-                              .join(", ") ||
-                              "Location unavailable"}
+                              .join(", ") || "Location unavailable"}
                           </span>
                         </div>
-
                       </div>
-
                     </div>
-
                   </Popup>
-
                 </Marker>
-
-              </div>
+              </Fragment>
             );
           })}
-
         </MapContainer>
-
 
         {/* MAP LEGEND */}
 
         <div className="customer-worker-map-legend">
-
           <div className="customer-map-legend-item">
-
-            <span className="customer-map-legend-customer">
-              📍
-            </span>
-
-            <span>
-              Your location
-            </span>
-
+            <span className="customer-map-legend-customer">📍</span>
+            <span>Your location</span>
           </div>
 
-
           <div className="customer-map-legend-item">
-
-            <span className="customer-map-legend-worker">
-              👷
-            </span>
-
-            <span>
-              Worker
-            </span>
-
+            <span className="customer-map-legend-worker">👷</span>
+            <span>Worker</span>
           </div>
-
 
           <div className="customer-map-legend-line"></div>
 
-          <span>
-            Distance
-          </span>
-
+          <span>Distance</span>
         </div>
-
       </div>
-
     </section>
   );
 }
 
 function CustomerDashboard() {
-  
   const navigate = useNavigate();
+
   const LOCATION_STORAGE_KEY = "workerSpot_customer_location";
+
   // =====================================================
   // REF FOR SCROLLING TO BOOKINGS
   // =====================================================
@@ -570,81 +421,63 @@ function CustomerDashboard() {
   const [locationStatus, setLocationStatus] = useState("");
   const [gettingLocation, setGettingLocation] = useState(false);
   const [manualLocation, setManualLocation] = useState("");
-  
+
   // =====================================================
-// RESTORE SAVED LOCATION
-// =====================================================
-
-useEffect(() => {
-  try {
-    const savedLocation =
-      localStorage.getItem(LOCATION_STORAGE_KEY);
-
-    if (!savedLocation) {
-      return;
-    }
-
-    const parsedLocation = JSON.parse(savedLocation);
-
-    if (
-      parsedLocation &&
-      parsedLocation.latitude !== null &&
-      parsedLocation.longitude !== null
-    ) {
-      setLocation(parsedLocation);
-
-      setLocationMode(
-        parsedLocation.locationMode || "current"
-      );
-
-      setLocationStatus(
-        "Saved service location restored."
-      );
-
-      console.log(
-        "Saved location restored:",
-        parsedLocation
-      );
-    }
-  } catch (error) {
-    console.error(
-      "Unable to restore saved location:",
-      error
-    );
-
-    localStorage.removeItem(
-      LOCATION_STORAGE_KEY
-    );
-  }
-}, []);
- 
+  // RESTORE SAVED LOCATION
   // =====================================================
-// SAVE LOCATION
-// =====================================================
 
-const saveLocation = (locationData, mode) => {
-  try {
-    const locationToSave = {
-      ...locationData,
-      locationMode: mode,
-    };
+  useEffect(() => {
+    try {
+      const savedLocation = localStorage.getItem(LOCATION_STORAGE_KEY);
 
-    localStorage.setItem(
-      LOCATION_STORAGE_KEY,
-      JSON.stringify(locationToSave)
-    );
+      if (!savedLocation) {
+        return;
+      }
 
-    console.log(
-      "Location saved:",
-      locationToSave
-    );
-  } catch (error) {
-    console.error(
-      "Unable to save location:",
-      error
-    );
-  }
-};
+      const parsedLocation = JSON.parse(savedLocation);
+
+      if (
+        parsedLocation &&
+        parsedLocation.latitude !== null &&
+        parsedLocation.longitude !== null
+      ) {
+        setLocation(parsedLocation);
+
+        setLocationMode(parsedLocation.locationMode || "current");
+
+        setLocationStatus("Saved service location restored.");
+
+        console.log("Saved location restored:", parsedLocation);
+      }
+    } catch (error) {
+      console.error("Unable to restore saved location:", error);
+
+      localStorage.removeItem(LOCATION_STORAGE_KEY);
+    }
+  }, []);
+
+  // =====================================================
+  // SAVE LOCATION
+  // =====================================================
+
+  const saveLocation = (locationData, mode) => {
+    try {
+      const locationToSave = {
+        ...locationData,
+        locationMode: mode,
+      };
+
+      localStorage.setItem(
+        LOCATION_STORAGE_KEY,
+        JSON.stringify(locationToSave)
+      );
+
+      console.log("Location saved:", locationToSave);
+    } catch (error) {
+      console.error("Unable to save location:", error);
+    }
+  };
+
   // =====================================================
   // WORKERS
   // =====================================================
@@ -683,7 +516,8 @@ const saveLocation = (locationData, mode) => {
   const [freeBookingsRemaining, setFreeBookingsRemaining] =
     useState(FREE_BOOKING_LIMIT);
 
-  const [freeBookingsCompleted, setFreeBookingsCompleted] = useState(false);
+  const [freeBookingsCompleted, setFreeBookingsCompleted] =
+    useState(false);
 
   const [bookingCredits, setBookingCredits] = useState(0);
 
@@ -699,8 +533,8 @@ const saveLocation = (locationData, mode) => {
     const loadBookingAccess = async () => {
       try {
         const token =
-  localStorage.getItem("token") ||
-  sessionStorage.getItem("token");
+          localStorage.getItem("token") ||
+          sessionStorage.getItem("token");
 
         if (!token) {
           setLoadingBookingAccess(false);
@@ -730,9 +564,7 @@ const saveLocation = (locationData, mode) => {
 
         setFreeBookingsUsed(Number(data.freeBookingsUsed ?? 0));
 
-        setFreeBookingsRemaining(
-          Number(data.freeBookingsRemaining ?? 0)
-        );
+        setFreeBookingsRemaining(Number(data.freeBookingsRemaining ?? 0));
 
         setFreeBookingsCompleted(Boolean(data.freeBookingsCompleted));
 
@@ -769,42 +601,42 @@ const saveLocation = (locationData, mode) => {
   // =====================================================
 
   const categories = [
-  {
-    name: "Mechanic",
-    icon: CarFront,
-    image: "/categories/mechanic.jpg",
-  },
-  {
-    name: "Plumber",
-    icon: Droplets,
-    image: "/categories/plumber.jpg",
-  },
-  {
-    name: "Electrician",
-    icon: Zap,
-    image: "/categories/electrician.jpg",
-  },
-  {
-    name: "Carpenter",
-    icon: Hammer,
-    image: "/categories/carpenter.jpg",
-  },
-  {
-    name: "Painter",
-    icon: Paintbrush,
-    image: "/categories/painter.jpg",
-  },
-  {
-    name: "AC Technician",
-    icon: Snowflake,
-    image: "/categories/ac-technician.jpg",
-  },
-  {
-    name: "Welder",
-    icon: Wrench,
-    image: "/categories/welder.jpg",
-  },
-];
+    {
+      name: "Mechanic",
+      icon: CarFront,
+      image: "/categories/mechanic.jpg",
+    },
+    {
+      name: "Plumber",
+      icon: Droplets,
+      image: "/categories/plumber.jpg",
+    },
+    {
+      name: "Electrician",
+      icon: Zap,
+      image: "/categories/electrician.jpg",
+    },
+    {
+      name: "Carpenter",
+      icon: Hammer,
+      image: "/categories/carpenter.jpg",
+    },
+    {
+      name: "Painter",
+      icon: Paintbrush,
+      image: "/categories/painter.jpg",
+    },
+    {
+      name: "AC Technician",
+      icon: Snowflake,
+      image: "/categories/ac-technician.jpg",
+    },
+    {
+      name: "Welder",
+      icon: Wrench,
+      image: "/categories/welder.jpg",
+    },
+  ];
 
   // =====================================================
   // REVERSE GEOCODING
@@ -907,8 +739,8 @@ const saveLocation = (locationData, mode) => {
       setWorkerError("");
 
       const token =
-  localStorage.getItem("token") ||
-  sessionStorage.getItem("token");
+        localStorage.getItem("token") ||
+        sessionStorage.getItem("token");
 
       if (!token) {
         throw new Error("Your session has expired. Please login again.");
@@ -979,185 +811,153 @@ const saveLocation = (locationData, mode) => {
 
       setWorkers([]);
 
-      setWorkerError(
-        error.message || "Unable to load nearby workers."
-      );
+      setWorkerError(error.message || "Unable to load nearby workers.");
     } finally {
       setLoadingWorkers(false);
     }
   };
 
- // =====================================================
-// CURRENT LOCATION
-// =====================================================
+  // =====================================================
+  // CURRENT LOCATION
+  // =====================================================
 
-const getPosition = (options) => {
-  return new Promise((resolve, reject) => {
-    navigator.geolocation.getCurrentPosition(
-      resolve,
-      reject,
-      options
-    );
-  });
-};
+  const getPosition = (options) => {
+    return new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject, options);
+    });
+  };
 
-const handleCurrentLocation = async () => {
-  if (!navigator.geolocation) {
-    setLocationStatus(
-      "Location services are not supported by this browser."
-    );
-    return;
-  }
+  const handleCurrentLocation = async () => {
+    if (!navigator.geolocation) {
+      setLocationStatus(
+        "Location services are not supported by this browser."
+      );
+      return;
+    }
 
-  setGettingLocation(true);
-  setLocationStatus("Getting your location...");
-  setWorkerError("");
-  setWorkers([]);
-
-  try {
-    let position;
+    setGettingLocation(true);
+    setLocationStatus("Getting your location...");
+    setWorkerError("");
+    setWorkers([]);
 
     try {
-      // -------------------------------------------------
-      // STEP 1: TRY FAST CACHED / NETWORK LOCATION
-      // -------------------------------------------------
+      let position;
 
-      position = await getPosition({
-        enableHighAccuracy: false,
-        timeout: 8000,
-        maximumAge: 600000,
+      try {
+        // -------------------------------------------------
+        // STEP 1: TRY FAST CACHED / NETWORK LOCATION
+        // -------------------------------------------------
+
+        position = await getPosition({
+          enableHighAccuracy: false,
+          timeout: 8000,
+          maximumAge: 600000,
+        });
+      } catch (fastError) {
+        console.log(
+          "Fast location failed. Trying fresh location...",
+          fastError
+        );
+
+        setLocationStatus("Getting fresh location...");
+
+        // -------------------------------------------------
+        // STEP 2: FALLBACK TO FRESH LOCATION
+        // -------------------------------------------------
+
+        position = await getPosition({
+          enableHighAccuracy: false,
+          timeout: 30000,
+          maximumAge: 0,
+        });
+      }
+
+      const { latitude, longitude, accuracy } = position.coords;
+
+      console.log("Location detected:", {
+        latitude,
+        longitude,
+        accuracy,
       });
 
-    } catch (fastError) {
-      console.log(
-        "Fast location failed. Trying fresh location...",
-        fastError
-      );
+      // -------------------------------------------------
+      // SAVE COORDINATES IMMEDIATELY
+      // -------------------------------------------------
+
+      const coordinatesLocation = {
+        ...location,
+        latitude,
+        longitude,
+      };
+
+      setLocation(coordinatesLocation);
+      setLocationMode("current");
+
+      saveLocation(coordinatesLocation, "current");
 
       setLocationStatus(
-        "Getting fresh location..."
+        "Location detected. Finding your address..."
       );
 
       // -------------------------------------------------
-      // STEP 2: FALLBACK TO FRESH LOCATION
+      // SEARCH WORKERS IMMEDIATELY
+      // DON'T WAIT FOR NOMINATIM
       // -------------------------------------------------
 
-      position = await getPosition({
-        enableHighAccuracy: false,
-        timeout: 30000,
-        maximumAge: 0,
-      });
-    }
+      if (selectedCategory) {
+        findNearbyWorkers(selectedCategory, latitude, longitude);
+      }
 
-    const {
-      latitude,
-      longitude,
-      accuracy,
-    } = position.coords;
+      // -------------------------------------------------
+      // GET ADDRESS AFTER LOCATION IS ALREADY AVAILABLE
+      // -------------------------------------------------
 
-    console.log("Location detected:", {
-      latitude,
-      longitude,
-      accuracy,
-    });
-
-    // -------------------------------------------------
-    // SAVE COORDINATES IMMEDIATELY
-    // -------------------------------------------------
-
-    const coordinatesLocation = {
-  ...location,
-  latitude,
-  longitude,
-};
-
-setLocation(coordinatesLocation);
-setLocationMode("current");
-
-saveLocation(
-  coordinatesLocation,
-  "current"
-);
-
-    setLocationStatus(
-      "Location detected. Finding your address..."
-    );
-
-    // -------------------------------------------------
-    // SEARCH WORKERS IMMEDIATELY
-    // DON'T WAIT FOR NOMINATIM
-    // -------------------------------------------------
-
-    if (selectedCategory) {
-      findNearbyWorkers(
-        selectedCategory,
-        latitude,
-        longitude
-      );
-    }
-
-    // -------------------------------------------------
-    // GET ADDRESS AFTER LOCATION IS ALREADY AVAILABLE
-    // -------------------------------------------------
-
-    const addressData =
-      await getAddressFromCoordinates(
+      const addressData = await getAddressFromCoordinates(
         latitude,
         longitude
       );
 
       const finalLocation = {
-  ...addressData,
-  latitude,
-  longitude,
-};
+        ...addressData,
+        latitude,
+        longitude,
+      };
 
-setLocation(finalLocation);
+      setLocation(finalLocation);
 
-setLocationMode("current");
+      setLocationMode("current");
 
-saveLocation(
-  finalLocation,
-  "current"
-);
+      saveLocation(finalLocation, "current");
 
-setLocationStatus(
-  "Current location detected successfully."
-);
+      setLocationStatus("Current location detected successfully.");
+    } catch (error) {
+      console.error("Geolocation error:", error.code, error.message);
 
-  } catch (error) {
-    console.error(
-      "Geolocation error:",
-      error.code,
-      error.message
-    );
+      let message = "Unable to detect your current location.";
 
-    let message =
-      "Unable to detect your current location.";
+      switch (error.code) {
+        case 1:
+          message =
+            "Location permission denied. Please allow location access.";
+          break;
 
-    switch (error.code) {
-      case 1:
-        message =
-          "Location permission denied. Please allow location access.";
-        break;
+        case 2:
+          message =
+            "Location unavailable. Please turn on Location and try again.";
+          break;
 
-      case 2:
-        message =
-          "Location unavailable. Please turn on Location and try again.";
-        break;
+        case 3:
+          message =
+            "Location is taking too long. Please check GPS and internet, then try again.";
+          break;
+      }
 
-      case 3:
-        message =
-          "Location is taking too long. Please check GPS and internet, then try again.";
-        break;
+      setLocationStatus(message);
+    } finally {
+      setGettingLocation(false);
     }
+  };
 
-    setLocationStatus(message);
-
-  } finally {
-    setGettingLocation(false);
-  }
-};
   // =====================================================
   // MANUAL LOCATION INPUT
   // =====================================================
@@ -1242,32 +1042,26 @@ setLocationStatus(
         "";
 
       const displayAddress = data.display_name || value;
+
       const newLocation = {
-  address: displayAddress,
-  state,
-  district,
-  city,
-  area,
-  latitude,
-  longitude,
-};
+        address: displayAddress,
+        state,
+        district,
+        city,
+        area,
+        latitude,
+        longitude,
+      };
 
-setLocation(newLocation);
+      setLocation(newLocation);
 
-setLocationMode("manual");
+      setLocationMode("manual");
 
-saveLocation(
-  newLocation,
-  "manual"
-);
+      saveLocation(newLocation, "manual");
 
       setLocationStatus("Location selected successfully.");
 
-      console.log(
-        "Manual location coordinates:",
-        latitude,
-        longitude
-      );
+      console.log("Manual location coordinates:", latitude, longitude);
 
       if (selectedCategory) {
         await findNearbyWorkers(
@@ -1304,9 +1098,7 @@ saveLocation(
       location.latitude === null ||
       location.longitude === null
     ) {
-      setWorkerError(
-        "Please select your service location first."
-      );
+      setWorkerError("Please select your service location first.");
 
       return;
     }
@@ -1406,9 +1198,7 @@ saveLocation(
       }
 
       if (status === "ACCEPTED") {
-        alert(
-          "This worker is currently working on your booking."
-        );
+        alert("This worker is currently working on your booking.");
 
         return;
       }
@@ -1449,13 +1239,11 @@ saveLocation(
 
   const handleSendBooking = async (description) => {
     const token =
-  localStorage.getItem("token") ||
-  sessionStorage.getItem("token");
+      localStorage.getItem("token") ||
+      sessionStorage.getItem("token");
 
     if (!token) {
-      alert(
-        "Your session has expired. Please login again."
-      );
+      alert("Your session has expired. Please login again.");
 
       return;
     }
@@ -1480,8 +1268,7 @@ saveLocation(
     const payload = {
       workerId: selectedWorker.workerId,
 
-      category:
-        selectedWorker.category || selectedCategory,
+      category: selectedWorker.category || selectedCategory,
 
       serviceLocation: location.address,
 
@@ -1521,9 +1308,7 @@ saveLocation(
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          data?.message || "Failed to create booking."
-        );
+        throw new Error(data?.message || "Failed to create booking.");
       }
 
       console.log("Booking created:", data);
@@ -1535,8 +1320,7 @@ saveLocation(
       setCustomerBookings((prev) => [
         data,
         ...prev.filter(
-          (booking) =>
-            booking.bookingId !== data.bookingId
+          (booking) => booking.bookingId !== data.bookingId
         ),
       ]);
 
@@ -1573,9 +1357,7 @@ saveLocation(
             Boolean(accessData.freeBookingsCompleted)
           );
 
-          setBookingCredits(
-            Number(accessData.bookingCredits ?? 0)
-          );
+          setBookingCredits(Number(accessData.bookingCredits ?? 0));
 
           setCanBook(Boolean(accessData.canBook));
         }
@@ -1628,15 +1410,12 @@ saveLocation(
 
   return (
     <div className="customer-dashboard">
-
       {/* =================================================
           TOPBAR
       ================================================= */}
 
       <header className="customer-dashboard-topbar">
-
         <div className="customer-dashboard-brand">
-
           <div className="customer-dashboard-brand-icon">
             <Wrench size={23} />
           </div>
@@ -1646,11 +1425,8 @@ saveLocation(
               Worker<span> Spot</span>
             </h2>
 
-            <p>
-              Find skilled workers near you
-            </p>
+            <p>Find skilled workers near you</p>
           </div>
-
         </div>
 
         {/* =================================================
@@ -1658,23 +1434,18 @@ saveLocation(
         ================================================= */}
 
         <div className="customer-dashboard-topbar-actions">
-
           {/* Booking Credits */}
 
           <button
-  type="button"
-  className="customer-dashboard-credit-button"
-  onClick={() =>
-    navigate("/customer/booking-credits")
-  }
->
-  <IndianRupee size={18} />
+            type="button"
+            className="customer-dashboard-credit-button"
+            onClick={() => navigate("/customer/booking-credits")}
+          >
+            <IndianRupee size={18} />
 
-  <span>
-    Booking Credits
-  </span>
-</button>
-          
+            <span>Booking Credits</span>
+          </button>
+
           {/* My Bookings */}
 
           <button
@@ -1684,9 +1455,7 @@ saveLocation(
           >
             <Calendar size={18} />
 
-            <span>
-              My Bookings
-            </span>
+            <span>My Bookings</span>
           </button>
 
           {/* Payment History */}
@@ -1694,15 +1463,11 @@ saveLocation(
           <button
             type="button"
             className="customer-dashboard-payment-history"
-            onClick={() =>
-              navigate("/payment-history")
-            }
+            onClick={() => navigate("/payment-history")}
           >
             <History size={18} />
 
-            <span>
-              Payment History
-            </span>
+            <span>Payment History</span>
           </button>
 
           {/* Profile */}
@@ -1710,19 +1475,13 @@ saveLocation(
           <button
             type="button"
             className="customer-dashboard-profile"
-            onClick={() =>
-              navigate("/customer-profile")
-            }
+            onClick={() => navigate("/customer-profile")}
           >
             <UserRound size={19} />
 
-            <span>
-              Profile
-            </span>
+            <span>Profile</span>
           </button>
-
         </div>
-
       </header>
 
       {/* =================================================
@@ -1730,33 +1489,23 @@ saveLocation(
       ================================================= */}
 
       <main className="customer-dashboard-content">
-
         {/* =================================================
             WELCOME
         ================================================= */}
 
         <section className="customer-dashboard-welcome">
-
           <div>
-
             <span className="customer-dashboard-badge">
-
               <Navigation size={14} />
-
               Service Finder
-
             </span>
 
-            <h1>
-              What service do you need?
-            </h1>
+            <h1>What service do you need?</h1>
 
             <p>
               Find skilled workers near your service location.
             </p>
-
           </div>
-
         </section>
 
         {/* =================================================
@@ -1764,59 +1513,40 @@ saveLocation(
         ================================================= */}
 
         <section className="customer-location-card">
-
           <div className="customer-location-header">
-
             <div className="customer-location-title">
-
               <div className="customer-location-icon">
                 <MapPin size={21} />
               </div>
 
               <div>
+                <h2>Service Location</h2>
 
-                <h2>
-                  Service Location
-                </h2>
-
-                <p>
-                  Where do you need the worker?
-                </p>
-
+                <p>Where do you need the worker?</p>
               </div>
-
             </div>
 
             <ChevronDown size={20} />
-
           </div>
 
           {/* SELECTED LOCATION */}
 
           {location.address && (
-
             <div className="customer-selected-location">
-
               <div className="customer-selected-location-icon">
                 <CheckCircle size={19} />
               </div>
 
               <div className="customer-selected-location-text">
-
                 <strong>
                   {locationMode === "current"
                     ? "Current location"
                     : "Selected location"}
                 </strong>
 
-                <span>
-                  {location.address}
-                </span>
-
+                <span>{location.address}</span>
               </div>
-
             </div>
-
           )}
 
           {/* CURRENT LOCATION */}
@@ -1827,21 +1557,15 @@ saveLocation(
             onClick={handleCurrentLocation}
             disabled={gettingLocation}
           >
-
             <LocateFixed size={19} />
 
             {gettingLocation
               ? "Detecting Location..."
               : "Use Current Location"}
-
           </button>
 
           <div className="customer-location-divider">
-
-            <span>
-              OR
-            </span>
-
+            <span>OR</span>
           </div>
 
           {/* MANUAL LOCATION */}
@@ -1850,9 +1574,7 @@ saveLocation(
             className="customer-manual-location"
             onSubmit={handleManualLocationSubmit}
           >
-
             <div className="customer-search-box">
-
               <Search size={19} />
 
               <input
@@ -1861,7 +1583,6 @@ saveLocation(
                 value={manualLocation}
                 onChange={handleManualLocation}
               />
-
             </div>
 
             <button
@@ -1869,21 +1590,13 @@ saveLocation(
               className="customer-location-search-button"
               disabled={gettingLocation}
             >
-              {gettingLocation
-                ? "Searching..."
-                : "Select"}
+              {gettingLocation ? "Searching..." : "Select"}
             </button>
-
           </form>
 
           {locationStatus && (
-
-            <p className="customer-location-status">
-              {locationStatus}
-            </p>
-
+            <p className="customer-location-status">{locationStatus}</p>
           )}
-
         </section>
 
         {/* =================================================
@@ -1891,77 +1604,56 @@ saveLocation(
         ================================================= */}
 
         <section className="customer-categories-section">
-
           <div className="customer-section-heading">
-
             <div>
+              <h2>Browse Services</h2>
 
-              <h2>
-                Browse Services
-              </h2>
-
-              <p>
-                Choose the type of worker you need.
-              </p>
-
+              <p>Choose the type of worker you need.</p>
             </div>
-
           </div>
 
           <div className="customer-category-grid">
-
             {categories.map((category) => {
-
               const Icon = category.icon;
 
-              const isSelected =
-                selectedCategory === category.name;
+              const isSelected = selectedCategory === category.name;
 
               return (
-
                 <button
                   type="button"
                   key={category.name}
                   className={`customer-category-card ${
                     isSelected ? "selected" : ""
                   }`}
-                  onClick={() =>
-                    handleCategoryClick(category.name)
-                  }
+                  onClick={() => handleCategoryClick(category.name)}
                   disabled={loadingWorkers}
                 >
+                  <div className="customer-category-image-wrapper">
+                    <img
+                      src={category.image}
+                      alt={category.name}
+                      className="customer-category-image"
+                      loading="lazy"
+                    />
 
-                 <div className="customer-category-image-wrapper">
-  <img
-    src={category.image}
-    alt={category.name}
-    className="customer-category-image"
-    loading="lazy"
-  />
+                    <div className="customer-category-image-overlay">
+                      <div className="customer-category-icon">
+                        <Icon size={22} />
+                      </div>
+                    </div>
+                  </div>
 
-  <div className="customer-category-image-overlay">
-    <div className="customer-category-icon">
-      <Icon size={22} />
-    </div>
-  </div>
-</div>
+                  <div className="customer-category-card-content">
+                    <span>{category.name}</span>
 
-<div className="customer-category-card-content">
-  <span>{category.name}</span>
-
-  <small>
-    {isSelected ? "Selected" : "Find nearby"}
-  </small>
-</div>
-
+                    <small>
+                      {isSelected ? "Selected" : "Find nearby"}
+                    </small>
+                  </div>
                 </button>
-
               );
-
             })}
-
           </div>
-
         </section>
 
         {/* =================================================
@@ -1969,445 +1661,296 @@ saveLocation(
         ================================================= */}
 
         <section className="customer-nearby-section">
-
           <div className="customer-section-heading">
-
             <div>
-
-              <h2>
-                Nearby Workers
-              </h2>
+              <h2>Nearby Workers</h2>
 
               <p>
                 {selectedCategory
                   ? `${selectedCategory} workers near your service location.`
                   : "Workers available near your service location."}
               </p>
-
             </div>
 
-            {selectedCategory &&
-              workers.length > 0 && (
-
-                <button
-                  type="button"
-                  className="customer-refresh-workers"
-                  onClick={handleRefreshWorkers}
-                  disabled={loadingWorkers}
-                >
-
-                  <RefreshCw size={17} />
-
-                  Refresh
-
-                </button>
-
-              )}
-
+            {selectedCategory && workers.length > 0 && (
+              <button
+                type="button"
+                className="customer-refresh-workers"
+                onClick={handleRefreshWorkers}
+                disabled={loadingWorkers}
+              >
+                <RefreshCw size={17} />
+                Refresh
+              </button>
+            )}
           </div>
 
           {/* LOADING */}
 
           {loadingWorkers && (
-
             <div className="customer-nearby-empty">
-
               <div className="customer-nearby-empty-icon">
-
                 <RefreshCw
                   size={27}
                   className="customer-loading-icon"
                 />
-
               </div>
 
-              <h3>
-                Finding nearby workers...
-              </h3>
+              <h3>Finding nearby workers...</h3>
 
               <p>
-                Searching for available{" "}
-                {selectedCategory} workers near your location.
+                Searching for available {selectedCategory} workers near
+                your location.
               </p>
-
             </div>
-
           )}
 
           {/* ERROR */}
 
-          {!loadingWorkers &&
-            workerError && (
-
-              <div className="customer-nearby-empty">
-
-                <div className="customer-nearby-empty-icon">
-                  <MapPin size={27} />
-                </div>
-
-                <h3>
-                  {selectedCategory
-                    ? "No workers found"
-                    : "Select a service location"}
-                </h3>
-
-                <p>
-                  {workerError}
-                </p>
-
+          {!loadingWorkers && workerError && (
+            <div className="customer-nearby-empty">
+              <div className="customer-nearby-empty-icon">
+                <MapPin size={27} />
               </div>
 
-            )}
+              <h3>
+                {selectedCategory
+                  ? "No workers found"
+                  : "Select a service location"}
+              </h3>
+
+              <p>{workerError}</p>
+            </div>
+          )}
 
           {/* NO CATEGORY */}
 
-          {!loadingWorkers &&
-            !workerError &&
-            !selectedCategory && (
-
-              <div className="customer-nearby-empty">
-
-                <div className="customer-nearby-empty-icon">
-                  <MapPin size={27} />
-                </div>
-
-                <h3>
-                  Select a service
-                </h3>
-
-                <p>
-                  Select your location and then choose the type
-                  of worker you need.
-                </p>
-
+          {!loadingWorkers && !workerError && !selectedCategory && (
+            <div className="customer-nearby-empty">
+              <div className="customer-nearby-empty-icon">
+                <MapPin size={27} />
               </div>
 
-            )}
+              <h3>Select a service</h3>
+
+              <p>
+                Select your location and then choose the type of worker
+                you need.
+              </p>
+            </div>
+          )}
 
           {/* WORKER LIST */}
 
-          {!loadingWorkers &&
-            workers.length > 0 && (
+          {!loadingWorkers && workers.length > 0 && (
+            <div className="customer-worker-list">
+              {workers.map((worker, index) => (
+                <article
+                  className={`customer-worker-card ${
+                    !canBook ? "free-tier-locked" : ""
+                  }`}
+                  key={worker.workerId ?? `worker-${index}`}
+                  style={{
+                    position: "relative",
+                  }}
+                >
+                  {/* WORKER CARD CONTENT */}
 
-              <div className="customer-worker-list">
-
-                {workers.map((worker, index) => (
-
-                  <article
-                    className={`customer-worker-card ${
-                      !canBook ? "free-tier-locked" : ""
-                    }`}
-                    key={
-                      worker.workerId ??
-                      `worker-${index}`
-                    }
+                  <div
+                    className="customer-worker-card-content"
                     style={{
-                      position: "relative",
+                      filter: !canBook ? "blur(4px)" : "none",
+
+                      pointerEvents: !canBook ? "none" : "auto",
+
+                      transition: "filter 0.3s ease",
                     }}
                   >
+                    {/* HEADER */}
 
-                    {/* WORKER CARD CONTENT */}
-
-                    <div
-                      className="customer-worker-card-content"
-                      style={{
-                        filter: !canBook
-                          ? "blur(4px)"
-                          : "none",
-
-                        pointerEvents: !canBook
-                          ? "none"
-                          : "auto",
-
-                        transition:
-                          "filter 0.3s ease",
-                      }}
-                    >
-
-                      {/* HEADER */}
-
-                      <div className="customer-worker-header">
-
-                        <div className="customer-worker-avatar">
-                          <UserRound size={25} />
-                        </div>
-
-                        <div className="customer-worker-main">
-
-                          <h3>
-                            {worker.fullName ||
-                              "Worker"}
-                          </h3>
-
-                          <span className="customer-worker-category">
-
-                            <Wrench size={14} />
-
-                            {worker.category ||
-                              selectedCategory}
-
-                          </span>
-
-                        </div>
-
-                        <div
-                          className={`customer-worker-availability ${
-                            String(
-                              worker.availability
-                            ).toUpperCase() ===
-                            "AVAILABLE"
-                              ? "available"
-                              : "busy"
-                          }`}
-                        >
-
-                          <span></span>
-
-                          {getAvailabilityText(
-                            worker.availability
-                          )}
-
-                        </div>
-
+                    <div className="customer-worker-header">
+                      <div className="customer-worker-avatar">
+                        <UserRound size={25} />
                       </div>
 
-                      {/* DETAILS */}
+                      <div className="customer-worker-main">
+                        <h3>{worker.fullName || "Worker"}</h3>
 
-                      <div className="customer-worker-details">
+                        <span className="customer-worker-category">
+                          <Wrench size={14} />
 
-                        <div className="customer-worker-detail">
-
-                          <BriefcaseBusiness size={17} />
-
-                          <div>
-
-                            <small>
-                              Experience
-                            </small>
-
-                            <strong>
-                              {worker.experienceYears ??
-                                0}{" "}
-                              years
-                            </strong>
-
-                          </div>
-
-                        </div>
-
-                        <div className="customer-worker-detail">
-
-                          <IndianRupee size={17} />
-
-                          <div>
-
-                            <small>
-                              Charges
-                            </small>
-
-                            <strong>
-                              ₹
-                              {Number(
-                                worker.charges ?? 0
-                              ).toFixed(2)}
-                              /hour
-                            </strong>
-
-                          </div>
-
-                        </div>
-
-                        <div className="customer-worker-detail">
-
-                          <Navigation size={17} />
-
-                          <div>
-
-                            <small>
-                              Distance
-                            </small>
-
-                            <strong>
-                              {formatDistance(
-                                worker.distanceKm
-                              )}
-                            </strong>
-
-                          </div>
-
-                        </div>
-
-                      </div>
-
-                      {/* LOCATION */}
-
-                      <div className="customer-worker-location">
-
-                        <MapPin size={17} />
-
-                        <span>
-                          {[
-                            worker.area,
-                            worker.city,
-                            worker.district,
-                            worker.state,
-                          ]
-                            .filter(Boolean)
-                            .join(", ") ||
-                            "Location unavailable"}
+                          {worker.category || selectedCategory}
                         </span>
-
                       </div>
 
-                      {/* ABOUT */}
+                      <div
+                        className={`customer-worker-availability ${
+                          String(worker.availability).toUpperCase() ===
+                          "AVAILABLE"
+                            ? "available"
+                            : "busy"
+                        }`}
+                      >
+                        <span></span>
 
-                      {worker.about && (
+                        {getAvailabilityText(worker.availability)}
+                      </div>
+                    </div>
 
-                        <div className="customer-worker-about">
+                    {/* DETAILS */}
 
-                          <p>
-                            {worker.about}
-                          </p>
+                    <div className="customer-worker-details">
+                      <div className="customer-worker-detail">
+                        <BriefcaseBusiness size={17} />
 
+                        <div>
+                          <small>Experience</small>
+
+                          <strong>
+                            {worker.experienceYears ?? 0} years
+                          </strong>
                         </div>
+                      </div>
 
-                      )}
+                      <div className="customer-worker-detail">
+                        <IndianRupee size={17} />
 
-                      {/* ACTION */}
+                        <div>
+                          <small>Charges</small>
 
-                      <div className="customer-worker-actions">
+                          <strong>
+                            ₹{Number(worker.charges ?? 0).toFixed(2)}
+                            /hour
+                          </strong>
+                        </div>
+                      </div>
 
-                        {(() => {
+                      <div className="customer-worker-detail">
+                        <Navigation size={17} />
 
-                          const existingBooking =
-                            getWorkerBooking(
-                              worker.workerId
-                            );
+                        <div>
+                          <small>Distance</small>
 
-                          const status =
-                            existingBooking?.status?.toUpperCase();
+                          <strong>
+                            {formatDistance(worker.distanceKm)}
+                          </strong>
+                        </div>
+                      </div>
+                    </div>
 
-                          if (
-                            status ===
-                            "PENDING"
-                          ) {
+                    {/* LOCATION */}
 
-                            return (
+                    <div className="customer-worker-location">
+                      <MapPin size={17} />
 
-                              <button
-                                type="button"
-                                className="customer-worker-view-button"
-                                disabled
-                              >
-                                ✓ Request Sent
-                              </button>
+                      <span>
+                        {[
+                          worker.area,
+                          worker.city,
+                          worker.district,
+                          worker.state,
+                        ]
+                          .filter(Boolean)
+                          .join(", ") || "Location unavailable"}
+                      </span>
+                    </div>
 
-                            );
+                    {/* ABOUT */}
 
-                          }
+                    {worker.about && (
+                      <div className="customer-worker-about">
+                        <p>{worker.about}</p>
+                      </div>
+                    )}
 
-                          if (
-                            status ===
-                            "ACCEPTED"
-                          ) {
+                    {/* ACTION */}
 
-                            return (
+                    <div className="customer-worker-actions">
+                      {(() => {
+                        const existingBooking = getWorkerBooking(
+                          worker.workerId
+                        );
 
-                              <button
-                                type="button"
-                                className="customer-worker-view-button"
-                                disabled
-                              >
-                                ✓ Worker Currently Working
-                              </button>
+                        const status =
+                          existingBooking?.status?.toUpperCase();
 
-                            );
-
-                          }
-
+                        if (status === "PENDING") {
                           return (
-
                             <button
                               type="button"
                               className="customer-worker-view-button"
-                              onClick={() =>
-                                handleViewWorker(
-                                  worker
-                                )
-                              }
+                              disabled
                             >
-                              View Worker
+                              ✓ Request Sent
                             </button>
-
                           );
+                        }
 
-                        })()}
-
-                      </div>
-
-                    </div>
-
-                    {/* FREE TIER LOCK OVERLAY */}
-
-                    {!loadingBookingAccess &&
-                      !canBook && (
-
-                        <div className="customer-worker-lock-overlay">
-
-                          <div className="customer-worker-lock-content">
-
-                            <div className="customer-worker-lock-icon">
-
-                              <Lock size={28} />
-
-                            </div>
-
-                            <h3>
-                              Booking Access Required
-                            </h3>
-
-                            <p>
-                              Your 3 free bookings have
-                              been completed.
-                            </p>
-
-                            <span>
-                              Purchase Booking Credits to
-                              continue booking workers.
-                            </span>
-
+                        if (status === "ACCEPTED") {
+                          return (
                             <button
                               type="button"
-                              className="customer-worker-unlock-button"
-                              onClick={() =>
-                                navigate(
-                                  "/customer/booking-credits"
-                                )
-                              }
+                              className="customer-worker-view-button"
+                              disabled
                             >
-
-                              <IndianRupee size={17} />
-
-                              Buy Booking Credits
-
+                              ✓ Worker Currently Working
                             </button>
+                          );
+                        }
 
-                          </div>
+                        return (
+                          <button
+                            type="button"
+                            className="customer-worker-view-button"
+                            onClick={() => handleViewWorker(worker)}
+                          >
+                            View Worker
+                          </button>
+                        );
+                      })()}
+                    </div>
+                  </div>
 
+                  {/* FREE TIER LOCK OVERLAY */}
+
+                  {!loadingBookingAccess && !canBook && (
+                    <div className="customer-worker-lock-overlay">
+                      <div className="customer-worker-lock-content">
+                        <div className="customer-worker-lock-icon">
+                          <Lock size={28} />
                         </div>
 
-                      )}
+                        <h3>Booking Access Required</h3>
 
-                  </article>
+                        <p>
+                          Your 3 free bookings have been completed.
+                        </p>
 
-                ))}
+                        <span>
+                          Purchase Booking Credits to continue booking
+                          workers.
+                        </span>
 
-              </div>
-
-            )}
-
+                        <button
+                          type="button"
+                          className="customer-worker-unlock-button"
+                          onClick={() =>
+                            navigate("/customer/booking-credits")
+                          }
+                        >
+                          <IndianRupee size={17} />
+                          Buy Booking Credits
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </article>
+              ))}
+            </div>
+          )}
         </section>
-                {/* =================================================
+
+        {/* =================================================
             CUSTOMER + WORKER MAP
         ================================================= */}
 
@@ -2421,24 +1964,14 @@ saveLocation(
             MY BOOKINGS
         ================================================= */}
 
-        <div
-          ref={bookingsRef}
-          className="customer-bookings-wrapper"
-        >
-
+        <div ref={bookingsRef} className="customer-bookings-wrapper">
           {showBookings && (
-
             <CustomerBookings
               token={localStorage.getItem("token")}
-              onBookingsLoaded={
-                setCustomerBookings
-              }
+              onBookingsLoaded={setCustomerBookings}
             />
-
           )}
-
         </div>
-
       </main>
 
       {/* =================================================
@@ -2464,7 +1997,6 @@ saveLocation(
       ================================================= */}
 
       <nav className="customer-mobile-bottom-nav">
-
         {/* HOME */}
 
         <button
@@ -2481,15 +2013,11 @@ saveLocation(
         <button
           type="button"
           className="customer-mobile-nav-item"
-          onClick={() =>
-            navigate("/customer/booking-credits")
-          }
+          onClick={() => navigate("/customer/booking-credits")}
         >
           <IndianRupee size={20} />
 
           <span>Credits</span>
-
-          
         </button>
 
         {/* MY BOOKINGS */}
@@ -2511,9 +2039,7 @@ saveLocation(
         <button
           type="button"
           className="customer-mobile-nav-item"
-          onClick={() =>
-            navigate("/payment-history")
-          }
+          onClick={() => navigate("/payment-history")}
         >
           <History size={20} />
 
@@ -2525,17 +2051,13 @@ saveLocation(
         <button
           type="button"
           className="customer-mobile-nav-item"
-          onClick={() =>
-            navigate("/customer-profile")
-          }
+          onClick={() => navigate("/customer-profile")}
         >
           <UserRound size={20} />
 
           <span>Profile</span>
         </button>
-
       </nav>
-
     </div>
   );
 }
