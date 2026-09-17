@@ -1,6 +1,6 @@
-import HeroWorker from "../../assets/images/Hero/hero-worker.png";
+import HeroWorkerVideo from "../../assets/videos/hero-worker.mp4";
 import "./Hero.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
@@ -31,7 +31,13 @@ function Hero() {
       text: "Skilled Professionals",
     },
   ];
+  const videoRef = useRef(null);
 
+useEffect(() => {
+  if (videoRef.current) {
+    videoRef.current.playbackRate = 0.45;
+  }
+}, []);
   const [currentText, setCurrentText] = useState("");
   const [textIndex, setTextIndex] = useState(0);
 
@@ -106,7 +112,17 @@ function Hero() {
         <div className="hero-image-wrapper">
           <div className="hero-glow"></div>
 
-          <img src={HeroWorker} alt="Professional Worker" />
+          <video
+  ref={videoRef}
+  src={HeroWorkerVideo}
+  autoPlay
+  loop
+  muted
+  playsInline
+  disablePictureInPicture
+  controlsList="nodownload noplaybackrate noremoteplayback"
+  className="hero-video"
+/>
 
          <div className="floating-card typing-card">
     {messages[textIndex].icon}

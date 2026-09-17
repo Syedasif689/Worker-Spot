@@ -1,7 +1,8 @@
+
 /* ===========================================
-   HERO — Fixed Desktop Layout on All Screens
-   Image enlarged on mobile, shifted upward
-   ============================================ */
+   HERO — Responsive Desktop / Tablet / Mobile
+   Worker Spot
+=========================================== */
 
 *,
 *::before,
@@ -19,11 +20,14 @@
 }
 
 .hero-container {
+  width: 100%;
   max-width: 1280px;
   margin: 0 auto;
-  
+
   min-height: auto;
+
   padding: 80px 0;
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -31,11 +35,16 @@
 
 .hero-grid {
   width: 100%;
+
   display: grid;
+
   grid-template-columns: 1.1fr 0.9fr;
+
   gap: clamp(30px, 5vw, 70px);
+
   align-items: center;
 }
+
 
 /* ===========================================
    LEFT CONTENT
@@ -44,34 +53,52 @@
 .hero-badge {
   display: inline-flex;
   align-items: center;
+
   gap: 10px;
+
   padding: 10px 18px;
+
   border-radius: 999px;
+
   background: rgba(255, 138, 0, 0.1);
+
   border: 1px solid rgba(255, 138, 0, 0.3);
+
   color: #ff8a00;
+
   font-size: clamp(12px, 1.1vw, 14px);
+
   font-weight: 500;
+
   width: fit-content;
 }
 
 .hero-title {
   margin-top: clamp(20px, 2.8vw, 28px);
+
   font-size: clamp(2rem, 5vw, 4.5rem);
+
   font-weight: 700;
+
   line-height: 1.15;
 }
+
 .hero-title span {
   color: #ff8a00;
 }
 
 .hero-description {
   margin-top: clamp(18px, 2.4vw, 28px);
+
   max-width: 560px;
+
   color: #9ca3af;
+
   font-size: clamp(15px, 1.3vw, 18px);
+
   line-height: 1.8;
 }
+
 
 /* ===========================================
    BUTTONS
@@ -79,46 +106,70 @@
 
 .hero-buttons {
   display: flex;
+
   gap: clamp(12px, 1.4vw, 18px);
+
   margin-top: clamp(30px, 3.2vw, 40px);
+
   flex-wrap: wrap;
 }
 
 .btn-primary,
 .btn-secondary {
   display: flex;
+
   align-items: center;
   justify-content: center;
+
   gap: 10px;
-  padding: clamp(12px, 1.3vw, 16px) clamp(20px, 2.2vw, 28px);
+
+  padding:
+    clamp(12px, 1.3vw, 16px)
+    clamp(20px, 2.2vw, 28px);
+
   border-radius: 14px;
+
   font-weight: 600;
+
   font-size: clamp(14px, 1vw, 16px);
+
   transition: 0.3s ease;
+
   cursor: pointer;
+
   text-decoration: none;
 }
 
 .btn-primary {
   background: #ff8a00;
+
   color: white;
+
   border: none;
 }
+
 .btn-primary:hover {
   background: #ff9f1c;
+
   transform: translateY(-3px);
 }
 
 .btn-secondary {
   border: 2px solid #ff8a00;
+
   background: transparent;
+
   color: #ff8a00;
 }
+
 .btn-secondary:hover {
   background: #ff8a00;
+
   color: white;
+
   transform: translateY(-3px);
 }
+
 
 /* ===========================================
    FEATURES
@@ -126,198 +177,601 @@
 
 .hero-features {
   display: flex;
+
   gap: clamp(20px, 3vw, 35px);
+
   margin-top: clamp(30px, 4vw, 45px);
+
   flex-wrap: wrap;
 }
 
 .hero-feature {
   display: flex;
+
   align-items: center;
+
   gap: 10px;
+
   color: #d1d5db;
+
   font-weight: 500;
+
   font-size: clamp(13px, 1vw, 15px);
 }
+
 .hero-feature svg {
   color: #ff8a00;
+
   flex-shrink: 0;
 }
 
+
 /* ===========================================
-   RIGHT IMAGE — ENLARGED
+   RIGHT VIDEO
 =========================================== */
 
 .hero-image {
   display: flex;
+
   justify-content: center;
+
+  width: 100%;
 }
 
 .hero-image-wrapper {
   position: relative;
+
   display: flex;
+
   justify-content: center;
+
   align-items: center;
+
   width: 100%;
+
   max-width: 700px;
+
   margin: 0 auto;
 }
 
-.hero-glow {
-  position: absolute;
-  width: clamp(280px, 38vw, 440px);
-  height: clamp(280px, 38vw, 440px);
-  background: rgba(255, 138, 0, 0.25);
-  border-radius: 50%;
-  filter: blur(80px);
-  z-index: 1;
-}
-
-.hero-image-wrapper img {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  max-width: clamp(380px, 50vw, 720px);
-  height: auto;
-  object-fit: contain;
-  display: block;
-}
 
 /* ===========================================
-   FLOATING CARD (typing-card)
+   ORANGE GLOW
+=========================================== */
+
+.hero-glow {
+  position: absolute;
+
+  width: clamp(280px, 38vw, 440px);
+
+  height: clamp(280px, 38vw, 440px);
+
+  background: rgba(255, 138, 0, 0.25);
+
+  border-radius: 50%;
+
+  filter: blur(80px);
+
+  z-index: 1;
+
+  pointer-events: none;
+}
+
+
+/* ===========================================
+   VIDEO
+=========================================== */
+
+.hero-video {
+  position: relative;
+
+  z-index: 2;
+
+  width: 100%;
+
+  max-width: clamp(380px, 50vw, 720px);
+
+  height: auto;
+
+  object-fit: contain;
+
+  display: block;
+
+  border-radius: 18px;
+}
+
+
+/* ===========================================
+   FLOATING CARD
 =========================================== */
 
 .typing-card {
   position: absolute;
+
   top: clamp(2%, 2vw, 5%);
+
   right: clamp(-5px, 0vw, 3%);
+
   z-index: 5;
+
   display: flex;
+
   align-items: center;
+
   gap: 12px;
+
   min-width: clamp(160px, 18vw, 220px);
-  padding: clamp(10px, 1vw, 14px) clamp(14px, 1.4vw, 20px);
+
+  padding:
+    clamp(10px, 1vw, 14px)
+    clamp(14px, 1.4vw, 20px);
+
   border-radius: 14px;
+
   background: #111827;
+
   border: 1px solid #374151;
+
   color: white;
+
   font-weight: 600;
+
   font-size: clamp(12px, 1vw, 15px);
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+
+  box-shadow:
+    0 15px 40px rgba(0, 0, 0, 0.35);
+
   white-space: nowrap;
 }
 
 .typing-cursor {
-  color: #ff8a00;
+  width: 2px;
+
+  height: 18px;
+
+  background: #ff8a00;
+
   animation: blink 0.8s step-end infinite;
 }
+
 @keyframes blink {
   50% {
     opacity: 0;
   }
 }
 
+
 /* ===========================================
-   MOBILE BREAKPOINT (≤480px)
-   — Image fills column, shifted upward
+   TABLET / SMALL LAPTOP
+   768px — 1100px
 =========================================== */
 
-@media (max-width: 480px) {
+@media (max-width: 1100px) {
+
   .hero-container {
-    padding: 20px 16px 30px;
-    min-height: auto;
+    padding: 70px 35px;
   }
 
   .hero-grid {
-    gap: 10px; /* tighter spacing */
+    gap: 35px;
   }
 
-  /* 1. MANAGE TEXT: slightly smaller but readable */
   .hero-title {
-    font-size: clamp(1.2rem, 5.5vw, 1.6rem);
-    margin-top: 10px;
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
   }
 
   .hero-description {
-    font-size: clamp(12px, 2.8vw, 13px);
-    margin-top: 10px;
-    max-width: 100%;
+    font-size: 15px;
   }
 
-  .hero-badge {
-    font-size: 9px;
-    padding: 4px 10px;
-    gap: 6px;
+  .hero-video {
+    max-width: 520px;
+  }
+
+  .typing-card {
+    min-width: 150px;
+
+    padding: 9px 12px;
+
+    gap: 8px;
+
+    font-size: 11px;
+  }
+}
+
+
+/* ===========================================
+   TABLET
+   600px — 767px
+=========================================== */
+
+@media (max-width: 767px) {
+
+  .hero-container {
+    padding: 50px 24px 40px;
+  }
+
+  /*
+     Keep the two-column design on tablets
+     but make both sides smaller.
+  */
+
+  .hero-grid {
+    grid-template-columns: 1fr 0.9fr;
+
+    gap: 20px;
+  }
+
+  .hero-title {
+    font-size: clamp(2rem, 5.5vw, 2.8rem);
+
+    line-height: 1.12;
+  }
+
+  .hero-description {
+    font-size: 13px;
+
+    line-height: 1.7;
   }
 
   .hero-buttons {
     gap: 8px;
-    margin-top: 14px;
+
+    margin-top: 20px;
   }
 
   .btn-primary,
   .btn-secondary {
-    padding: 8px 14px;
+    padding: 10px 13px;
+
     font-size: 11px;
-    width: auto;
+
+    border-radius: 11px;
+
+    gap: 6px;
+  }
+
+  .btn-primary svg,
+  .btn-secondary svg {
+    width: 16px;
+
+    height: 16px;
   }
 
   .hero-features {
-    gap: 8px;
-    margin-top: 14px;
+    gap: 12px;
+
+    margin-top: 22px;
   }
 
   .hero-feature {
     font-size: 10px;
+
+    gap: 6px;
   }
+
   .hero-feature svg {
-    width: 14px;
-    height: 14px;
+    width: 15px;
+
+    height: 15px;
   }
 
-  /* 2. ENLARGE IMAGE + SHIFT UPWARD */
-  .hero-image-wrapper {
-    max-width: 100%;
-    transform: translateY(-12px); /* ⬆ shift image upward */
+  .hero-video {
+    width: 100%;
+
+    max-width: 430px;
+
+    border-radius: 14px;
   }
 
-  .hero-image-wrapper img {
-    max-width: 100%;
-    height: auto;
-  }
-
-  /* Scale glow to match bigger image */
   .hero-glow {
-    width: clamp(150px, 38vw, 240px);
-    height: clamp(150px, 38vw, 240px);
-    filter: blur(50px);
+    width: 240px;
+
+    height: 240px;
+
+    filter: blur(55px);
   }
 
-  /* 3. Adjust floating card to avoid overlap */
   .typing-card {
-    font-size: 8px;
-    padding: 4px 8px;
-    min-width: 75px;
-    top: -4px;
+    top: 0;
+
     right: -2px;
+
+    min-width: 120px;
+
+    padding: 7px 9px;
+
+    gap: 5px;
+
+    font-size: 8px;
+
     border-radius: 8px;
-    gap: 4px;
   }
+
   .typing-card svg {
-    width: 12px;
-    height: 12px;
+    width: 13px;
+
+    height: 13px;
+  }
+
+  .typing-cursor {
+    height: 11px;
   }
 }
 
+
 /* ===========================================
-   VERY LARGE SCREENS (≥1400px)
+   MOBILE
+   ≤ 599px
+
+   IMPORTANT:
+   On phones we switch to one column.
+   Text remains first, video below.
+=========================================== */
+
+@media (max-width: 599px) {
+
+  .hero-container {
+    padding: 30px 16px 35px;
+  }
+
+  .hero-grid {
+    grid-template-columns: 1fr;
+
+    gap: 18px;
+  }
+
+  .hero-badge {
+    padding: 7px 12px;
+
+    gap: 6px;
+
+    font-size: 10px;
+  }
+
+  .hero-badge svg {
+    width: 14px;
+
+    height: 14px;
+  }
+
+  .hero-title {
+    margin-top: 12px;
+
+    font-size: clamp(1.9rem, 9vw, 2.5rem);
+
+    line-height: 1.1;
+  }
+
+  .hero-description {
+    margin-top: 10px;
+
+    max-width: 100%;
+
+    font-size: 12px;
+
+    line-height: 1.65;
+  }
+
+  .hero-buttons {
+    margin-top: 17px;
+
+    gap: 7px;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 9px 12px;
+
+    font-size: 10px;
+
+    border-radius: 9px;
+
+    gap: 5px;
+  }
+
+  .btn-primary svg,
+  .btn-secondary svg {
+    width: 14px;
+
+    height: 14px;
+  }
+
+  .hero-features {
+    margin-top: 16px;
+
+    gap: 12px;
+  }
+
+  .hero-feature {
+    font-size: 9px;
+
+    gap: 5px;
+  }
+
+  .hero-feature svg {
+    width: 13px;
+
+    height: 13px;
+  }
+
+
+  /* =======================================
+     MOBILE VIDEO
+  ======================================= */
+
+  .hero-image {
+    width: 100%;
+
+    margin-top: 0;
+  }
+
+  .hero-image-wrapper {
+    width: 100%;
+
+    max-width: 100%;
+
+    transform: translateY(-5px);
+  }
+
+  .hero-video {
+    width: 100%;
+
+    max-width: 100%;
+
+    height: auto;
+
+    border-radius: 12px;
+  }
+
+  .hero-glow {
+    width: 200px;
+
+    height: 200px;
+
+    filter: blur(45px);
+  }
+
+
+  /* =======================================
+     MOBILE FLOATING CARD
+  ======================================= */
+
+  .typing-card {
+    top: 0;
+
+    right: 0;
+
+    min-width: 105px;
+
+    padding: 5px 7px;
+
+    gap: 4px;
+
+    border-radius: 7px;
+
+    font-size: 7px;
+  }
+
+  .typing-card svg {
+    width: 11px;
+
+    height: 11px;
+  }
+
+  .typing-cursor {
+    height: 9px;
+  }
+}
+
+
+/* ===========================================
+   VERY SMALL MOBILE
+   ≤ 380px
+=========================================== */
+
+@media (max-width: 380px) {
+
+  .hero-container {
+    padding: 24px 12px 28px;
+  }
+
+  .hero-grid {
+    gap: 14px;
+  }
+
+  .hero-badge {
+    font-size: 9px;
+
+    padding: 6px 9px;
+  }
+
+  .hero-title {
+    font-size: 1.7rem;
+  }
+
+  .hero-description {
+    font-size: 11px;
+  }
+
+  .hero-buttons {
+    gap: 5px;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 8px 10px;
+
+    font-size: 9px;
+  }
+
+  .hero-features {
+    gap: 8px;
+  }
+
+  .hero-feature {
+    font-size: 8px;
+  }
+
+  .hero-feature svg {
+    width: 12px;
+
+    height: 12px;
+  }
+
+  .hero-image-wrapper {
+    transform: translateY(-7px);
+  }
+
+  .typing-card {
+    min-width: 85px;
+
+    padding: 4px 6px;
+
+    font-size: 6.5px;
+  }
+
+  .typing-card svg {
+    width: 10px;
+
+    height: 10px;
+  }
+}
+
+
+/* ===========================================
+   VERY LARGE SCREENS
+   ≥ 1400px
 =========================================== */
 
 @media (min-width: 1400px) {
+
   .hero-container {
     max-width: 1400px;
   }
-  .hero-image-wrapper img {
+
+  .hero-video {
     max-width: 720px;
+  }
+
+  .hero-image-wrapper {
+    max-width: 720px;
+  }
+}
+
+
+/* ===========================================
+   REDUCED MOTION
+=========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .typing-cursor {
+    animation: none;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    transition: none;
   }
 }
