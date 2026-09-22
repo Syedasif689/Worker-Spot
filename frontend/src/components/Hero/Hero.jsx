@@ -112,11 +112,10 @@ useEffect(() => {
         <div className="hero-image-wrapper">
           <div className="hero-glow"></div>
 
-          <video
+            <video
   ref={videoRef}
   src={HeroWorkerVideo}
   autoPlay
-  loop
   muted
   playsInline
   disablePictureInPicture

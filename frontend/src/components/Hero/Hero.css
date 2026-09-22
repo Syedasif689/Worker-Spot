@@ -1,6 +1,6 @@
 
 /* ===========================================
-   HERO — Responsive Desktop / Tablet / Mobile
+   HERO — Same Desktop Layout on All Screens
    Worker Spot
 =========================================== */
 
@@ -23,10 +23,7 @@
   width: 100%;
   max-width: 1280px;
   margin: 0 auto;
-
-  min-height: auto;
-
-  padding: 80px 0;
+  padding: 80px 40px;
 
   display: flex;
   align-items: center;
@@ -38,9 +35,10 @@
 
   display: grid;
 
+  /* ALWAYS TWO COLUMNS */
   grid-template-columns: 1.1fr 0.9fr;
 
-  gap: clamp(30px, 5vw, 70px);
+  gap: clamp(25px, 5vw, 70px);
 
   align-items: center;
 }
@@ -74,7 +72,7 @@
 }
 
 .hero-title {
-  margin-top: clamp(20px, 2.8vw, 28px);
+  margin-top: clamp(18px, 2.8vw, 28px);
 
   font-size: clamp(2rem, 5vw, 4.5rem);
 
@@ -107,11 +105,11 @@
 .hero-buttons {
   display: flex;
 
-  gap: clamp(12px, 1.4vw, 18px);
+  gap: clamp(8px, 1.4vw, 18px);
 
-  margin-top: clamp(30px, 3.2vw, 40px);
+  margin-top: clamp(25px, 3.2vw, 40px);
 
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .btn-primary,
@@ -124,20 +122,22 @@
   gap: 10px;
 
   padding:
-    clamp(12px, 1.3vw, 16px)
-    clamp(20px, 2.2vw, 28px);
+    clamp(10px, 1.3vw, 16px)
+    clamp(14px, 2.2vw, 28px);
 
   border-radius: 14px;
 
   font-weight: 600;
 
-  font-size: clamp(14px, 1vw, 16px);
+  font-size: clamp(11px, 1vw, 16px);
 
   transition: 0.3s ease;
 
   cursor: pointer;
 
   text-decoration: none;
+
+  white-space: nowrap;
 }
 
 .btn-primary {
@@ -178,11 +178,11 @@
 .hero-features {
   display: flex;
 
-  gap: clamp(20px, 3vw, 35px);
+  gap: clamp(10px, 3vw, 35px);
 
-  margin-top: clamp(30px, 4vw, 45px);
+  margin-top: clamp(25px, 4vw, 45px);
 
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .hero-feature {
@@ -196,7 +196,9 @@
 
   font-weight: 500;
 
-  font-size: clamp(13px, 1vw, 15px);
+  font-size: clamp(9px, 1vw, 15px);
+
+  white-space: nowrap;
 }
 
 .hero-feature svg {
@@ -214,6 +216,8 @@
   display: flex;
 
   justify-content: center;
+
+  align-items: center;
 
   width: 100%;
 }
@@ -242,9 +246,9 @@
 .hero-glow {
   position: absolute;
 
-  width: clamp(280px, 38vw, 440px);
+  width: clamp(200px, 38vw, 440px);
 
-  height: clamp(280px, 38vw, 440px);
+  height: clamp(200px, 38vw, 440px);
 
   background: rgba(255, 138, 0, 0.25);
 
@@ -269,7 +273,7 @@
 
   width: 100%;
 
-  max-width: clamp(380px, 50vw, 720px);
+  max-width: clamp(280px, 50vw, 720px);
 
   height: auto;
 
@@ -300,11 +304,11 @@
 
   gap: 12px;
 
-  min-width: clamp(160px, 18vw, 220px);
+  min-width: clamp(120px, 18vw, 220px);
 
   padding:
-    clamp(10px, 1vw, 14px)
-    clamp(14px, 1.4vw, 20px);
+    clamp(8px, 1vw, 14px)
+    clamp(10px, 1.4vw, 20px);
 
   border-radius: 14px;
 
@@ -316,12 +320,18 @@
 
   font-weight: 600;
 
-  font-size: clamp(12px, 1vw, 15px);
+  font-size: clamp(9px, 1vw, 15px);
 
   box-shadow:
     0 15px 40px rgba(0, 0, 0, 0.35);
 
   white-space: nowrap;
+
+  overflow: hidden;
+}
+
+.typing-card svg {
+  flex-shrink: 0;
 }
 
 .typing-cursor {
@@ -332,6 +342,8 @@
   background: #ff8a00;
 
   animation: blink 0.8s step-end infinite;
+
+  flex-shrink: 0;
 }
 
 @keyframes blink {
@@ -344,201 +356,91 @@
 /* ===========================================
    TABLET / SMALL LAPTOP
    768px — 1100px
+
+   STILL TWO COLUMNS
 =========================================== */
 
 @media (max-width: 1100px) {
 
   .hero-container {
-    padding: 70px 35px;
+    padding: 65px 30px;
   }
 
   .hero-grid {
-    gap: 35px;
+    grid-template-columns: 1.1fr 0.9fr;
+
+    gap: 25px;
   }
 
   .hero-title {
-    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-size: clamp(2rem, 5vw, 3.5rem);
   }
 
   .hero-description {
-    font-size: 15px;
+    font-size: 14px;
+
+    line-height: 1.65;
   }
 
   .hero-video {
-    max-width: 520px;
+    max-width: 500px;
   }
 
   .typing-card {
-    min-width: 150px;
+    min-width: 130px;
 
-    padding: 9px 12px;
+    padding: 8px 10px;
 
-    gap: 8px;
+    gap: 7px;
 
-    font-size: 11px;
+    font-size: 10px;
+  }
+
+  .typing-card svg {
+    width: 15px;
+
+    height: 15px;
   }
 }
 
 
 /* ===========================================
-   TABLET
+   TABLET / LARGE PHONE
    600px — 767px
+
+   STILL TWO COLUMNS
 =========================================== */
 
 @media (max-width: 767px) {
 
   .hero-container {
-    padding: 50px 24px 40px;
+    padding: 45px 18px 35px;
   }
-
-  /*
-     Keep the two-column design on tablets
-     but make both sides smaller.
-  */
 
   .hero-grid {
-    grid-template-columns: 1fr 0.9fr;
+    grid-template-columns: 1.1fr 0.9fr;
 
-    gap: 20px;
+    gap: 14px;
   }
 
-  .hero-title {
-    font-size: clamp(2rem, 5.5vw, 2.8rem);
-
-    line-height: 1.12;
-  }
-
-  .hero-description {
-    font-size: 13px;
-
-    line-height: 1.7;
-  }
-
-  .hero-buttons {
-    gap: 8px;
-
-    margin-top: 20px;
-  }
-
-  .btn-primary,
-  .btn-secondary {
-    padding: 10px 13px;
-
-    font-size: 11px;
-
-    border-radius: 11px;
-
-    gap: 6px;
-  }
-
-  .btn-primary svg,
-  .btn-secondary svg {
-    width: 16px;
-
-    height: 16px;
-  }
-
-  .hero-features {
-    gap: 12px;
-
-    margin-top: 22px;
-  }
-
-  .hero-feature {
-    font-size: 10px;
-
-    gap: 6px;
-  }
-
-  .hero-feature svg {
-    width: 15px;
-
-    height: 15px;
-  }
-
-  .hero-video {
-    width: 100%;
-
-    max-width: 430px;
-
-    border-radius: 14px;
-  }
-
-  .hero-glow {
-    width: 240px;
-
-    height: 240px;
-
-    filter: blur(55px);
-  }
-
-  .typing-card {
-    top: 0;
-
-    right: -2px;
-
-    min-width: 120px;
-
-    padding: 7px 9px;
+  .hero-badge {
+    padding: 7px 10px;
 
     gap: 5px;
 
-    font-size: 8px;
-
-    border-radius: 8px;
+    font-size: 9px;
   }
 
-  .typing-card svg {
+  .hero-badge svg {
     width: 13px;
 
     height: 13px;
   }
 
-  .typing-cursor {
-    height: 11px;
-  }
-}
-
-
-/* ===========================================
-   MOBILE
-   ≤ 599px
-
-   IMPORTANT:
-   On phones we switch to one column.
-   Text remains first, video below.
-=========================================== */
-
-@media (max-width: 599px) {
-
-  .hero-container {
-    padding: 30px 16px 35px;
-  }
-
-  .hero-grid {
-    grid-template-columns: 1fr;
-
-    gap: 18px;
-  }
-
-  .hero-badge {
-    padding: 7px 12px;
-
-    gap: 6px;
-
-    font-size: 10px;
-  }
-
-  .hero-badge svg {
-    width: 14px;
-
-    height: 14px;
-  }
-
   .hero-title {
     margin-top: 12px;
 
-    font-size: clamp(1.9rem, 9vw, 2.5rem);
+    font-size: clamp(1.5rem, 6vw, 2.4rem);
 
     line-height: 1.1;
   }
@@ -548,70 +450,57 @@
 
     max-width: 100%;
 
-    font-size: 12px;
+    font-size: 10px;
 
-    line-height: 1.65;
+    line-height: 1.55;
   }
 
   .hero-buttons {
-    margin-top: 17px;
+    margin-top: 16px;
 
-    gap: 7px;
+    gap: 5px;
+
+    flex-wrap: nowrap;
   }
 
   .btn-primary,
   .btn-secondary {
-    padding: 9px 12px;
+    padding: 8px 9px;
 
-    font-size: 10px;
+    font-size: 8px;
 
-    border-radius: 9px;
+    border-radius: 8px;
 
-    gap: 5px;
+    gap: 4px;
+
+    border-width: 1px;
   }
 
   .btn-primary svg,
   .btn-secondary svg {
-    width: 14px;
+    width: 12px;
 
-    height: 14px;
+    height: 12px;
   }
 
   .hero-features {
+    gap: 7px;
+
     margin-top: 16px;
 
-    gap: 12px;
+    flex-wrap: nowrap;
   }
 
   .hero-feature {
-    font-size: 9px;
+    font-size: 7px;
 
-    gap: 5px;
+    gap: 4px;
   }
 
   .hero-feature svg {
-    width: 13px;
+    width: 12px;
 
-    height: 13px;
-  }
-
-
-  /* =======================================
-     MOBILE VIDEO
-  ======================================= */
-
-  .hero-image {
-    width: 100%;
-
-    margin-top: 0;
-  }
-
-  .hero-image-wrapper {
-    width: 100%;
-
-    max-width: 100%;
-
-    transform: translateY(-5px);
+    height: 12px;
   }
 
   .hero-video {
@@ -619,38 +508,31 @@
 
     max-width: 100%;
 
-    height: auto;
-
-    border-radius: 12px;
+    border-radius: 11px;
   }
 
   .hero-glow {
-    width: 200px;
+    width: 180px;
 
-    height: 200px;
+    height: 180px;
 
     filter: blur(45px);
   }
 
-
-  /* =======================================
-     MOBILE FLOATING CARD
-  ======================================= */
-
   .typing-card {
     top: 0;
 
-    right: 0;
+    right: -2px;
 
-    min-width: 105px;
+    min-width: 90px;
 
     padding: 5px 7px;
 
     gap: 4px;
 
-    border-radius: 7px;
-
     font-size: 7px;
+
+    border-radius: 7px;
   }
 
   .typing-card svg {
@@ -666,75 +548,340 @@
 
 
 /* ===========================================
-   VERY SMALL MOBILE
+   MOBILE
+   ≤ 599px
+
+   IMPORTANT:
+   DESKTOP-STYLE TWO COLUMN LAYOUT
+=========================================== */
+
+@media (max-width: 599px) {
+
+  .hero-container {
+    padding: 28px 10px 30px;
+  }
+
+  /*
+     NEVER change to 1fr here.
+
+     The desktop interface remains:
+     LEFT  = content
+     RIGHT = video
+  */
+
+  .hero-grid {
+    grid-template-columns: 1.08fr 0.92fr;
+
+    gap: 8px;
+
+    align-items: center;
+  }
+
+
+  /* -----------------------------------------
+     BADGE
+  ----------------------------------------- */
+
+  .hero-badge {
+    padding: 5px 8px;
+
+    gap: 4px;
+
+    font-size: 7px;
+
+    border-radius: 999px;
+  }
+
+  .hero-badge svg {
+    width: 11px;
+
+    height: 11px;
+  }
+
+
+  /* -----------------------------------------
+     TITLE
+  ----------------------------------------- */
+
+  .hero-title {
+    margin-top: 9px;
+
+    font-size: clamp(1.25rem, 7vw, 1.8rem);
+
+    line-height: 1.08;
+  }
+
+
+  /* -----------------------------------------
+     DESCRIPTION
+  ----------------------------------------- */
+
+  .hero-description {
+    margin-top: 8px;
+
+    max-width: 100%;
+
+    font-size: 8px;
+
+    line-height: 1.5;
+  }
+
+
+  /* -----------------------------------------
+     BUTTONS
+  ----------------------------------------- */
+
+  .hero-buttons {
+    margin-top: 12px;
+
+    gap: 4px;
+
+    flex-wrap: nowrap;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 6px 7px;
+
+    font-size: 7px;
+
+    border-radius: 7px;
+
+    gap: 3px;
+
+    border-width: 1px;
+  }
+
+  .btn-primary svg,
+  .btn-secondary svg {
+    width: 10px;
+
+    height: 10px;
+  }
+
+
+  /* -----------------------------------------
+     FEATURES
+  ----------------------------------------- */
+
+  .hero-features {
+    margin-top: 12px;
+
+    gap: 6px;
+
+    flex-wrap: nowrap;
+  }
+
+  .hero-feature {
+    font-size: 6.5px;
+
+    gap: 3px;
+  }
+
+  .hero-feature svg {
+    width: 10px;
+
+    height: 10px;
+  }
+
+
+  /* -----------------------------------------
+     VIDEO
+  ----------------------------------------- */
+
+  .hero-image {
+    width: 100%;
+
+    margin-top: 0;
+  }
+
+  .hero-image-wrapper {
+    width: 100%;
+
+    max-width: 100%;
+
+    transform: none;
+  }
+
+  .hero-video {
+    width: 100%;
+
+    max-width: 100%;
+
+    height: auto;
+
+    border-radius: 9px;
+  }
+
+
+  /* -----------------------------------------
+     GLOW
+  ----------------------------------------- */
+
+  .hero-glow {
+    width: 150px;
+
+    height: 150px;
+
+    filter: blur(40px);
+  }
+
+
+  /* -----------------------------------------
+     FLOATING CARD
+  ----------------------------------------- */
+
+  .typing-card {
+    top: 0;
+
+    right: 0;
+
+    min-width: 75px;
+
+    max-width: 110px;
+
+    padding: 4px 5px;
+
+    gap: 3px;
+
+    border-radius: 6px;
+
+    font-size: 5.5px;
+  }
+
+  .typing-card svg {
+    width: 9px;
+
+    height: 9px;
+  }
+
+  .typing-cursor {
+    width: 1px;
+
+    height: 8px;
+  }
+}
+
+
+/* ===========================================
+   VERY SMALL PHONES
    ≤ 380px
+
+   STILL TWO COLUMNS
 =========================================== */
 
 @media (max-width: 380px) {
 
   .hero-container {
-    padding: 24px 12px 28px;
+    padding: 22px 8px 25px;
   }
 
   .hero-grid {
-    gap: 14px;
+    grid-template-columns: 1.08fr 0.92fr;
+
+    gap: 6px;
   }
 
   .hero-badge {
-    font-size: 9px;
+    font-size: 6px;
 
-    padding: 6px 9px;
+    padding: 4px 6px;
+  }
+
+  .hero-badge svg {
+    width: 9px;
+
+    height: 9px;
   }
 
   .hero-title {
-    font-size: 1.7rem;
+    margin-top: 7px;
+
+    font-size: 1.2rem;
   }
 
   .hero-description {
-    font-size: 11px;
+    font-size: 7px;
+
+    line-height: 1.45;
   }
 
   .hero-buttons {
-    gap: 5px;
+    margin-top: 9px;
+
+    gap: 3px;
   }
 
   .btn-primary,
   .btn-secondary {
-    padding: 8px 10px;
+    padding: 5px 5px;
 
-    font-size: 9px;
+    font-size: 6px;
+
+    border-radius: 6px;
+
+    gap: 2px;
+  }
+
+  .btn-primary svg,
+  .btn-secondary svg {
+    width: 9px;
+
+    height: 9px;
   }
 
   .hero-features {
-    gap: 8px;
+    margin-top: 9px;
+
+    gap: 4px;
   }
 
   .hero-feature {
-    font-size: 8px;
+    font-size: 5.5px;
+
+    gap: 2px;
   }
 
   .hero-feature svg {
-    width: 12px;
+    width: 8px;
 
-    height: 12px;
+    height: 8px;
   }
 
-  .hero-image-wrapper {
-    transform: translateY(-7px);
+  .hero-video {
+    border-radius: 7px;
+  }
+
+  .hero-glow {
+    width: 120px;
+
+    height: 120px;
+
+    filter: blur(32px);
   }
 
   .typing-card {
-    min-width: 85px;
+    min-width: 62px;
 
-    padding: 4px 6px;
+    max-width: 80px;
 
-    font-size: 6.5px;
+    padding: 3px 4px;
+
+    font-size: 5px;
+
+    gap: 2px;
+
+    border-radius: 5px;
   }
 
   .typing-card svg {
-    width: 10px;
+    width: 8px;
 
-    height: 10px;
+    height: 8px;
+  }
+
+  .typing-cursor {
+    height: 7px;
   }
 }
 
