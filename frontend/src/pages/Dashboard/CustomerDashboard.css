@@ -2301,88 +2301,98 @@
     display: none;
   }
 }
-/* =========================================================
-   MOBILE CATEGORY CARD SIZE FIX
-   (shrink Browse Services cards so lower sections stay visible)
-   ========================================================= */
-
 @media (max-width: 700px) {
-  .customer-category-image-wrapper {
-    height: 90px;                     /* was 145px */
+  /* ---------- OVERLAY: turn into bottom sheet ---------- */
+  .booking-modal-overlay {
+    align-items: flex-end;      /* sheet slides up from bottom */
+    padding: 0;
   }
 
-  .customer-category-image-overlay {
-    padding: 8px;                     /* was 14px */
+  /* ---------- CARD ---------- */
+  .booking-modal-card {
+    width: 100%;
+    max-width: 100%;
+    max-height: 85dvh;
+    overflow-y: auto;
+    border-radius: 18px 18px 0 0;
+    padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
   }
 
-  .customer-category-icon {
-    width: 30px;                      /* was 40/42px */
-    height: 30px;
-    border-radius: 8px;
+  /* ---------- HEADER ---------- */
+  .booking-modal-header {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
   }
-
-  .customer-category-icon svg {
-    width: 16px;
-    height: 16px;
+  .booking-modal-header h2,
+  .booking-modal-header h3 {
+    font-size: 15px;            /* was probably 18–20px */
   }
-
-  .customer-category-card-content {
-    padding: 8px 10px 10px;           /* was 14px 15px 16px */
-  }
-
-  .customer-category-card-content span {
-    font-size: 13px;                  /* was 16px */
-    line-height: 1.2;
-  }
-
-  .customer-category-card-content small {
-    margin-top: 2px;
-    font-size: 10px;                  /* was 12px */
-  }
-}
-
-@media (max-width: 500px) {
-  .customer-category-image-wrapper {
-    height: 72px;                     /* even shorter on phones */
-  }
-
-  .customer-category-card {
-    min-height: auto;                 /* was 112px — let content decide */
-  }
-
-  .customer-category-card-content {
-    padding: 7px 8px 9px;
-  }
-
-  .customer-category-card-content span {
-    font-size: 12px;
-  }
-
-  .customer-category-card-content small {
-    font-size: 9px;
-  }
-
-  .customer-category-icon {
-    width: 26px;
-    height: 26px;
-  }
-
-  .customer-category-icon svg {
-    width: 14px;
-    height: 14px;
-  }
-}
-
-@media (max-width: 360px) {
-  .customer-category-image-wrapper {
-    height: 62px;
-  }
-
-  .customer-category-card-content span {
+  .booking-modal-header p {
     font-size: 11px;
   }
 
-  .customer-category-card-content small {
-    display: none;                    /* hides "Find nearby" text */
+  /* ---------- WORKER SUMMARY / AVATAR BLOCK ---------- */
+  .booking-modal-worker {
+    padding: 10px;
+    gap: 8px;
+  }
+  .booking-modal-worker-avatar {
+    width: 40px;                /* was 52–60px */
+    height: 40px;
+  }
+  .booking-modal-worker h3 {
+    font-size: 13px;
+  }
+  .booking-modal-worker span {
+    font-size: 10px;
+  }
+
+  /* ---------- FORM FIELDS ---------- */
+  .booking-modal textarea,
+  .booking-modal input,
+  .booking-modal select {
+    font-size: 12px;
+    padding: 8px 10px;
+    min-height: 40px;
+  }
+  .booking-modal textarea {
+    min-height: 70px;           /* was probably 110–130px */
+  }
+  .booking-modal label {
+    font-size: 11px;
+    margin-bottom: 4px;
+  }
+
+  /* ---------- LOCATION / META ROWS ---------- */
+  .booking-modal-location,
+  .booking-modal-meta {
+    font-size: 11px;
+    padding: 8px 10px;
+    gap: 6px;
+  }
+
+  /* ---------- ACTIONS: sticky footer ---------- */
+  .booking-modal-actions {
+    position: sticky;
+    bottom: 0;
+    margin-top: 10px;
+    padding: 10px 0 0;
+    background: inherit;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  .booking-modal-actions button {
+    min-height: 40px;
+    font-size: 12px;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 400px) {
+  .booking-modal-card {
+    max-height: 88dvh;
+    padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
+  }
+  .booking-modal textarea {
+    min-height: 60px;
   }
 }
