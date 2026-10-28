@@ -591,49 +591,243 @@
   color: #8899aa;
 }
 
+
+/* =========================================
+   MOBILE ONLY — COMPACT BOOKING MODAL
+   Desktop styles remain unchanged.
+========================================= */
+
 @media (max-width: 600px) {
-  .booking-card-body {
-    grid-template-columns: 1fr;
-  }
-  .booking-modal {
-    margin: 0.5rem;
-    max-height: 95vh;
-  }
-  .booking-modal-header {
-    padding: 1rem;
-  }
-  .booking-modal-body {
-    padding: 1rem;
-  }
-  .booking-worker-info {
-    flex-direction: column;
+  .booking-modal-overlay {
+    padding: 0.5rem;
     align-items: center;
-    text-align: center;
   }
+
+  .booking-modal {
+    width: 100%;
+    max-width: 420px;
+    max-height: 88dvh;
+    margin: 0;
+    border-radius: 14px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .booking-modal-header {
+    padding: 0.75rem 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: #0b0f14;
+  }
+
+  .booking-modal-header h2 {
+    font-size: 1.05rem;
+  }
+
+  .booking-modal-close svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .booking-modal-body {
+    padding: 0.75rem;
+    overflow: visible;
+  }
+
+  .booking-section {
+    margin-bottom: 0.85rem;
+  }
+
+  .booking-section h3 {
+    font-size: 0.82rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Worker details: compact horizontal layout */
+  .booking-worker-info {
+    flex-direction: row;
+    align-items: flex-start;
+    text-align: left;
+    gap: 0.65rem;
+    padding: 0.7rem;
+  }
+
+  .booking-worker-avatar {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+  }
+
+  .booking-worker-avatar svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .booking-worker-details {
+    min-width: 0;
+    gap: 3px;
+  }
+
+  .booking-worker-name {
+    font-size: 0.95rem;
+    overflow-wrap: anywhere;
+  }
+
   .booking-worker-meta {
-    justify-content: center;
+    gap: 0.35rem 0.7rem;
+    font-size: 0.75rem;
   }
+
+  .booking-worker-meta svg,
+  .booking-worker-location svg {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+  }
+
+  .booking-worker-location {
+    align-items: flex-start;
+    gap: 4px;
+    font-size: 0.75rem;
+    overflow-wrap: anywhere;
+  }
+
+  .booking-worker-about {
+    margin-top: 4px;
+    padding: 0.4rem 0.55rem;
+    font-size: 0.78rem;
+  }
+
+  .booking-worker-about p {
+    margin: 0;
+  }
+
+  .booking-worker-availability {
+    font-size: 0.72rem;
+    margin-top: 3px;
+  }
+
+  /* Service details */
   .booking-service-location,
   .booking-service-category {
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.2rem;
+    gap: 0.25rem;
+    padding: 0.4rem 0;
   }
+
+  .booking-service-location-label,
+  .booking-service-category-label {
+    font-size: 0.78rem;
+  }
+
   .booking-service-location-value,
   .booking-service-category-value {
-    text-align: left;
     max-width: 100%;
+    text-align: left;
+    font-size: 0.82rem;
+    overflow-wrap: anywhere;
   }
+
+  /* Shorter problem-description field */
+  .booking-problem {
+    margin-top: 0.45rem;
+  }
+
+  .booking-problem label {
+    font-size: 0.8rem;
+  }
+
+  .booking-problem textarea {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 64px;
+    padding: 0.55rem;
+    font-size: 0.85rem;
+    resize: vertical;
+  }
+
+  /* Smaller booking summary */
+  .booking-summary-placeholder,
+  .booking-summary-result {
+    padding: 0.65rem;
+  }
+
+  .booking-summary-placeholder p {
+    font-size: 0.78rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .booking-summary-row {
+    padding: 0.3rem 0;
+    font-size: 0.8rem;
+    gap: 0.5rem;
+  }
+
+  .booking-summary-row.total {
+    font-size: 0.9rem;
+    padding-top: 0.4rem;
+  }
+
+  .booking-free-badge {
+    font-size: 0.78rem;
+    margin-top: 0.35rem;
+    padding-top: 0.35rem;
+  }
+
+  /* Credit warning */
+  .booking-credit-lock {
+    gap: 0.6rem;
+    padding: 0.7rem;
+  }
+
+  .booking-credit-lock-content h3 {
+    font-size: 0.9rem;
+  }
+
+  .booking-credit-lock-content p {
+    font-size: 0.8rem;
+  }
+
+  /* Success message */
+  .booking-success {
+    gap: 0.6rem;
+    padding: 0.7rem;
+  }
+
+  .booking-success h4 {
+    font-size: 0.9rem;
+  }
+
+  .booking-success p {
+    font-size: 0.8rem;
+    overflow-wrap: anywhere;
+  }
+
+  /* Keep actions visible at the bottom while scrolling */
   .booking-modal-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    background: #0b0f14;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: stretch;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    padding: 0.65rem 0 0.25rem;
   }
+
   .booking-modal-actions button {
-    flex: 1;
-    min-width: 100px;
+    flex: 1 1 120px;
+    min-width: 0;
+    min-height: 42px;
+    padding: 0.6rem 0.5rem;
+    font-size: 0.8rem;
   }
-  .customer-bookings-header {
-    flex-direction: column;
-    align-items: stretch;
+
+  .booking-credit-lock-button {
+    max-width: 100%;
+    font-size: 0.8rem;
   }
 }
