@@ -2301,98 +2301,78 @@
     display: none;
   }
 }
+/* =========================================================
+   MOBILE BOOKING MODAL - COMPACT SIZE FIX
+   ========================================================= */
+
 @media (max-width: 700px) {
-  /* ---------- OVERLAY: turn into bottom sheet ---------- */
-  .booking-modal-overlay {
-    align-items: flex-end;      /* sheet slides up from bottom */
-    padding: 0;
+  /* 1. Force the modal to fit the screen */
+  .booking-modal-container, 
+  .booking-modal-card { /* Use your actual modal wrapper class */
+    max-height: 85dvh !important; 
+    padding: 16px !important; /* Reduce outer padding */
   }
 
-  /* ---------- CARD ---------- */
-  .booking-modal-card {
-    width: 100%;
-    max-width: 100%;
-    max-height: 85dvh;
-    overflow-y: auto;
-    border-radius: 18px 18px 0 0;
-    padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+  /* 2. Shrink the Worker Avatar */
+  .booking-modal-avatar { /* Use your actual avatar class */
+    width: 45px !important;
+    height: 45px !important;
+    margin-bottom: 8px !important;
+  }
+  
+  .booking-modal-avatar svg {
+    width: 22px !important;
+    height: 22px !important;
   }
 
-  /* ---------- HEADER ---------- */
-  .booking-modal-header {
-    margin-bottom: 10px;
-    padding-bottom: 10px;
-  }
-  .booking-modal-header h2,
-  .booking-modal-header h3 {
-    font-size: 15px;            /* was probably 18–20px */
-  }
-  .booking-modal-header p {
-    font-size: 11px;
+  /* 3. Tighten the Worker Details spacing and text */
+  .worker-details-section { /* The card with the dark background */
+    padding: 12px !important;
+    gap: 6px !important; /* Reduce gap between items */
   }
 
-  /* ---------- WORKER SUMMARY / AVATAR BLOCK ---------- */
-  .booking-modal-worker {
-    padding: 10px;
-    gap: 8px;
-  }
-  .booking-modal-worker-avatar {
-    width: 40px;                /* was 52–60px */
-    height: 40px;
-  }
-  .booking-modal-worker h3 {
-    font-size: 13px;
-  }
-  .booking-modal-worker span {
-    font-size: 10px;
+  .worker-name {
+    font-size: 15px !important;
+    margin-bottom: 2px !important;
   }
 
-  /* ---------- FORM FIELDS ---------- */
-  .booking-modal textarea,
-  .booking-modal input,
-  .booking-modal select {
-    font-size: 12px;
-    padding: 8px 10px;
-    min-height: 40px;
-  }
-  .booking-modal textarea {
-    min-height: 70px;           /* was probably 110–130px */
-  }
-  .booking-modal label {
-    font-size: 11px;
-    margin-bottom: 4px;
+  /* Make the meta info (Mechanic, 6 years, price) more compact */
+  .worker-meta-row {
+    font-size: 11px !important;
+    gap: 8px !important;
   }
 
-  /* ---------- LOCATION / META ROWS ---------- */
-  .booking-modal-location,
-  .booking-modal-meta {
-    font-size: 11px;
-    padding: 8px 10px;
-    gap: 6px;
+  /* Limit the "About" text to 2 lines so it doesn't push the card down */
+  .worker-about-text {
+    font-size: 11px !important;
+    line-height: 1.3 !important;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Cuts off text after 2 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
-  /* ---------- ACTIONS: sticky footer ---------- */
+  /* 4. Compact the Service Location Text */
+  .service-location-text {
+    font-size: 11px !important;
+    line-height: 1.3 !important;
+  }
+
+  /* 5. Reduce Margins between sections */
+  .section-title {
+    margin-top: 12px !important;
+    margin-bottom: 8px !important;
+    font-size: 11px !important; /* "WORKER DETAILS" and "SERVICE DETAILS" */
+  }
+
+  /* 6. Keep the action buttons visible at the bottom */
   .booking-modal-actions {
-    position: sticky;
-    bottom: 0;
-    margin-top: 10px;
-    padding: 10px 0 0;
-    background: inherit;
-    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 10px !important;
+    margin-top: auto !important;
   }
+  
   .booking-modal-actions button {
-    min-height: 40px;
-    font-size: 12px;
-  }
-}
-
-/* Very small phones */
-@media (max-width: 400px) {
-  .booking-modal-card {
-    max-height: 88dvh;
-    padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
-  }
-  .booking-modal textarea {
-    min-height: 60px;
+    min-height: 38px !important;
+    font-size: 12px !important;
   }
 }
