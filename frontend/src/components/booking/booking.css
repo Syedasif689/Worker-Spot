@@ -860,3 +860,15 @@
     flex-basis: 145px;
   }
 }
+/* Slightly lift booking UI upward on mobile */
+@media (max-width: 600px) {
+  .booking-card {
+    transform: translateY(-6px);
+  }
+
+  /* If you mean the booking modal instead */
+  .booking-modal,
+  .booking-modal-content {
+    transform: translateY(-10px);
+  }
+}
