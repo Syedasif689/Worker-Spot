@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./WhyChoose.css";
+import { useNavigate } from "react-router-dom";
 
 import {
   ShieldCheck,
@@ -52,6 +53,7 @@ function WhyChoose() {
         "A transparent platform designed to provide a reliable and secure hiring experience.",
     },
   ];
+const navigate = useNavigate();
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [cardsPerView, setCardsPerView] = useState(3);
@@ -225,13 +227,10 @@ function WhyChoose() {
             to connect with reliable local professionals.
           </p>
 
-          <button className="why-btn">
-
-            Find Workers
-
-            <ArrowRight size={20} />
-
-          </button>
+          <button className="why-btn" onClick={() => navigate("/Userrig")}>
+  Register Now
+  <ArrowRight size={20} />
+</button>
 
         </div>
 
