@@ -1,32 +1,196 @@
+
+/* ==========================================
+   WORKER SPOT — SCROLL STACK CATEGORIES
+========================================== */
+
 .categories {
-    background: #0B0F14;
-    padding: 30px 0 60px;
+  position: relative;
+  isolation: isolate;
+  padding: 70px 0 100px;
+  background: #0B0F14;
 }
 
-.categories-container{
-    max-width:1280px;
-    margin:auto;
-    padding:0 30px;
+.categories-container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 30px;
 }
 
-.section-heading{
-    text-align:center;
-    margin-bottom:60px;
+/* Section heading */
+.section-heading {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  margin-bottom: 65px;
 }
 
-.section-heading h2{
-    color:white;
-    font-size:48px;
-    margin-bottom:15px;
+.section-heading h2 {
+  color: #ffffff;
+  font-size: clamp(32px, 4vw, 48px);
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  margin: 0 0 15px;
 }
 
-.section-heading p{
-    color:#9CA3AF;
-    font-size:18px;
+.section-heading p {
+  color: #9CA3AF;
+  font-size: clamp(15px, 1.5vw, 18px);
+  line-height: 1.7;
+  margin: 0;
 }
 
-.categories-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-    gap:30px;
+/* ==========================================
+   VERTICAL STICKY CARD STACK
+========================================== */
+
+.categories-stack {
+  position: relative;
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding-bottom: 8vh;
+}
+
+/* Each card occupies its own scroll section */
+.category-stack-item {
+  position: sticky;
+  top: 100px;
+  min-width: 0;
+  min-height: 350px;
+  padding-bottom: 35px;
+
+  /* Later cards appear above earlier cards */
+  z-index: calc(var(--card-index, 0) + 1);
+}
+
+/* Space each card's arrival through scrolling */
+.category-stack-item:nth-child(1) {
+  --stack-offset: 0px;
+}
+
+.category-stack-item:nth-child(2) {
+  --stack-offset: 5px;
+}
+
+.category-stack-item:nth-child(3) {
+  --stack-offset: 10px;
+}
+
+.category-stack-item:nth-child(4) {
+  --stack-offset: 15px;
+}
+
+.category-stack-item:nth-child(5) {
+  --stack-offset: 20px;
+}
+
+.category-stack-item:nth-child(6) {
+  --stack-offset: 25px;
+}
+
+.category-stack-item:nth-child(7) {
+  --stack-offset: 30px;
+}
+
+.category-stack-item:nth-child(8) {
+  --stack-offset: 35px;
+}
+
+/* Card entrance animation follows scroll position */
+@supports (animation-timeline: view()) {
+  .category-stack-item .category-card {
+    animation: category-card-arrive linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 75%;
+  }
+
+  @keyframes category-card-arrive {
+    from {
+      opacity: 0.7;
+      transform:
+        perspective(1000px)
+        rotateX(9deg)
+        translateY(45px)
+        scale(0.94);
+    }
+
+    to {
+      opacity: 1;
+      transform:
+        perspective(1000px)
+        rotateX(0deg)
+        translateY(0)
+        scale(1);
+    }
+  }
+}
+
+/* ==========================================
+   TABLET
+========================================== */
+
+@media (max-width: 1024px) {
+  .categories-container {
+    padding: 0 24px;
+  }
+
+  .categories-stack {
+    max-width: 650px;
+  }
+
+  .category-stack-item {
+    top: 85px;
+    min-height: 320px;
+    padding-bottom: 28px;
+  }
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 560px) {
+  .categories {
+    padding: 48px 0 65px;
+  }
+
+  .categories-container {
+    padding: 0 20px;
+  }
+
+  .section-heading {
+    margin-bottom: 42px;
+  }
+
+  .categories-stack {
+    max-width: 100%;
+    padding-bottom: 5vh;
+  }
+
+  .category-stack-item {
+    top: 72px;
+    min-height: 285px;
+    padding-bottom: 22px;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 360px) {
+  .categories-container {
+    padding: 0 16px;
+  }
+
+  .category-stack-item {
+    top: 62px;
+    min-height: 265px;
+    padding-bottom: 18px;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .category-stack-item .category-card {
+    animation: none !important;
+  }
 }

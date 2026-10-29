@@ -1,3 +1,4 @@
+
 import "./Categories.css";
 import CategoryCard from "../../components/CategoryCard/CategoryCard";
 
@@ -13,7 +14,6 @@ import {
 } from "lucide-react";
 
 function Categories() {
-
   const categories = [
     {
       icon: Zap,
@@ -66,36 +66,32 @@ function Categories() {
   ];
 
   return (
-    <section className="categories">
-
+    <section className="categories" id="categories">
       <div className="categories-container">
-
         <div className="section-heading">
-
           <h2>Explore Categories</h2>
-
           <p>
             Find trusted professionals for every service you need.
           </p>
-
         </div>
 
-        <div className="categories-grid">
-
-          {categories.map((category) => (
-            <CategoryCard
+        <div className="categories-stack">
+          {categories.map((category, index) => (
+            <div
+              className="category-stack-item"
               key={category.title}
-              icon={category.icon}
-              title={category.title}
-              workers={category.workers}
-              description={category.description}
-            />
+              style={{ "--card-index": index }}
+            >
+              <CategoryCard
+                icon={category.icon}
+                title={category.title}
+                workers={category.workers}
+                description={category.description}
+              />
+            </div>
           ))}
-
         </div>
-
       </div>
-
     </section>
   );
 }

@@ -1,225 +1,466 @@
-/* ===========================================
-   CATEGORY CARDS — Short on Mobile
-   3 columns, compact heights
-   ============================================ */
 
-.categories-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: clamp(12px, 1.5vw, 24px);
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: clamp(16px, 3vw, 40px) clamp(12px, 2vw, 32px);
-}
+/* ==========================================
+   WORKER SPOT — 3D SCROLL STACK CARDS
+   Dark + Orange Premium Design
+========================================== */
 
 .category-card {
-  background: #111827;
-  border: 1px solid #2b3445;
-  border-radius: clamp(12px, 1.2vw, 16px);
-  padding: clamp(14px, 1.5vw, 24px);
-  transition: 0.35s ease;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: clamp(8px, 0.8vw, 14px);
+  --card-accent: #FF8A00;
+
   position: relative;
-  overflow: hidden;
-  /* optional: constrain height on mobile */
-  max-height: clamp(180px, 30vw, 300px);
+  width: 100%;
+  min-width: 0;
+  height: 290px;
+
+  perspective: 1200px;
+  isolation: isolate;
+  background: transparent;
+  border: none;
+  border-radius: 22px;
+  cursor: pointer;
 }
 
-/* if you don't want max-height, remove it */
-@media (max-width: 480px) {
-  .category-card {
-    max-height: 160px; /* shorter on mobile */
-    padding: 10px 10px 12px;
-    gap: 4px;
-    border-radius: 10px;
-  }
-}
-
-/* Glow */
+/* Orange rear layer */
 .category-card::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255, 138, 0, 0.08), transparent);
-  opacity: 0;
-  transition: 0.35s ease;
-}
-.category-card:hover::before {
-  opacity: 1;
-}
-
-.category-card:hover {
-  transform: translateY(-4px);
-  border-color: #ff8a00;
-  box-shadow: 0 12px 30px rgba(255, 138, 0, 0.15);
+  z-index: -2;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #FFB347, #FF6B00);
+  transform: translate(9px, 10px);
+  transition: transform 0.4s ease;
 }
 
-/* ----- Icon ----- */
-.category-icon {
-  width: clamp(36px, 5vw, 60px);
-  height: clamp(36px, 5vw, 60px);
-  border-radius: clamp(10px, 1.2vw, 14px);
+/* Secondary rear layer */
+.category-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border: 1px solid #35404D;
+  border-radius: 22px;
+  background: #1A222D;
+  transform: translate(4px, 5px);
+  transition: transform 0.4s ease;
+}
+
+/* ==========================================
+   3D FLIP CONTAINER
+========================================== */
+
+.category-card-flipper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 290px;
+
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Both faces */
+.category-card-face {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+
+  padding: 24px;
+  overflow: hidden;
+
+  border: 1px solid #29313C;
+  border-radius: 22px;
+  background: #111820;
+
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Soft orange glow */
+.category-card-face::before {
+  content: "";
+  position: absolute;
+  top: -75px;
+  right: -65px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: rgba(255, 138, 0, 0.07);
+  pointer-events: none;
+}
+
+/* Front face */
+.category-card-front {
+  transform: rotateY(0deg);
+}
+
+/* Back face */
+.category-card-back {
+  transform: rotateY(180deg);
+  justify-content: center;
+  border-color: rgba(255, 138, 0, 0.4);
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(255, 138, 0, 0.13),
+      transparent 45%
+    ),
+    #151C25;
+}
+
+/* ==========================================
+   CARD HEADER
+========================================== */
+
+.category-card-top {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 4px;
+}
+
+.category-card-label {
+  color: #9CA3AF;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.7px;
+}
+
+.category-card-number {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 138, 0, 0.12);
-  color: #ff8a00;
-  flex-shrink: 0;
-}
-.category-icon svg {
-  width: clamp(20px, 3vw, 34px);
-  height: clamp(20px, 3vw, 34px);
+  width: 29px;
+  height: 29px;
+
+  border: 1px solid rgba(255, 138, 0, 0.35);
+  border-radius: 9px;
+  background: rgba(255, 138, 0, 0.09);
+  color: #FF9D26;
+  font-size: 13px;
+  font-weight: 800;
 }
 
-/* ----- Text ----- */
+/* ==========================================
+   CATEGORY ICON
+========================================== */
+
+.category-icon {
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 56px;
+  height: 56px;
+
+  color: #FF9D26;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 138, 0, 0.22),
+    rgba(255, 138, 0, 0.06)
+  );
+
+  border: 1px solid rgba(255, 138, 0, 0.35);
+  border-radius: 16px;
+
+  box-shadow: 0 6px 20px rgba(255, 138, 0, 0.08);
+  transition:
+    transform 0.35s ease,
+    background 0.35s ease;
+}
+
+.category-icon svg {
+  width: 29px;
+  height: 29px;
+  stroke-width: 1.8;
+}
+
+/* ==========================================
+   TEXT
+========================================== */
+
 .category-card h3 {
-  color: white;
-  font-size: clamp(0.9rem, 1.6vw, 1.25rem);
-  font-weight: 600;
+  position: relative;
+  z-index: 1;
   margin: 0;
-  line-height: 1.2;
+
+  color: #FFFFFF;
+  font-size: clamp(19px, 2vw, 23px);
+  font-weight: 750;
+  letter-spacing: -0.5px;
+  line-height: 1.3;
 }
 
 .workers-count {
-  color: #ff8a00;
-  font-weight: 600;
-  font-size: clamp(0.7rem, 0.9vw, 0.9rem);
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  margin: 0;
+  color: #FF9D26;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.workers-count svg {
+  width: 15px;
+  height: 15px;
 }
 
 .category-description {
-  color: #9ca3af;
-  line-height: 1.4;
-  flex: 1;
-  font-size: clamp(0.7rem, 0.9vw, 0.9rem);
+  position: relative;
+  z-index: 1;
   margin: 0;
-  /* truncate on mobile to save height */
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+
+  color: #A6B0BE;
+  font-size: 13px;
+  line-height: 1.65;
 }
 
-/* On larger screens, show full description */
-@media (min-width: 769px) {
-  .category-description {
-    display: block;
-    -webkit-line-clamp: unset;
-    overflow: visible;
-  }
-}
+/* ==========================================
+   FRONT FOOTER
+========================================== */
 
-.category-btn {
+.category-card-footer {
+  position: relative;
+  z-index: 1;
+
   display: flex;
   align-items: center;
-  gap: 6px;
-  background: none;
-  border: none;
-  color: #ff8a00;
-  font-weight: 600;
-  font-size: clamp(0.75rem, 0.8vw, 0.95rem);
-  padding: 0;
-  transition: 0.3s ease;
-  cursor: pointer;
+  justify-content: space-between;
+  gap: 10px;
+
+  width: 100%;
+  margin-top: auto;
+  padding-top: 13px;
+
+  border-top: 1px solid #29313C;
+  color: #FF9D26;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.category-card-footer svg {
+  flex-shrink: 0;
+}
+
+/* ==========================================
+   BACK FACE CONTENT
+========================================== */
+
+.category-back-icon {
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 54px;
+  height: 54px;
+  color: #FF9D26;
+
+  border: 1px solid rgba(255, 138, 0, 0.3);
+  border-radius: 16px;
+  background: rgba(255, 138, 0, 0.1);
+}
+
+.category-back-eyebrow {
+  position: relative;
+  z-index: 1;
+  color: #FF9D26;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+}
+
+.category-card-back h3 {
+  position: relative;
+  z-index: 1;
+  font-size: 22px;
+}
+
+.category-card-back > p {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+
+  color: #A6B0BE;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.category-back-workers {
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  color: #E5E7EB;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+/* Explore button */
+.category-btn {
+  position: relative;
+  z-index: 1;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+
   margin-top: 2px;
-}
-.category-card:hover .category-btn {
-  gap: 12px;
+  padding: 10px 15px;
+
+  border: 1px solid #FF9D26;
+  border-radius: 10px;
+  background: #FF9D26;
+  color: #111820;
+
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+
+  transition:
+    background 0.25s ease,
+    color 0.25s ease,
+    gap 0.25s ease;
 }
 
-/* ===========================================
-   RESPONSIVE — extra compact on small phones
-   ============================================ */
+/* ==========================================
+   HOVER EFFECTS
+========================================== */
 
-@media (max-width: 480px) {
-  .categories-grid {
-    gap: 10px;
-    padding: 12px 8px;
+@media (hover: hover) {
+  .category-card:hover::before {
+    transform: translate(12px, 13px);
   }
 
+  .category-card:hover::after {
+    transform: translate(7px, 8px);
+    border-color: rgba(255, 138, 0, 0.35);
+  }
+
+  .category-card:hover .category-icon {
+    transform: translateY(-2px) rotate(-4deg);
+    background: rgba(255, 138, 0, 0.2);
+  }
+
+  .category-card-back .category-btn:hover {
+    gap: 14px;
+    background: #FFB347;
+  }
+}
+
+/* ==========================================
+   ACCESSIBILITY
+========================================== */
+
+.category-btn:focus-visible {
+  outline: 2px solid #FFFFFF;
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .category-card-flipper,
+  .category-card::before,
+  .category-card::after,
+  .category-icon,
+  .category-btn {
+    transition: none;
+  }
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 560px) {
   .category-card {
-    padding: 8px 8px 10px;
-    gap: 3px;
-    border-radius: 8px;
-    max-height: 150px; /* force short cards */
-    overflow: hidden;
+    height: 280px;
+  }
+
+  .category-card-flipper {
+    min-height: 280px;
+  }
+
+  .category-card-face {
+    padding: 18px;
+    gap: 10px;
+    border-radius: 17px;
+  }
+
+  .category-card,
+  .category-card::before,
+  .category-card::after {
+    border-radius: 17px;
   }
 
   .category-icon {
-    width: 30px;
-    height: 30px;
+    width: 46px;
+    height: 46px;
+    border-radius: 13px;
   }
+
   .category-icon svg {
-    width: 18px;
-    height: 18px;
+    width: 24px;
+    height: 24px;
   }
 
   .category-card h3 {
-    font-size: 0.8rem;
+    font-size: 18px;
   }
-  .workers-count {
-    font-size: 0.65rem;
-  }
+
   .category-description {
-    font-size: 0.6rem;
-    line-height: 1.3;
-    -webkit-line-clamp: 2;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    font-size: 12px;
   }
-  .category-btn {
-    font-size: 0.65rem;
-    gap: 4px;
-  }
-  .category-card:hover {
-    transform: translateY(-2px);
+
+  .category-card-back h3 {
+    font-size: 20px;
   }
 }
 
 @media (max-width: 360px) {
   .category-card {
-    max-height: 130px;
-    padding: 6px 6px 8px;
+    height: 270px;
   }
-  .category-icon {
-    width: 26px;
-    height: 26px;
-  }
-  .category-icon svg {
-    width: 16px;
-    height: 16px;
-  }
-  .category-card h3 {
-    font-size: 0.7rem;
-  }
-  .category-description {
-    font-size: 0.55rem;
-    -webkit-line-clamp: 1; /* only show one line on very small */
-  }
-  .workers-count {
-    font-size: 0.55rem;
-  }
-  .category-btn {
-    font-size: 0.6rem;
-  }
-}
 
-/* Desktop: allow more height, show full description */
-@media (min-width: 1024px) {
-  .categories-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 24px;
+  .category-card-flipper {
+    min-height: 270px;
   }
-  .category-card {
-    max-height: none; /* remove height limit */
-    padding: 24px;
+
+  .category-card-face {
+    padding: 14px;
+    gap: 9px;
   }
+
+  .category-card h3 {
+    font-size: 16px;
+  }
+
   .category-description {
-    display: block;
-    -webkit-line-clamp: unset;
-    overflow: visible;
+    font-size: 11px;
+  }
+
+  .category-card-footer {
+    font-size: 10px;
   }
 }
